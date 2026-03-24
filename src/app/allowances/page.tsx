@@ -163,7 +163,7 @@ function FuyoTeate() {
           扶養手当の額は以下の計算にも影響します。
         </p>
         <ul className="mt-3 space-y-1 text-sm text-charcoal/60">
-          <li>&bull; 地域手当 = （給料 + 扶養手当 + 管理職手当）&times; 10%</li>
+          <li>&bull; 地域手当 = （給料 + 扶養手当 + 管理職手当）&times; 11%</li>
           <li>&bull; 期末勤勉手当 = （給料 + 役職加算額 + 扶養手当 + 地域手当）&times; 支給率</li>
         </ul>
       </SectionCard>
@@ -445,7 +445,7 @@ function BonusSection() {
 
       <SectionCard title="役職加算率">
         <p className="text-sm text-charcoal/60 mb-3">
-          加算額 = （給料 + 給料 &times; 10%地域手当率）&times; 加算率
+          加算額 = （給料 + 給料 &times; 11%地域手当率）&times; 加算率
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
@@ -536,7 +536,7 @@ function OvertimeSection() {
       <SectionCard title="勤務1時間あたりの給与額">
         <div className="p-4 rounded-xl bg-accent/5 text-sm text-charcoal/70">
           <p className="font-mono text-center">
-            （給料 + 給料 &times; 0.1）&times; 12 &divide; 1,860時間
+            （給料 + 給料 &times; 0.11）&times; 12 &divide; 1,860時間
           </p>
           <p className="text-xs text-charcoal/40 text-center mt-2">
             1,860時間 = 52週 &times; 38.75時間 - 20日 &times; 7.75時間
@@ -818,7 +818,7 @@ function PaymentSection() {
           勤務しないときは、特に承認があった場合を除き、勤務1時間あたりの給料月額に勤務しなかった時間数を乗じて得た額を減額します。
         </p>
         <div className="mt-3 p-3 rounded-xl bg-accent/5 text-xs text-charcoal/60 font-mono text-center">
-          勤務1時間あたり = （給料 + 給料 &times; 0.1）&times; 12 &divide; 1,860時間
+          勤務1時間あたり = （給料 + 給料 &times; 0.11）&times; 12 &divide; 1,860時間
         </div>
       </SectionCard>
     </div>

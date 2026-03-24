@@ -301,7 +301,7 @@ export default function SalaryPage() {
   const kanrishokuTeate = 0; // Placeholder - not calculated, just noted
 
   const chiikiTeate = useMemo(
-    () => Math.floor((baseSalary + fuyoTeate + kanrishokuTeate) * 0.1),
+    () => Math.floor((baseSalary + fuyoTeate + kanrishokuTeate) * 0.11),
     [baseSalary, fuyoTeate, kanrishokuTeate]
   );
 
@@ -320,7 +320,7 @@ export default function SalaryPage() {
   // Bonus calculation
   const positionAddRate = useMemo(() => getPositionAddRate(position, ageNum), [position, ageNum]);
   const yakushokuKasanGaku = useMemo(
-    () => Math.floor((baseSalary + baseSalary * 0.1) * positionAddRate),
+    () => Math.floor((baseSalary + baseSalary * 0.11) * positionAddRate),
     [baseSalary, positionAddRate]
   );
 
@@ -400,13 +400,13 @@ export default function SalaryPage() {
 
       // Calculate annual income for this year
       const yFuyo = calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, true);
-      const yChiiki = Math.floor((effectiveSalary + yFuyo) * 0.1);
+      const yChiiki = Math.floor((effectiveSalary + yFuyo) * 0.11);
       const yJukyo = calcHousingAllowance(housingType, rentNum);
       const yTsukin = calcCommuteAllowance(commuteMethod, commuteDistanceNum, sixMonthPassNum);
       const yMonthly = effectiveSalary + yFuyo + yChiiki + yJukyo + yTsukin;
 
       const yPosRate = getPositionAddRate(position, curAge);
-      const yYakushoku = Math.floor((effectiveSalary + effectiveSalary * 0.1) * yPosRate);
+      const yYakushoku = Math.floor((effectiveSalary + effectiveSalary * 0.11) * yPosRate);
       const yBonusBase = effectiveSalary + yFuyo + yChiiki + yYakushoku;
       const yBonus = Math.floor(yBonusBase * 2.5) + Math.floor(yBonusBase * 2.1);
       const yAnnual = yMonthly * 12 + yBonus;
@@ -686,7 +686,7 @@ export default function SalaryPage() {
                 {[
                   ['給料（基本給）', baseSalary],
                   ['扶養手当', fuyoTeate],
-                  ['地域手当（10%）', chiikiTeate],
+                  ['地域手当（11%）', chiikiTeate],
                   ['住居手当', jukyoTeate],
                   ['通勤手当', tsukinTeate],
                 ].map(([label, val], i) => (
