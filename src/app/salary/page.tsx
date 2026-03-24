@@ -456,6 +456,7 @@ export default function SalaryPage() {
     'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
   const labelCls = 'block text-xs font-medium text-charcoal/50 mb-1.5';
   const sliderCls = 'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1B4D4F]';
+  const miniInputCls = 'w-20 bg-white/80 border border-gray-200 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
 
   return (
     <PageLayout
@@ -492,15 +493,12 @@ export default function SalaryPage() {
               </select>
             </div>
             <div>
-              <label className={labelCls}>年齢 <span className="text-accent font-bold">{ageNum}歳</span></label>
-              <input
-                type="range"
-                min={18}
-                max={65}
-                value={ageNum}
-                onChange={(e) => setAge(Number(e.target.value))}
-                className={sliderCls}
-              />
+              <label className={labelCls}>年齢</label>
+              <div className="flex items-center gap-2">
+                <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
+                <span className="text-xs text-charcoal/40">歳</span>
+              </div>
             </div>
             <div>
               <label className={labelCls}>役職</label>
@@ -542,41 +540,28 @@ export default function SalaryPage() {
               </div>
             </div>
             <div>
-              <label className={labelCls}>子の人数 <span className="text-accent font-bold">{numChildrenNum}人</span></label>
-              <input
-                type="range"
-                min={0}
-                max={6}
-                value={numChildrenNum}
-                onChange={(e) => {
-                  const v = Number(e.target.value);
-                  setNumChildren(v);
-                  if (numChildren16to22Num > v) setNumChildren16to22(v);
-                }}
-                className={sliderCls}
-              />
+              <label className={labelCls}>子の人数</label>
+              <div className="flex items-center gap-2">
+                <input type="range" min={0} max={6} value={numChildrenNum} onChange={(e) => { const v = Number(e.target.value); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={`${sliderCls} flex-1`} />
+                <input type="number" min={0} max={6} value={numChildren} placeholder="0" onChange={(e) => { if (e.target.value === '') { setNumChildren(''); return; } const v = Math.max(0, Math.min(6, Number(e.target.value))); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={miniInputCls} />
+                <span className="text-xs text-charcoal/40">人</span>
+              </div>
             </div>
             <div>
-              <label className={labelCls}>うち16〜22歳の子 <span className="text-accent font-bold">{numChildren16to22Num}人</span></label>
-              <input
-                type="range"
-                min={0}
-                max={numChildrenNum}
-                value={numChildren16to22Num}
-                onChange={(e) => setNumChildren16to22(Number(e.target.value))}
-                className={sliderCls}
-              />
+              <label className={labelCls}>うち16〜22歳の子</label>
+              <div className="flex items-center gap-2">
+                <input type="range" min={0} max={numChildrenNum} value={numChildren16to22Num} onChange={(e) => setNumChildren16to22(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                <input type="number" min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Math.max(0, Math.min(numChildrenNum, Number(e.target.value))))} className={miniInputCls} />
+                <span className="text-xs text-charcoal/40">人</span>
+              </div>
             </div>
             <div>
-              <label className={labelCls}>父母等の人数 <span className="text-accent font-bold">{numParentsNum}人</span></label>
-              <input
-                type="range"
-                min={0}
-                max={4}
-                value={numParentsNum}
-                onChange={(e) => setNumParents(Number(e.target.value))}
-                className={sliderCls}
-              />
+              <label className={labelCls}>父母等の人数</label>
+              <div className="flex items-center gap-2">
+                <input type="range" min={0} max={4} value={numParentsNum} onChange={(e) => setNumParents(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                <input type="number" min={0} max={4} value={numParents} placeholder="0" onChange={(e) => setNumParents(e.target.value === '' ? '' : Math.max(0, Math.min(4, Number(e.target.value))))} className={miniInputCls} />
+                <span className="text-xs text-charcoal/40">人</span>
+              </div>
             </div>
           </div>
         </SectionCard>
@@ -604,16 +589,12 @@ export default function SalaryPage() {
             </div>
             {housingType === 'rent' && (
               <div>
-                <label className={labelCls}>家賃額（月額） <span className="text-accent font-bold">{rentNum.toLocaleString()}円</span></label>
-                <input
-                  type="range"
-                  min={0}
-                  max={150000}
-                  step={5000}
-                  value={rentNum}
-                  onChange={(e) => setRent(Number(e.target.value))}
-                  className={sliderCls}
-                />
+                <label className={labelCls}>家賃額（月額）</label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={150000} step={1000} value={rentNum} onChange={(e) => setRent(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                  <input type="number" min={0} step={1000} value={rent} placeholder="55000" onChange={(e) => setRent(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <span className="text-xs text-charcoal/40">円</span>
+                </div>
               </div>
             )}
           </div>
@@ -632,30 +613,22 @@ export default function SalaryPage() {
             </div>
             {(commuteMethod === 'car' || commuteMethod === 'bike' || commuteMethod === 'bicycle') && (
               <div>
-                <label className={labelCls}>片道距離 <span className="text-accent font-bold">{commuteDistanceNum}km</span></label>
-                <input
-                  type="range"
-                  min={0}
-                  max={50}
-                  step={1}
-                  value={commuteDistanceNum}
-                  onChange={(e) => setCommuteDistance(Number(e.target.value))}
-                  className={sliderCls}
-                />
+                <label className={labelCls}>片道距離</label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={50} step={1} value={commuteDistanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                  <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <span className="text-xs text-charcoal/40">km</span>
+                </div>
               </div>
             )}
             {commuteMethod === 'transit' && (
               <div>
-                <label className={labelCls}>6ヶ月定期代 <span className="text-accent font-bold">{sixMonthPassNum.toLocaleString()}円</span></label>
-                <input
-                  type="range"
-                  min={0}
-                  max={300000}
-                  step={5000}
-                  value={sixMonthPassNum}
-                  onChange={(e) => setSixMonthPass(Number(e.target.value))}
-                  className={sliderCls}
-                />
+                <label className={labelCls}>6ヶ月定期代</label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={300000} step={1000} value={sixMonthPassNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                  <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <span className="text-xs text-charcoal/40">円</span>
+                </div>
               </div>
             )}
           </div>
