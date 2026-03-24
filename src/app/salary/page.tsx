@@ -231,23 +231,23 @@ export default function SalaryPage() {
   const [tableId, setTableId] = useState('gyosei');
   const [grade, setGrade] = useState(6);
   const [step, setStep] = useState(25);
-  const [age, setAge] = useState(30);
+  const [age, setAge] = useState<number | ''>('');
   const [position, setPosition] = useState<PositionLevel>('ippan');
 
   // Dependents
   const [hasSpouse, setHasSpouse] = useState(false);
-  const [numChildren, setNumChildren] = useState(0);
-  const [numChildren16to22, setNumChildren16to22] = useState(0);
-  const [numParents, setNumParents] = useState(0);
+  const [numChildren, setNumChildren] = useState<number | ''>('');
+  const [numChildren16to22, setNumChildren16to22] = useState<number | ''>('');
+  const [numParents, setNumParents] = useState<number | ''>('');
 
   // Housing
   const [housingType, setHousingType] = useState<HousingType>('rent');
-  const [rent, setRent] = useState(55000);
+  const [rent, setRent] = useState<number | ''>('');
 
   // Commute
   const [commuteMethod, setCommuteMethod] = useState<CommuteMethod>('transit');
-  const [commuteDistance, setCommuteDistance] = useState(10);
-  const [sixMonthPass, setSixMonthPass] = useState(60000);
+  const [commuteDistance, setCommuteDistance] = useState<number | ''>('');
+  const [sixMonthPass, setSixMonthPass] = useState<number | ''>('');
 
   // Promotion plans
   const [promotionPlans, setPromotionPlans] = useState<PromotionPlan[]>([]);
@@ -281,12 +281,21 @@ export default function SalaryPage() {
     setStep(1);
   };
 
+  // ===================== Safe numeric values =====================
+  const ageNum = age === '' ? 30 : age;
+  const numChildrenNum = numChildren === '' ? 0 : numChildren;
+  const numChildren16to22Num = numChildren16to22 === '' ? 0 : numChildren16to22;
+  const numParentsNum = numParents === '' ? 0 : numParents;
+  const rentNum = rent === '' ? 0 : rent;
+  const commuteDistanceNum = commuteDistance === '' ? 0 : commuteDistance;
+  const sixMonthPassNum = sixMonthPass === '' ? 0 : sixMonthPass;
+
   // ===================== Calculations =====================
   const baseSalary = getSalary(tableId, grade, step) ?? 0;
 
   const fuyoTeate = useMemo(
-    () => calcFuyoTeate(hasSpouse, numChildren, numChildren16to22, numParents, position, useR8),
-    [hasSpouse, numChildren, numChildren16to22, numParents, position, useR8]
+    () => calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, useR8),
+    [hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, useR8]
   );
 
   const kanrishokuTeate = 0; // Placeholder - not calculated, just noted
@@ -297,19 +306,19 @@ export default function SalaryPage() {
   );
 
   const jukyoTeate = useMemo(
-    () => calcHousingAllowance(housingType, rent),
-    [housingType, rent]
+    () => calcHousingAllowance(housingType, rentNum),
+    [housingType, rentNum]
   );
 
   const tsukinTeate = useMemo(
-    () => calcCommuteAllowance(commuteMethod, commuteDistance, sixMonthPass),
-    [commuteMethod, commuteDistance, sixMonthPass]
+    () => calcCommuteAllowance(commuteMethod, commuteDistanceNum, sixMonthPassNum),
+    [commuteMethod, commuteDistanceNum, sixMonthPassNum]
   );
 
   const monthlyTotal = baseSalary + fuyoTeate + chiikiTeate + jukyoTeate + tsukinTeate;
 
   // Bonus calculation
-  const positionAddRate = useMemo(() => getPositionAddRate(position, age), [position, age]);
+  const positionAddRate = useMemo(() => getPositionAddRate(position, ageNum), [position, ageNum]);
   const yakushokuKasanGaku = useMemo(
     () => Math.floor((baseSalary + baseSalary * 0.1) * positionAddRate),
     [baseSalary, positionAddRate]
@@ -355,14 +364,14 @@ export default function SalaryPage() {
     let curGrade = grade;
     let curStep = step;
     const retirementAge = 65;
-    const maxYears = retirementAge - age;
+    const maxYears = retirementAge - ageNum;
     if (maxYears <= 0) return results;
 
     // Sort promotions by year
     const sortedPlans = [...promotionPlans].sort((a, b) => a.yearOffset - b.yearOffset);
 
     for (let y = 0; y <= Math.min(maxYears, 35); y++) {
-      const curAge = age + y;
+      const curAge = ageNum + y;
 
       // Check for promotion this year
       const promo = sortedPlans.find(p => p.yearOffset === y);
@@ -390,10 +399,10 @@ export default function SalaryPage() {
       const effectiveSalary = curAge >= 61 ? Math.floor(sal * 0.7) : sal;
 
       // Calculate annual income for this year
-      const yFuyo = calcFuyoTeate(hasSpouse, numChildren, numChildren16to22, numParents, position, true);
+      const yFuyo = calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, true);
       const yChiiki = Math.floor((effectiveSalary + yFuyo) * 0.1);
-      const yJukyo = calcHousingAllowance(housingType, rent);
-      const yTsukin = calcCommuteAllowance(commuteMethod, commuteDistance, sixMonthPass);
+      const yJukyo = calcHousingAllowance(housingType, rentNum);
+      const yTsukin = calcCommuteAllowance(commuteMethod, commuteDistanceNum, sixMonthPassNum);
       const yMonthly = effectiveSalary + yFuyo + yChiiki + yJukyo + yTsukin;
 
       const yPosRate = getPositionAddRate(position, curAge);
@@ -428,9 +437,9 @@ export default function SalaryPage() {
 
     return results;
   }, [
-    grade, step, age, position, tableId, currentTable, promotionPlans,
-    hasSpouse, numChildren, numChildren16to22, numParents,
-    housingType, rent, commuteMethod, commuteDistance, sixMonthPass,
+    grade, step, ageNum, position, tableId, currentTable, promotionPlans,
+    hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum,
+    housingType, rentNum, commuteMethod, commuteDistanceNum, sixMonthPassNum,
   ]);
 
   const chartData = useMemo(
@@ -488,7 +497,8 @@ export default function SalaryPage() {
                 min={18}
                 max={65}
                 value={age}
-                onChange={(e) => setAge(Math.max(18, Math.min(65, Number(e.target.value))))}
+                placeholder="例: 30"
+                onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))}
                 className={inputCls}
               />
             </div>
@@ -538,10 +548,12 @@ export default function SalaryPage() {
                 min={0}
                 max={10}
                 value={numChildren}
+                placeholder="0"
                 onChange={(e) => {
+                  if (e.target.value === '') { setNumChildren(''); return; }
                   const v = Math.max(0, Number(e.target.value));
                   setNumChildren(v);
-                  if (numChildren16to22 > v) setNumChildren16to22(v);
+                  if (numChildren16to22Num > v) setNumChildren16to22(v);
                 }}
                 className={inputCls}
               />
@@ -551,9 +563,10 @@ export default function SalaryPage() {
               <input
                 type="number"
                 min={0}
-                max={numChildren}
+                max={numChildrenNum}
                 value={numChildren16to22}
-                onChange={(e) => setNumChildren16to22(Math.max(0, Math.min(numChildren, Number(e.target.value))))}
+                placeholder="0"
+                onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Math.max(0, Math.min(numChildrenNum, Number(e.target.value))))}
                 className={inputCls}
               />
             </div>
@@ -564,7 +577,8 @@ export default function SalaryPage() {
                 min={0}
                 max={4}
                 value={numParents}
-                onChange={(e) => setNumParents(Math.max(0, Number(e.target.value)))}
+                placeholder="0"
+                onChange={(e) => setNumParents(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                 className={inputCls}
               />
             </div>
@@ -601,7 +615,8 @@ export default function SalaryPage() {
                     min={0}
                     step={1000}
                     value={rent}
-                    onChange={(e) => setRent(Math.max(0, Number(e.target.value)))}
+                    placeholder="例: 55000"
+                    onChange={(e) => setRent(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                     className={inputCls}
                   />
                   <span className="text-sm text-charcoal/40 shrink-0">円</span>
@@ -631,7 +646,8 @@ export default function SalaryPage() {
                   max={100}
                   step={0.5}
                   value={commuteDistance}
-                  onChange={(e) => setCommuteDistance(Math.max(0, Number(e.target.value)))}
+                  placeholder="例: 10"
+                  onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className={inputCls}
                 />
               </div>
@@ -645,7 +661,8 @@ export default function SalaryPage() {
                     min={0}
                     step={1000}
                     value={sixMonthPass}
-                    onChange={(e) => setSixMonthPass(Math.max(0, Number(e.target.value)))}
+                    placeholder="例: 60000"
+                    onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                     className={inputCls}
                   />
                   <span className="text-sm text-charcoal/40 shrink-0">円</span>
