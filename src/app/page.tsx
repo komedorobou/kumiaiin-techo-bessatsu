@@ -10,9 +10,13 @@ const features = [
     title: '給料シミュレーター',
     description: '職種・等級・号給を選んで月額給料を確認。来年の昇給シミュレーションも。',
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2" />
-        <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M6 16h4M14 16h4" />
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="6" width="32" height="28" rx="4" />
+        <path d="M10 14h.01M16 14h.01M22 14h.01M28 14h.01" />
+        <path d="M10 20h.01M16 20h.01M22 20h.01M28 20h.01" />
+        <path d="M10 26h6M22 26h6" />
+        <circle cx="20" cy="20" r="3" strokeWidth="1.2" />
+        <path d="M20 17v-1M20 24v-1M23 20h1M16 20h1" strokeWidth="1.2" />
       </svg>
     ),
   },
@@ -21,9 +25,10 @@ const features = [
     title: '休暇ガイド',
     description: 'ライフイベントから検索。結婚・出産・介護など場面別に必要な休暇が分かる。',
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="7" width="30" height="28" rx="4" />
+        <path d="M27 4v6M13 4v6M5 17h30" />
+        <path d="M15 23l3 3 6-6" strokeWidth="2" />
       </svg>
     ),
   },
@@ -32,9 +37,9 @@ const features = [
     title: '共済かんたん診断',
     description: '質問に答えるだけで最適なセット共済プランを提案。保障内容も比較できる。',
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M9 12l2 2 4-4" />
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 37s13-6.5 13-16.5V9L20 4 7 9v11.5C7 30.5 20 37 20 37z" />
+        <path d="M15 20l3.5 3.5 7-7" strokeWidth="2" />
       </svg>
     ),
   },
@@ -43,8 +48,11 @@ const features = [
     title: '手当ガイド',
     description: '扶養・住居・通勤・賞与など各種手当の詳細。シミュレーター付き。',
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="6" y="10" width="28" height="20" rx="3" />
+        <path d="M6 16h28M6 24h28" />
+        <circle cx="20" cy="20" r="4" />
+        <path d="M20 17.5v5M18 19h4" strokeWidth="1.2" />
       </svg>
     ),
   },
@@ -53,10 +61,10 @@ const features = [
     title: '規約ビューア',
     description: '組合規約の全文を章ごとにナビゲーション。全文検索でキーワードを素早く発見。',
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-        <path d="M8 7h8M8 11h6" />
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M7 33A4 4 0 0111 29H34" />
+        <path d="M11 4H34v32H11A4 4 0 017 32V8a4 4 0 014-4z" />
+        <path d="M13 12h14M13 18h10M13 24h8" />
       </svg>
     ),
   },
@@ -109,7 +117,7 @@ export default function Home() {
               className={`group glass-card-strong rounded-2xl p-6 sm:p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in-delay-${i + 1}`}
             >
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent/10 transition-colors">
+                <div className="w-14 h-14 rounded-xl bg-accent/5 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent/10 transition-colors">
                   {feature.icon}
                 </div>
                 <div>

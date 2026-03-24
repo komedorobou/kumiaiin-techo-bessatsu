@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import PageLayout from '@/components/PageLayout';
 import {
   leaveCategories,
@@ -10,6 +10,121 @@ import {
   FamilyChartEntry,
   LeaveSubItem,
 } from '@/data/leaveData';
+
+/* ── Category SVG Icons (24px, line-style) ── */
+const categoryIcons: Record<string, ReactNode> = {
+  daily: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
+    </svg>
+  ),
+  illness: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 2v4M16 2v4" />
+      <rect x="3" y="4" width="18" height="6" rx="2" />
+      <path d="M12 14v4M10 16h4" />
+      <circle cx="12" cy="16" r="6" />
+    </svg>
+  ),
+  marriage: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="13" r="4" />
+      <circle cx="15" cy="13" r="4" />
+      <path d="M12 3l1.5 3.5L17 7l-2.5 2.5L15 13l-3-2-3 2 .5-3.5L7 7l3.5-.5z" />
+    </svg>
+  ),
+  childbirth: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="6" r="3" />
+      <path d="M9 12h6" />
+      <path d="M8 21c0-3 1.5-5 4-5s4 2 4 5" />
+      <path d="M12 12v4" />
+      <path d="M9 15.5c-2 .5-3 2-3 3.5" />
+      <path d="M15 15.5c2 .5 3 2 3 3.5" />
+    </svg>
+  ),
+  childcare: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="5" r="2.5" />
+      <circle cx="17" cy="7" r="2" />
+      <path d="M5 14c0-2.5 1.8-4 4-4s4 1.5 4 4v7H5v-7z" />
+      <path d="M14 16c0-2 1.2-3 3-3s3 1 3 3v5h-6v-5z" />
+    </svg>
+  ),
+  nursing: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="5" r="3" />
+      <path d="M8 22l1-7H5l3-5h8l3 5h-4l1 7H8z" />
+      <path d="M4 15h2M18 15h2" />
+    </svg>
+  ),
+  bereavement: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22V8" />
+      <path d="M9 3c-1.5 0-3 1-3 3s3 4 6 2c3 2 6 0 6-2s-1.5-3-3-3c-1 0-2 .5-3 1.5C11 4 10 3.5 9 3z" />
+      <path d="M7 14c-2 0-3.5 1.5-3.5 3s1.5 3 3.5 3M17 14c2 0 3.5 1.5 3.5 3s-1.5 3-3.5 3" />
+    </svg>
+  ),
+  other: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <path d="M8 6h8M8 10h8M8 14h4" />
+      <circle cx="8" cy="18" r="0.5" fill="currentColor" />
+      <circle cx="12" cy="18" r="0.5" fill="currentColor" />
+      <circle cx="16" cy="18" r="0.5" fill="currentColor" />
+    </svg>
+  ),
+};
+
+/* ── Badge inline SVG icons (14px) ── */
+function PaidIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0">
+      <circle cx="7" cy="7" r="6" />
+      <path d="M4.5 7l2 2 3.5-3.5" />
+    </svg>
+  );
+}
+
+function UnpaidIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0">
+      <circle cx="7" cy="7" r="6" />
+      <path d="M5 5l4 4M9 5l-4 4" />
+    </svg>
+  );
+}
+
+function SystemIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0">
+      <circle cx="7" cy="7" r="6" />
+      <path d="M7 4v3.5l2 1.5" />
+    </svg>
+  );
+}
+
+function MixedIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0">
+      <circle cx="7" cy="7" r="6" />
+      <path d="M7 4v4M7 10h.01" />
+    </svg>
+  );
+}
+
+/* ── Document icon for required documents ── */
+function DocumentIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0 text-accent/50">
+      <path d="M8 1H3.5A1.5 1.5 0 002 2.5v9A1.5 1.5 0 003.5 13h7a1.5 1.5 0 001.5-1.5V5L8 1z" />
+      <path d="M8 1v4h4" />
+      <path d="M5 7.5h4M5 10h2.5" />
+    </svg>
+  );
+}
 
 export default function LeavePage() {
   const [selectedCategory, setSelectedCategory] = useState<LeaveCategory | null>(null);
@@ -27,7 +142,9 @@ export default function LeavePage() {
               onClick={() => setSelectedCategory(cat)}
               className={`glass-card-strong rounded-2xl p-6 text-left hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group animate-fade-in-delay-${Math.min(i + 1, 4)}`}
             >
-              <div className="text-3xl mb-3">{cat.emoji}</div>
+              <div className="w-10 h-10 rounded-xl bg-accent/5 flex items-center justify-center text-accent mb-3 group-hover:bg-accent/10 transition-colors">
+                {categoryIcons[cat.id] || cat.emoji}
+              </div>
               <h2 className="text-lg font-semibold text-charcoal group-hover:text-accent transition-colors">
                 {cat.title}
               </h2>
@@ -56,7 +173,9 @@ export default function LeavePage() {
           </button>
 
           <div className="flex items-center gap-3 mb-8 animate-fade-in">
-            <span className="text-3xl">{selectedCategory.emoji}</span>
+            <div className="w-12 h-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent">
+              {categoryIcons[selectedCategory.id] || selectedCategory.emoji}
+            </div>
             <div>
               <h2 className="text-xl font-bold text-charcoal">{selectedCategory.title}</h2>
               <p className="text-xs text-charcoal/40">{selectedCategory.description}</p>
@@ -123,7 +242,15 @@ function LeaveCard({ item, index }: { item: LeaveItem; index: number }) {
             {item.unit && <DetailRow label="取得単位" value={item.unit} />}
 
             {/* 必要書類 */}
-            {item.documents && <DetailRow label="必要書類" value={item.documents} />}
+            {item.documents && (
+              <div>
+                <span className="text-xs text-charcoal/40 font-medium inline-flex items-center gap-1">
+                  <DocumentIcon />
+                  必要書類
+                </span>
+                <p className="text-charcoal/70 mt-0.5 leading-relaxed whitespace-pre-line">{item.documents}</p>
+              </div>
+            )}
 
             {/* サブアイテム */}
             {item.subItems && item.subItems.length > 0 && (
@@ -164,8 +291,11 @@ function PayBadge({ type }: { type: string }) {
   else if (isMixed) bgClass = 'bg-amber-50 text-amber-700';
   else if (isUnpaid) bgClass = 'bg-gray-100 text-gray-600';
 
+  const icon = isSystem ? <SystemIcon /> : isMixed ? <MixedIcon /> : isPaid ? <PaidIcon /> : isUnpaid ? <UnpaidIcon /> : null;
+
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${bgClass}`}>
+    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap inline-flex items-center gap-1 ${bgClass}`}>
+      {icon}
       {type}
     </span>
   );
