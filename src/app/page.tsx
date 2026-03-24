@@ -39,6 +39,16 @@ const features = [
     ),
   },
   {
+    href: '/allowances',
+    title: '手当ガイド',
+    description: '扶養・住居・通勤・賞与など各種手当の詳細。シミュレーター付き。',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+      </svg>
+    ),
+  },
+  {
     href: '/rules',
     title: '規約ビューア',
     description: '組合規約の全文を章ごとにナビゲーション。全文検索でキーワードを素早く発見。',

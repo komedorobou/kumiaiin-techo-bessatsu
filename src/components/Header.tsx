@@ -23,6 +23,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-1">
             <NavLink href="/salary">給料シミュレーター</NavLink>
             <NavLink href="/leave">休暇ガイド</NavLink>
+            <NavLink href="/allowances">手当ガイド</NavLink>
             <NavLink href="/insurance">共済診断</NavLink>
             <NavLink href="/rules">規約ビューア</NavLink>
           </nav>
@@ -50,6 +51,7 @@ export default function Header() {
           <nav className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
             <MobileNavLink href="/salary" onClick={() => setMenuOpen(false)}>給料シミュレーター</MobileNavLink>
             <MobileNavLink href="/leave" onClick={() => setMenuOpen(false)}>休暇ガイド</MobileNavLink>
+            <MobileNavLink href="/allowances" onClick={() => setMenuOpen(false)}>手当ガイド</MobileNavLink>
             <MobileNavLink href="/insurance" onClick={() => setMenuOpen(false)}>共済診断</MobileNavLink>
             <MobileNavLink href="/rules" onClick={() => setMenuOpen(false)}>規約ビューア</MobileNavLink>
           </nav>
