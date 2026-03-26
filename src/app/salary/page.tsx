@@ -266,6 +266,47 @@ export default function SalaryPage() {
   const [promotionPlans, setPromotionPlans] = useState<PromotionPlan[]>([]);
   const [nextPlanId, setNextPlanId] = useState(1);
 
+  // Promotion model preset
+  type PromotionModel = 'daigaku' | 'kousotsu' | 'nashi' | null;
+  const [activeModel, setActiveModel] = useState<PromotionModel>(null);
+
+  const applyPromotionModel = useCallback((model: PromotionModel) => {
+    if (model === activeModel) {
+      // Toggle off
+      setActiveModel(null);
+      return;
+    }
+    setActiveModel(model);
+    setTableId('gyosei');
+
+    if (model === 'daigaku') {
+      setAge(23);
+      setGrade(7);
+      setStep(3);
+      setPromotionPlans([
+        { id: 1, yearOffset: 8, targetGrade: 6 },
+        { id: 2, yearOffset: 15, targetGrade: 5 },
+        { id: 3, yearOffset: 19, targetGrade: 4 },
+      ]);
+      setNextPlanId(4);
+    } else if (model === 'kousotsu') {
+      setAge(19);
+      setGrade(8);
+      setStep(14);
+      setPromotionPlans([
+        { id: 1, yearOffset: 4, targetGrade: 7 },
+        { id: 2, yearOffset: 12, targetGrade: 6 },
+      ]);
+      setNextPlanId(3);
+    } else if (model === 'nashi') {
+      setAge(31);
+      setGrade(6);
+      setStep(23);
+      setPromotionPlans([]);
+      setNextPlanId(1);
+    }
+  }, [activeModel]);
+
   // Use R8 rules (R8 onwards = from 2026)
   const useR8 = true; // Current date is 2026
 
@@ -287,11 +328,13 @@ export default function SalaryPage() {
     setTableId(id);
     setGrade(1);
     setStep(1);
+    setActiveModel(null);
   };
 
   const handleGradeChange = (g: number) => {
     setGrade(g);
     setStep(1);
+    setActiveModel(null);
   };
 
   // ===================== Safe numeric values =====================
@@ -479,6 +522,51 @@ export default function SalaryPage() {
     >
       {/* ==================== INPUT SECTION ==================== */}
       <div className="space-y-6">
+        {/* 昇格モデルプリセット */}
+        <SectionCard title="昇格モデル（事務職）" className="animate-fade-in">
+          <p className="text-xs text-charcoal/40 mb-3">
+            モデルを選択すると、職種・年齢・等級・号給・昇格プランが自動設定されます。
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {([
+              ['daigaku', '大卒モデル', '23歳 7級3号 → 6級 → 5級 → 4級'],
+              ['kousotsu', '高卒モデル', '19歳 8級14号 → 7級 → 6級'],
+              ['nashi', '昇格なしモデル', '31歳 6級23号のまま'],
+            ] as [PromotionModel, string, string][]).map(([key, label, desc]) => (
+              <button
+                key={key}
+                onClick={() => applyPromotionModel(key)}
+                className={`group relative flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  activeModel === key
+                    ? 'bg-accent text-white shadow-lg shadow-accent/20 scale-[1.02]'
+                    : 'bg-white/60 text-charcoal/70 border border-gray-200 hover:border-accent/40 hover:bg-white/80 hover:shadow-md'
+                }`}
+              >
+                <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0 transition-colors ${
+                  activeModel === key
+                    ? 'bg-white/20 text-white'
+                    : 'bg-accent/10 text-accent'
+                }`}>
+                  {key === 'daigaku' ? '大' : key === 'kousotsu' ? '高' : '−'}
+                </span>
+                <span className="text-left">
+                  <span className="block leading-tight">{label}</span>
+                  <span className={`block text-[10px] mt-0.5 leading-tight ${
+                    activeModel === key ? 'text-white/70' : 'text-charcoal/40'
+                  }`}>
+                    {desc}
+                  </span>
+                </span>
+                {activeModel === key && (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-1 shrink-0">
+                    <path d="M3 8.5l3.5 3.5L13 4" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </SectionCard>
+
         {/* 基本情報 */}
         <SectionCard title="基本情報" className="animate-fade-in-delay-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
