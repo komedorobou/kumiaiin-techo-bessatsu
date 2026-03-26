@@ -5,7 +5,7 @@ import PageLayout from '@/components/PageLayout';
 import { salaryTables, getSalary } from '@/data/salaryData';
 
 /* ===================== Types ===================== */
-type PositionLevel = 'buchou' | 'kachou' | 'shukan' | 'tantouchou' | 'shusa' | 'shunin' | 'ippan';
+type PositionLevel = 'buchou' | 'riji' | 'kachou' | 'sanji' | 'kachohosa' | 'shukan' | 'tantouchou' | 'shusa' | 'shunin' | 'ippan';
 type HousingType = 'rent' | 'own' | 'other';
 type CommuteMethod = 'transit' | 'car' | 'bike' | 'bicycle' | 'walk';
 
@@ -16,13 +16,26 @@ interface PromotionPlan {
 }
 
 const positionLabels: Record<PositionLevel, string> = {
-  buchou: '部長級',
-  kachou: '課長級',
-  shukan: '主幹級',
-  tantouchou: '担当長級',
-  shusa: '主査級',
-  shunin: '主任級',
+  buchou: '部長',
+  riji: '理事',
+  kachou: '課長',
+  sanji: '参事',
+  kachohosa: '課長補佐',
+  shukan: '主幹',
+  tantouchou: '担当長',
+  shusa: '主査',
+  shunin: '主任',
   ippan: '一般',
+};
+
+/* ===================== Management Allowance ===================== */
+const kanrishokuTeateMap: Partial<Record<PositionLevel, number>> = {
+  buchou: 72000,
+  riji: 63000,
+  kachou: 58000,
+  sanji: 51000,
+  kachohosa: 44000,
+  shukan: 38000,
 };
 
 const commuteLabels: Record<CommuteMethod, string> = {
@@ -80,7 +93,7 @@ function calcFuyoTeate(
     if (hasSpouse) total += 3000;
     total += numChildren * 11500;
     total += numChildren16to22 * 5000;
-    if (position === 'buchou') {
+    if (position === 'buchou' || position === 'riji') {
       total += numParents * 3500;
     } else {
       total += numParents * 6500;
@@ -111,9 +124,9 @@ function calcCommuteAllowance(
 }
 
 function getPositionAddRate(position: PositionLevel, age: number): number {
-  if (position === 'buchou') return 0.20;
-  if (position === 'kachou') return 0.15;
-  if (position === 'shukan') return 0.10;
+  if (position === 'buchou' || position === 'riji') return 0.20;
+  if (position === 'kachou' || position === 'sanji') return 0.15;
+  if (position === 'kachohosa' || position === 'shukan') return 0.10;
   if (position === 'tantouchou' || position === 'shusa' || position === 'shunin') return 0.05;
   // ippan
   if (age >= 44) return 0.10;
@@ -298,7 +311,7 @@ export default function SalaryPage() {
     [hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, useR8]
   );
 
-  const kanrishokuTeate = 0; // Placeholder - not calculated, just noted
+  const kanrishokuTeate = kanrishokuTeateMap[position] ?? 0;
 
   const chiikiTeate = useMemo(
     () => Math.floor((baseSalary + fuyoTeate + kanrishokuTeate) * 0.11),
@@ -315,7 +328,7 @@ export default function SalaryPage() {
     [commuteMethod, commuteDistanceNum, sixMonthPassNum]
   );
 
-  const monthlyTotal = baseSalary + fuyoTeate + chiikiTeate + jukyoTeate + tsukinTeate;
+  const monthlyTotal = baseSalary + kanrishokuTeate + fuyoTeate + chiikiTeate + jukyoTeate + tsukinTeate;
 
   // Bonus calculation
   const positionAddRate = useMemo(() => getPositionAddRate(position, ageNum), [position, ageNum]);
@@ -400,10 +413,11 @@ export default function SalaryPage() {
 
       // Calculate annual income for this year
       const yFuyo = calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, true);
-      const yChiiki = Math.floor((effectiveSalary + yFuyo) * 0.11);
+      const yKanri = kanrishokuTeateMap[position] ?? 0;
+      const yChiiki = Math.floor((effectiveSalary + yFuyo + yKanri) * 0.11);
       const yJukyo = calcHousingAllowance(housingType, rentNum);
       const yTsukin = calcCommuteAllowance(commuteMethod, commuteDistanceNum, sixMonthPassNum);
-      const yMonthly = effectiveSalary + yFuyo + yChiiki + yJukyo + yTsukin;
+      const yMonthly = effectiveSalary + yKanri + yFuyo + yChiiki + yJukyo + yTsukin;
 
       const yPosRate = getPositionAddRate(position, curAge);
       const yYakushoku = Math.floor((effectiveSalary + effectiveSalary * 0.11) * yPosRate);
@@ -685,6 +699,7 @@ export default function SalaryPage() {
               <tbody>
                 {[
                   ['給料（基本給）', baseSalary],
+                  ['管理職手当', kanrishokuTeate],
                   ['扶養手当', fuyoTeate],
                   ['地域手当（11%）', chiikiTeate],
                   ['住居手当', jukyoTeate],

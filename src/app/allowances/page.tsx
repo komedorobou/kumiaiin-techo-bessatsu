@@ -551,10 +551,43 @@ function OvertimeSection() {
         </p>
       </SectionCard>
 
+      <SectionCard title="管理職手当（月額）">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          {[
+            { role: '部長', amount: '72,000円' },
+            { role: '理事', amount: '63,000円' },
+            { role: '課長', amount: '58,000円' },
+            { role: '参事', amount: '51,000円' },
+            { role: '課長補佐', amount: '44,000円' },
+            { role: '主幹', amount: '38,000円' },
+          ].map((item) => (
+            <div key={item.role} className="bg-white/60 rounded-xl p-3 text-center border border-gray-100">
+              <div className="text-xs text-charcoal/50">{item.role}</div>
+              <div className="text-lg font-bold text-accent mt-1">{item.amount}</div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-charcoal/40">管理職手当を支給されている職員には超過勤務手当・休日給は支給されません。</p>
+      </SectionCard>
+
       <SectionCard title="管理職員特別勤務手当">
         <p className="text-sm text-charcoal/70 mb-2">
-          管理職手当を支給されている職員には超過勤務手当・休日給は支給されません。ただし、以下の業務については管理職員特別勤務手当（定額）を支給します。
+          管理職が以下の業務に従事した場合に支給される定額手当です。
         </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+          {[
+            { time: '6時間超', amount: '10,000円' },
+            { time: '3時間以上6時間以下', amount: '10,000円' },
+            { time: '1時間以上3時間未満', amount: '5,000円' },
+          ].map((item) => (
+            <div key={item.time} className="bg-white/60 rounded-xl p-3 text-center border border-gray-100">
+              <div className="text-xs text-charcoal/50">{item.time}</div>
+              <div className="text-base font-bold text-accent mt-1">{item.amount}</div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-charcoal/40 mb-2">※61歳以降・再任用職員は上記の70%</p>
+        <p className="text-xs font-medium text-charcoal/50 mb-1">対象業務:</p>
         <ul className="space-y-1 text-sm text-charcoal/60">
           <li>&bull; 選挙・住民投票に係る事務（前日・当日）</li>
           <li>&bull; 地域防災計画に基づく災害応急対策業務</li>
