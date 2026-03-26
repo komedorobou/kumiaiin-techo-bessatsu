@@ -427,7 +427,7 @@ export default function SalaryPage() {
     // Sort promotions by year
     const sortedPlans = [...promotionPlans].sort((a, b) => a.yearOffset - b.yearOffset);
 
-    for (let y = 0; y <= Math.min(maxYears, 35); y++) {
+    for (let y = 0; y <= maxYears; y++) {
       const curAge = ageNum + y;
 
       // Check for promotion this year
