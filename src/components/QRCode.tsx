@@ -1,364 +1,373 @@
 'use client';
 
 /**
- * Minimal QR Code generator component (SVG output).
- * Supports alphanumeric mode, error-correction level M, versions 1-10.
+ * QR Code generator component (SVG output).
+ * Byte-mode encoding, EC level M, versions 1-10.
  * No external dependencies.
  */
 
-// ---------- GF(256) arithmetic ----------
-const EXP = new Uint8Array(256);
+// ========== GF(256) ==========
+const EXP = new Uint8Array(512);
 const LOG = new Uint8Array(256);
-(() => {
-  let v = 1;
+{
+  let x = 1;
   for (let i = 0; i < 255; i++) {
-    EXP[i] = v;
-    LOG[v] = i;
-    v = v << 1;
-    if (v >= 256) v ^= 0x11d;
+    EXP[i] = x;
+    LOG[x] = i;
+    x <<= 1;
+    if (x & 256) x ^= 0x11d;
   }
-  EXP[255] = EXP[0];
-})();
+  for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+}
 
 function gfMul(a: number, b: number): number {
-  if (a === 0 || b === 0) return 0;
-  return EXP[(LOG[a] + LOG[b]) % 255];
+  return a === 0 || b === 0 ? 0 : EXP[LOG[a] + LOG[b]];
 }
 
-function polyMul(a: number[], b: number[]): number[] {
-  const r = new Array(a.length + b.length - 1).fill(0);
-  for (let i = 0; i < a.length; i++)
-    for (let j = 0; j < b.length; j++)
-      r[i + j] ^= gfMul(a[i], b[j]);
-  return r;
-}
-
-function polyMod(data: number[], gen: number[]): number[] {
-  const result = [...data];
+function rsEncode(data: number[], ecLen: number): number[] {
+  let gen = [1];
+  for (let i = 0; i < ecLen; i++) {
+    const newGen = new Array(gen.length + 1).fill(0);
+    for (let j = 0; j < gen.length; j++) {
+      newGen[j] ^= gen[j];
+      newGen[j + 1] ^= gfMul(gen[j], EXP[i]);
+    }
+    gen = newGen;
+  }
+  const result = new Array(ecLen).fill(0);
   for (let i = 0; i < data.length; i++) {
-    const coef = result[i];
-    if (coef !== 0)
-      for (let j = 0; j < gen.length; j++)
-        result[i + j] ^= gfMul(gen[j], coef);
-  }
-  return result.slice(data.length);
-}
-
-function generatorPoly(n: number): number[] {
-  let g = [1];
-  for (let i = 0; i < n; i++) g = polyMul(g, [1, EXP[i]]);
-  return g;
-}
-
-// ---------- Bit buffer ----------
-class BitBuffer {
-  data: number[] = [];
-  length = 0;
-  put(num: number, len: number) {
-    for (let i = len - 1; i >= 0; i--) {
-      this.data[this.length >> 3] = ((this.data[this.length >> 3] || 0) << 1) | ((num >> i) & 1);
-      this.length++;
+    const factor = data[i] ^ result[0];
+    result.shift();
+    result.push(0);
+    for (let j = 0; j < ecLen; j++) {
+      result[j] ^= gfMul(gen[j + 1], factor);
     }
   }
-  getBit(index: number): number {
-    return (this.data[index >> 3] >> (7 - (index & 7))) & 1;
-  }
-  // Rebuild internal representation so each byte is properly aligned
-  toBytes(): number[] {
-    const bytes: number[] = [];
-    for (let i = 0; i < this.length; i++) {
-      const byteIndex = i >> 3;
-      const bitIndex = 7 - (i & 7);
-      if (i % 8 === 0) bytes.push(0);
-      bytes[byteIndex] |= this.getBit(i) << bitIndex;
-    }
-    return bytes;
-  }
+  return result;
 }
 
-// ---------- QR encoding (byte mode) ----------
-const EC_CODEWORDS: Record<number, number> = {
-  1: 10, 2: 16, 3: 26, 4: 18, 5: 24, 6: 16, 7: 18, 8: 22, 9: 22, 10: 26,
+// ========== QR Parameters (EC Level M) ==========
+const QR_PARAMS: Record<number, { size: number; ecPB: number; groups: number[][] }> = {
+  1:  { size: 21, ecPB: 10, groups: [[1, 16]] },
+  2:  { size: 25, ecPB: 16, groups: [[1, 28]] },
+  3:  { size: 29, ecPB: 26, groups: [[1, 44]] },
+  4:  { size: 33, ecPB: 18, groups: [[2, 32]] },
+  5:  { size: 37, ecPB: 24, groups: [[2, 43]] },
+  6:  { size: 41, ecPB: 16, groups: [[4, 27]] },
+  7:  { size: 45, ecPB: 18, groups: [[4, 31]] },
+  8:  { size: 49, ecPB: 22, groups: [[2, 38], [2, 39]] },
+  9:  { size: 53, ecPB: 22, groups: [[3, 36], [2, 37]] },
+  10: { size: 57, ecPB: 26, groups: [[4, 43], [1, 44]] },
 };
 
-const TOTAL_CODEWORDS: Record<number, number> = {
-  1: 26, 2: 44, 3: 70, 4: 100, 5: 134, 6: 172, 7: 196, 8: 242, 9: 292, 10: 346,
+const ALIGNMENT_PATTERNS: Record<number, number[]> = {
+  1: [], 2: [6,18], 3: [6,22], 4: [6,26], 5: [6,30],
+  6: [6,34], 7: [6,22,38], 8: [6,24,42], 9: [6,26,46], 10: [6,28,52],
 };
 
-const DATA_CAPACITY: Record<number, number> = {
-  1: 16, 2: 28, 3: 44, 4: 82, 5: 110, 6: 156, 7: 178, 8: 220, 9: 270, 10: 320,
-};
-
-// EC blocks [numBlocks, dataCodewordsPerBlock] for level M
-const EC_BLOCKS: Record<number, number[][]> = {
-  1: [[1, 16]],
-  2: [[1, 28]],
-  3: [[1, 44]],
-  4: [[2, 32]],
-  5: [[2, 43]],
-  6: [[4, 27]],
-  7: [[4, 31]],
-  8: [[2, 38], [2, 39]],
-  9: [[3, 36], [2, 37]],
-  10: [[4, 43], [1, 44]],
-};
-
-function chooseVersion(dataLen: number): number {
-  for (let v = 1; v <= 10; v++) {
-    // byte mode: 4 bit mode + char count bits + 8*data
-    const charCountBits = v <= 9 ? 8 : 16;
-    const totalBits = 4 + charCountBits + dataLen * 8;
-    const capacity = DATA_CAPACITY[v];
-    if (totalBits <= capacity * 8) return v;
-  }
-  throw new Error('Data too long for QR versions 1-10');
-}
-
+// ========== Encoding ==========
 function encode(text: string): { version: number; modules: boolean[][] } {
-  const data = new TextEncoder().encode(text);
-  const version = chooseVersion(data.length);
-  const size = version * 4 + 17;
+  const textBytes = new TextEncoder().encode(text);
 
-  // Build bit stream
-  const buf = new BitBuffer();
-  buf.put(0b0100, 4); // byte mode
+  // Choose version
+  let version = 0;
+  for (let v = 1; v <= 10; v++) {
+    const p = QR_PARAMS[v];
+    let totalData = 0;
+    for (const [cnt, dc] of p.groups) totalData += cnt * dc;
+    const charCountBits = v <= 9 ? 8 : 16;
+    const bitsNeeded = 4 + charCountBits + textBytes.length * 8;
+    if (bitsNeeded <= totalData * 8) { version = v; break; }
+  }
+  if (!version) throw new Error('Data too long for QR versions 1-10');
+
+  const params = QR_PARAMS[version];
+  const size = params.size;
   const charCountBits = version <= 9 ? 8 : 16;
-  buf.put(data.length, charCountBits);
-  for (const b of data) buf.put(b, 8);
 
-  // Terminator
-  const totalDataBits = DATA_CAPACITY[version] * 8;
-  const terminatorLen = Math.min(4, totalDataBits - buf.length);
-  buf.put(0, terminatorLen);
+  let totalDataCW = 0;
+  for (const [cnt, dc] of params.groups) totalDataCW += cnt * dc;
 
-  // Pad to byte boundary
-  while (buf.length % 8 !== 0) buf.put(0, 1);
+  // Build data bitstream
+  const bits: number[] = [];
+  function pushBits(val: number, len: number) {
+    for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1);
+  }
 
-  // Pad codewords
-  const padBytes = [0xec, 0x11];
+  pushBits(0b0100, 4); // Byte mode
+  pushBits(textBytes.length, charCountBits);
+  for (const b of textBytes) pushBits(b, 8);
+
+  const totalDataBits = totalDataCW * 8;
+  for (let i = 0; i < 4 && bits.length < totalDataBits; i++) bits.push(0);
+  while (bits.length % 8 !== 0) bits.push(0);
+
+  const pads = [0xEC, 0x11];
   let padIdx = 0;
-  while (buf.length < totalDataBits) {
-    buf.put(padBytes[padIdx % 2], 8);
+  while (bits.length < totalDataBits) {
+    pushBits(pads[padIdx & 1], 8);
     padIdx++;
   }
 
-  const dataBytes = buf.toBytes();
+  const dataBytes: number[] = [];
+  for (let i = 0; i < bits.length; i += 8) {
+    let byte = 0;
+    for (let j = 0; j < 8; j++) byte = (byte << 1) | bits[i + j];
+    dataBytes.push(byte);
+  }
 
   // Split into blocks and compute EC
-  const blocks = EC_BLOCKS[version];
-  const ecPerBlock = EC_CODEWORDS[version];
-  const gen = generatorPoly(ecPerBlock);
-
   const dataBlocks: number[][] = [];
   const ecBlocks: number[][] = [];
   let offset = 0;
-
-  for (const [count, dcCount] of blocks) {
-    for (let i = 0; i < count; i++) {
-      const block = dataBytes.slice(offset, offset + dcCount);
+  for (const [cnt, dcPerBlock] of params.groups) {
+    for (let i = 0; i < cnt; i++) {
+      const block = dataBytes.slice(offset, offset + dcPerBlock);
       dataBlocks.push(block);
-      const padded = [...block, ...new Array(ecPerBlock).fill(0)];
-      ecBlocks.push(polyMod(padded, gen));
-      offset += dcCount;
+      ecBlocks.push(rsEncode(block, params.ecPB));
+      offset += dcPerBlock;
     }
   }
 
   // Interleave
-  const result: number[] = [];
-  const maxDataLen = Math.max(...dataBlocks.map((b) => b.length));
-  for (let i = 0; i < maxDataLen; i++)
-    for (const block of dataBlocks) if (i < block.length) result.push(block[i]);
-  for (let i = 0; i < ecPerBlock; i++)
-    for (const block of ecBlocks) if (i < block.length) result.push(block[i]);
+  const interleaved: number[] = [];
+  const maxDC = Math.max(...dataBlocks.map(b => b.length));
+  for (let i = 0; i < maxDC; i++)
+    for (const b of dataBlocks) if (i < b.length) interleaved.push(b[i]);
+  for (let i = 0; i < params.ecPB; i++)
+    for (const b of ecBlocks) if (i < b.length) interleaved.push(b[i]);
 
-  // Create module grid
-  const modules: (boolean | null)[][] = Array.from({ length: size }, () =>
-    new Array(size).fill(null)
-  );
-  const isFunction: boolean[][] = Array.from({ length: size }, () =>
-    new Array(size).fill(false)
-  );
+  // ========== Build QR matrix ==========
+  const grid: (boolean | null)[][] = Array.from({ length: size }, () => new Array(size).fill(null));
+  const reserved: boolean[][] = Array.from({ length: size }, () => new Array(size).fill(false));
+
+  function setModule(r: number, c: number, dark: boolean) {
+    grid[r][c] = dark;
+    reserved[r][c] = true;
+  }
 
   // Finder patterns
-  function setFinderPattern(row: number, col: number) {
-    for (let r = -1; r <= 7; r++)
-      for (let c = -1; c <= 7; c++) {
-        const rr = row + r, cc = col + c;
-        if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
-        const inOuter = r === 0 || r === 6 || c === 0 || c === 6;
-        const inInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-        modules[rr][cc] = (r >= 0 && r <= 6 && c >= 0 && c <= 6) && (inOuter || inInner);
-        isFunction[rr][cc] = true;
+  function placeFinderPattern(row: number, col: number) {
+    for (let dr = -1; dr <= 7; dr++) {
+      for (let dc = -1; dc <= 7; dc++) {
+        const r = row + dr, c = col + dc;
+        if (r < 0 || r >= size || c < 0 || c >= size) continue;
+        let dark = false;
+        if (dr >= 0 && dr <= 6 && dc >= 0 && dc <= 6) {
+          dark = dr === 0 || dr === 6 || dc === 0 || dc === 6 ||
+                 (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4);
+        }
+        setModule(r, c, dark);
       }
+    }
   }
-  setFinderPattern(0, 0);
-  setFinderPattern(0, size - 7);
-  setFinderPattern(size - 7, 0);
+  placeFinderPattern(0, 0);
+  placeFinderPattern(0, size - 7);
+  placeFinderPattern(size - 7, 0);
 
   // Alignment patterns
-  const alignPositions = getAlignmentPositions(version);
-  for (const r of alignPositions)
-    for (const c of alignPositions) {
-      if ((r < 9 && c < 9) || (r < 9 && c >= size - 8) || (r >= size - 8 && c < 9)) continue;
-      for (let dr = -2; dr <= 2; dr++)
+  const alignPos = ALIGNMENT_PATTERNS[version];
+  for (const ar of alignPos) {
+    for (const ac of alignPos) {
+      if (ar <= 8 && ac <= 8) continue;
+      if (ar <= 8 && ac >= size - 9) continue;
+      if (ar >= size - 9 && ac <= 8) continue;
+      for (let dr = -2; dr <= 2; dr++) {
         for (let dc = -2; dc <= 2; dc++) {
-          modules[r + dr][c + dc] = Math.abs(dr) === 2 || Math.abs(dc) === 2 || (dr === 0 && dc === 0);
-          isFunction[r + dr][c + dc] = true;
+          const dark = Math.abs(dr) === 2 || Math.abs(dc) === 2 || (dr === 0 && dc === 0);
+          setModule(ar + dr, ac + dc, dark);
         }
+      }
     }
+  }
 
   // Timing patterns
   for (let i = 8; i < size - 8; i++) {
-    modules[6][i] = i % 2 === 0;
-    isFunction[6][i] = true;
-    modules[i][6] = i % 2 === 0;
-    isFunction[i][6] = true;
+    if (!reserved[6][i]) setModule(6, i, i % 2 === 0);
+    if (!reserved[i][6]) setModule(i, 6, i % 2 === 0);
   }
 
   // Dark module
-  modules[size - 8][8] = true;
-  isFunction[size - 8][8] = true;
+  setModule(size - 8, 8, true);
 
-  // Reserve format info
-  for (let i = 0; i < 8; i++) {
-    isFunction[8][i] = true;
-    isFunction[8][size - 1 - i] = true;
-    isFunction[i][8] = true;
-    isFunction[size - 1 - i][8] = true;
+  // Reserve format info areas
+  // Top-left: row 8 cols 0-8 and col 8 rows 0-8
+  for (let i = 0; i <= 8; i++) {
+    if (!reserved[8][i]) { reserved[8][i] = true; grid[8][i] = false; }
+    if (!reserved[i][8]) { reserved[i][8] = true; grid[i][8] = false; }
   }
-  isFunction[8][8] = true;
+  // Top-right: row 8, cols size-8 to size-1 (8 positions)
+  for (let i = 0; i < 8; i++) {
+    if (!reserved[8][size - 1 - i]) { reserved[8][size - 1 - i] = true; grid[8][size - 1 - i] = false; }
+  }
+  // Bottom-left: col 8, rows size-7 to size-1 (7 positions)
+  for (let i = 0; i < 7; i++) {
+    if (!reserved[size - 1 - i][8]) { reserved[size - 1 - i][8] = true; grid[size - 1 - i][8] = false; }
+  }
 
   // Place data bits
-  const dataBits = new BitBuffer();
-  for (const byte of result) dataBits.put(byte, 8);
-  // Add remainder bits
-  const remainderBits = [0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0][version] || 0;
-  for (let i = 0; i < remainderBits; i++) dataBits.put(0, 1);
+  const dataBitStream: number[] = [];
+  for (const byte of interleaved) {
+    for (let i = 7; i >= 0; i--) dataBitStream.push((byte >> i) & 1);
+  }
 
-  let bitIndex = 0;
+  const isDataModule: boolean[][] = Array.from({ length: size }, () => new Array(size).fill(false));
+  let bitIdx = 0;
   for (let right = size - 1; right >= 1; right -= 2) {
     if (right === 6) right = 5;
     for (let vert = 0; vert < size; vert++) {
       for (let j = 0; j < 2; j++) {
         const col = right - j;
-        const upward = ((right + 1) & 2) === 0;
+        const upward = ((Math.floor((size - 1 - right) / 2)) & 1) === 0;
         const row = upward ? size - 1 - vert : vert;
-        if (!isFunction[row][col] && bitIndex < dataBits.length) {
-          modules[row][col] = dataBits.getBit(bitIndex) === 1;
-          bitIndex++;
+        if (row >= 0 && row < size && col >= 0 && col < size && !reserved[row][col]) {
+          grid[row][col] = bitIdx < dataBitStream.length ? dataBitStream[bitIdx] === 1 : false;
+          isDataModule[row][col] = true;
+          bitIdx++;
         }
       }
     }
   }
 
-  // Apply mask (mask 0: (row + col) % 2 === 0) and find best
-  let bestMask = 0;
-  let bestScore = Infinity;
-  let bestModules = modules;
+  // ========== Masking ==========
+  const maskFns = [
+    (r: number, c: number) => (r + c) % 2 === 0,
+    (r: number, _c: number) => r % 2 === 0,
+    (_r: number, c: number) => c % 3 === 0,
+    (r: number, c: number) => (r + c) % 3 === 0,
+    (r: number, c: number) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
+    (r: number, c: number) => ((r * c) % 2) + ((r * c) % 3) === 0,
+    (r: number, c: number) => (((r * c) % 2) + ((r * c) % 3)) % 2 === 0,
+    (r: number, c: number) => (((r + c) % 2) + ((r * c) % 3)) % 2 === 0,
+  ];
 
-  for (let mask = 0; mask < 8; mask++) {
-    const masked = modules.map((row) => [...row]);
-    for (let r = 0; r < size; r++)
-      for (let c = 0; c < size; c++)
-        if (!isFunction[r][c]) {
-          let invert = false;
-          switch (mask) {
-            case 0: invert = (r + c) % 2 === 0; break;
-            case 1: invert = r % 2 === 0; break;
-            case 2: invert = c % 3 === 0; break;
-            case 3: invert = (r + c) % 3 === 0; break;
-            case 4: invert = (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0; break;
-            case 5: invert = ((r * c) % 2) + ((r * c) % 3) === 0; break;
-            case 6: invert = (((r * c) % 2) + ((r * c) % 3)) % 2 === 0; break;
-            case 7: invert = (((r + c) % 2) + ((r * c) % 3)) % 2 === 0; break;
-          }
-          if (invert) masked[r][c] = !masked[r][c];
+  let bestPenalty = Infinity;
+  let bestResult: (boolean | null)[][] = grid;
+
+  for (let m = 0; m < 8; m++) {
+    const masked = grid.map(row => [...row]);
+
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (isDataModule[r][c] && maskFns[m](r, c)) {
+          masked[r][c] = !masked[r][c];
         }
+      }
+    }
 
-    // Apply format info
-    applyFormatInfo(masked, isFunction, size, mask);
+    writeFormatInfo(masked, size, m);
 
-    const score = penaltyScore(masked, size);
-    if (score < bestScore) {
-      bestScore = score;
-      bestMask = mask;
-      bestModules = masked;
+    const pen = calcPenalty(masked, size);
+    if (pen < bestPenalty) {
+      bestPenalty = pen;
+      bestResult = masked;
     }
   }
 
-  return { version, modules: bestModules as boolean[][] };
+  return { version, modules: bestResult as boolean[][] };
 }
 
-function applyFormatInfo(
-  modules: (boolean | null)[][],
-  isFunction: boolean[][],
-  size: number,
-  mask: number
-) {
-  // EC level M = 0, mask pattern
-  const data = (0b00 << 3) | mask; // EC level M = 00
-  let rem = data;
-  for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >> 9) * 0x537);
-  const bits = ((data << 10) | rem) ^ 0x5412;
+function writeFormatInfo(grid: (boolean | null)[][], size: number, maskPattern: number) {
+  const ecBits = 0b00; // EC level M
+  const formatData = (ecBits << 3) | maskPattern;
 
-  for (let i = 0; i < 6; i++) modules[8][i] = ((bits >> (14 - i)) & 1) === 1;
-  modules[8][7] = ((bits >> 8) & 1) === 1;
-  modules[8][8] = ((bits >> 7) & 1) === 1;
-  modules[7][8] = ((bits >> 6) & 1) === 1;
-  for (let i = 0; i < 6; i++) modules[5 - i][8] = ((bits >> (i)) & 1) === 1;
+  // BCH(15,5)
+  let remainder = formatData;
+  for (let i = 0; i < 10; i++) {
+    remainder <<= 1;
+    if (remainder & (1 << 10)) remainder ^= 0b10100110111;
+  }
+  const formatBits = ((formatData << 10) | remainder) ^ 0b101010000010010;
 
-  for (let i = 0; i < 8; i++) modules[size - 1 - i][8] = ((bits >> (14 - i)) & 1) === 1;
-  for (let i = 0; i < 7; i++) modules[8][size - 7 + i] = ((bits >> (6 - i)) & 1) === 1;
+  // First copy: around top-left finder (bit 0 at (8,0), bit 14 at (0,8))
+  const posA: [number, number][] = [
+    [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
+    [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8],
+  ];
+  for (let i = 0; i < 15; i++) {
+    const [r, c] = posA[i];
+    grid[r][c] = ((formatBits >> i) & 1) === 1;
+  }
+
+  // Second copy: bit 0 at (size-1,8), bit 14 at (8,size-1)
+  const posB: [number, number][] = [
+    [size-1,8],[size-2,8],[size-3,8],[size-4,8],[size-5,8],[size-6,8],[size-7,8],
+    [8,size-8],[8,size-7],[8,size-6],[8,size-5],[8,size-4],[8,size-3],[8,size-2],[8,size-1],
+  ];
+  for (let i = 0; i < 15; i++) {
+    const [r, c] = posB[i];
+    grid[r][c] = ((formatBits >> i) & 1) === 1;
+  }
 }
 
-function penaltyScore(modules: (boolean | null)[][], size: number): number {
-  let score = 0;
+function calcPenalty(grid: (boolean | null)[][], size: number): number {
+  let penalty = 0;
+
   // Rule 1: runs of same color
   for (let r = 0; r < size; r++) {
-    let run = 1;
+    let count = 1;
     for (let c = 1; c < size; c++) {
-      if (modules[r][c] === modules[r][c - 1]) run++;
-      else {
-        if (run >= 5) score += run - 2;
-        run = 1;
-      }
+      if (grid[r][c] === grid[r][c - 1]) count++;
+      else { if (count >= 5) penalty += count - 2; count = 1; }
     }
-    if (run >= 5) score += run - 2;
+    if (count >= 5) penalty += count - 2;
   }
   for (let c = 0; c < size; c++) {
-    let run = 1;
+    let count = 1;
     for (let r = 1; r < size; r++) {
-      if (modules[r][c] === modules[r - 1][c]) run++;
-      else {
-        if (run >= 5) score += run - 2;
-        run = 1;
-      }
+      if (grid[r][c] === grid[r - 1][c]) count++;
+      else { if (count >= 5) penalty += count - 2; count = 1; }
     }
-    if (run >= 5) score += run - 2;
+    if (count >= 5) penalty += count - 2;
   }
+
   // Rule 2: 2x2 blocks
   for (let r = 0; r < size - 1; r++)
     for (let c = 0; c < size - 1; c++) {
-      const color = modules[r][c];
-      if (color === modules[r][c + 1] && color === modules[r + 1][c] && color === modules[r + 1][c + 1])
-        score += 3;
+      const v = grid[r][c];
+      if (v === grid[r][c+1] && v === grid[r+1][c] && v === grid[r+1][c+1]) penalty += 3;
     }
-  return score;
+
+  // Rule 3: finder-like patterns
+  const pat1 = [1,0,1,1,1,0,1,0,0,0,0];
+  const pat2 = [0,0,0,0,1,0,1,1,1,0,1];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c <= size - 11; c++) {
+      let m1 = true, m2 = true;
+      for (let i = 0; i < 11; i++) {
+        const v = grid[r][c+i] ? 1 : 0;
+        if (v !== pat1[i]) m1 = false;
+        if (v !== pat2[i]) m2 = false;
+      }
+      if (m1 || m2) penalty += 40;
+    }
+  }
+  for (let c = 0; c < size; c++) {
+    for (let r = 0; r <= size - 11; r++) {
+      let m1 = true, m2 = true;
+      for (let i = 0; i < 11; i++) {
+        const v = grid[r+i][c] ? 1 : 0;
+        if (v !== pat1[i]) m1 = false;
+        if (v !== pat2[i]) m2 = false;
+      }
+      if (m1 || m2) penalty += 40;
+    }
+  }
+
+  // Rule 4: dark module proportion
+  let darkCount = 0;
+  for (let r = 0; r < size; r++)
+    for (let c = 0; c < size; c++)
+      if (grid[r][c]) darkCount++;
+  const percent = (darkCount * 100) / (size * size);
+  const prev5 = Math.floor(percent / 5) * 5;
+  const next5 = prev5 + 5;
+  penalty += Math.min(Math.abs(prev5 - 50) / 5, Math.abs(next5 - 50) / 5) * 10;
+
+  return penalty;
 }
 
-function getAlignmentPositions(version: number): number[] {
-  if (version === 1) return [];
-  const positions = [6];
-  const last = version * 4 + 10;
-  const count = Math.floor(version / 7) + 2;
-  const step = Math.ceil((last - 6) / (count - 1));
-  for (let i = 1; i < count; i++) positions.push(6 + step * i);
-  // Adjust last to be exact
-  positions[positions.length - 1] = last;
-  return positions;
-}
-
-// ---------- React component ----------
+// ========== React component ==========
 interface QRCodeProps {
   value: string;
   size?: number;
