@@ -8,6 +8,8 @@ import {
   kaikeiEmploymentRows,
   kaikeiEmploymentColumns,
   kaikeiEmploymentNote,
+  kaikeiCommuteAmounts,
+  kaikeiTransitCap,
 } from '@/data/kaikeiNendoData';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
@@ -276,10 +278,6 @@ export default function SalaryPage() {
   // 職員区分（正職員 / その他）※サイト共通
   const { mode: staffMode } = useStaffMode();
 
-  // 会計年度任用職員 job tab
-  const [kaikeiJobId, setKaikeiJobId] = useState(kaikeiNendoJobs[0].id);
-  const kaikeiJob = kaikeiNendoJobs.find(j => j.id === kaikeiJobId) ?? kaikeiNendoJobs[0];
-
   // Promotion model preset
   type PromotionModel = 'daigaku' | 'kousotsu' | 'nashi' | null;
   const [activeModel, setActiveModel] = useState<PromotionModel>(null);
@@ -532,12 +530,8 @@ export default function SalaryPage() {
 
   return (
     <PageLayout
-      title={staffMode === 'seishoku' ? '給料シミュレーター' : '会計年度任用職員の給与'}
-      subtitle={
-        staffMode === 'seishoku'
-          ? '給料・手当・ボーナス・年収を試算し、将来の収入推移をシミュレーションできます'
-          : '児童指導員・長時間担当職員・放課後児童支援員の1〜10年目給与を確認できます'
-      }
+      title="給料シミュレーター"
+      subtitle="給料・手当・ボーナス・年収を試算し、将来の収入推移をシミュレーションできます"
     >
       {/* ==================== 職員区分選択（サイト共通） ==================== */}
       <StaffModeToggle />
@@ -1021,54 +1015,356 @@ export default function SalaryPage() {
       </>
       )}
 
-      {staffMode === 'sonota' && (
+      {staffMode === 'sonota' && <KaikeiSection />}
+    </PageLayout>
+  );
+}
+
+/* ===================== 会計年度任用職員シミュレーター ===================== */
+
+function calcKaikeiCommute(
+  method: CommuteMethod,
+  distanceKm: number,
+  sixMonthPass: number,
+  halfDistance: boolean
+): number {
+  if (method === 'walk') return 0;
+  if (method === 'transit') return Math.min(Math.round(sixMonthPass / 6), kaikeiTransitCap);
+  const d = halfDistance ? distanceKm / 2 : distanceKm;
+  if (d < 2) return 0;
+  const idx = d < 4 ? 0 : d < 6 ? 1 : d < 8 ? 2 : 3;
+  return kaikeiCommuteAmounts[method as 'car' | 'bike' | 'bicycle'][idx];
+}
+
+function KaikeiSection() {
+  // Basic info
+  const [jobId, setJobId] = useState(kaikeiNendoJobs[0].id);
+  const [yearNum, setYearNum] = useState(1);
+  const [age, setAge] = useState<number | ''>('');
+
+  // Commute
+  const [commuteMethod, setCommuteMethod] = useState<CommuteMethod>('transit');
+  const [commuteDistance, setCommuteDistance] = useState<number | ''>('');
+  const [sixMonthPass, setSixMonthPass] = useState<number | ''>('');
+
+  const job = kaikeiNendoJobs.find((j) => j.id === jobId) ?? kaikeiNendoJobs[0];
+  const ageNum = age === '' ? 30 : age;
+  const distanceNum = commuteDistance === '' ? 0 : commuteDistance;
+  const passNum = sixMonthPass === '' ? 0 : sixMonthPass;
+  const isChoujikan = jobId === 'choujikan';
+
+  const monthly = job.rows[Math.min(Math.max(yearNum, 1), 10) - 1].monthly;
+
+  const tsukinTeate = useMemo(
+    () => calcKaikeiCommute(commuteMethod, distanceNum, passNum, isChoujikan),
+    [commuteMethod, distanceNum, passNum, isChoujikan]
+  );
+
+  const monthlyTotal = monthly + tsukinTeate;
+
+  // ボーナス（期末・勤勉手当）: 常勤職員と同じ支給月数で概算
+  const kimatsuTeate = Math.floor(monthly * 2.5);
+  const kinbenTeate = Math.floor(monthly * 2.1);
+  const bonusAnnual = kimatsuTeate + kinbenTeate;
+
+  const annualIncome = monthlyTotal * 12 + bonusAnnual;
+  const takeHome = Math.round(annualIncome * 0.79);
+
+  // 将来シミュレーション（65歳まで。昇給は10年目が上限）
+  const simulation = useMemo(() => {
+    const results: {
+      year: number;
+      age: number;
+      expYear: number;
+      monthlySalary: number;
+      annualIncome: number;
+    }[] = [];
+    const maxYears = 65 - ageNum;
+    if (maxYears <= 0) return results;
+
+    for (let y = 0; y <= maxYears; y++) {
+      const expYear = Math.min(yearNum + y, 10);
+      const m = job.rows[expYear - 1].monthly;
+      const yBonus = Math.floor(m * 2.5) + Math.floor(m * 2.1);
+      const yAnnual = (m + tsukinTeate) * 12 + yBonus;
+      results.push({
+        year: y,
+        age: ageNum + y,
+        expYear,
+        monthlySalary: m,
+        annualIncome: yAnnual,
+      });
+    }
+    return results;
+  }, [ageNum, yearNum, job, tsukinTeate]);
+
+  const chartData = useMemo(
+    () => simulation.map((s) => ({ label: `${s.age}歳`, value: s.annualIncome })),
+    [simulation]
+  );
+
+  const inputCls =
+    'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
+  const labelCls = 'block text-xs font-medium text-charcoal/50 mb-1.5';
+  const sliderCls = 'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1B4D4F]';
+  const miniInputCls = 'w-20 bg-white/80 border border-gray-200 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
+
+  return (
+    <>
+      {/* ==================== INPUT SECTION ==================== */}
       <div className="space-y-6">
-        <SectionCard className="animate-fade-in-delay-1">
-          {/* Job tabs */}
-          <div className="flex items-center gap-2 flex-wrap mb-4">
-            {kaikeiNendoJobs.map((job) => (
-              <button
-                key={job.id}
-                onClick={() => setKaikeiJobId(job.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  kaikeiJobId === job.id
-                    ? 'bg-accent text-white shadow-md'
-                    : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
-                }`}
-              >
-                {job.name}
-              </button>
-            ))}
+        {/* 基本情報 */}
+        <SectionCard title="基本情報" className="animate-fade-in-delay-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>職種</label>
+              <select value={jobId} onChange={(e) => setJobId(e.target.value)} className={inputCls}>
+                {kaikeiNendoJobs.map((j) => (
+                  <option key={j.id} value={j.id}>{j.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>何年目</label>
+              <select value={yearNum} onChange={(e) => setYearNum(Number(e.target.value))} className={inputCls}>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((y) => (
+                  <option key={y} value={y}>{y}年目</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>年齢</label>
+              <div className="flex items-center gap-2">
+                <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
+                <span className="text-xs text-charcoal/40">歳</span>
+              </div>
+            </div>
           </div>
+          <p className="mt-4 text-xs text-charcoal/40">{job.subtitle}</p>
+        </SectionCard>
 
-          <p className="text-xs text-charcoal/50 mb-4">{kaikeiJob.subtitle}</p>
+        {/* 通勤 */}
+        <SectionCard title="通勤" className="animate-fade-in-delay-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>通勤方法</label>
+              <select value={commuteMethod} onChange={(e) => setCommuteMethod(e.target.value as CommuteMethod)} className={inputCls}>
+                {Object.entries(commuteLabels).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
+            {(commuteMethod === 'car' || commuteMethod === 'bike' || commuteMethod === 'bicycle') && (
+              <div>
+                <label className={labelCls}>片道距離</label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={30} step={1} value={distanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                  <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <span className="text-xs text-charcoal/40">km</span>
+                </div>
+              </div>
+            )}
+            {commuteMethod === 'transit' && (
+              <div>
+                <label className={labelCls}>6ヶ月定期代</label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={300000} step={1000} value={passNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
+                  <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <span className="text-xs text-charcoal/40">円</span>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+            <p>・交通機関利用者は定期券の額（月額限度 18,000円）</p>
+            <p>・交通用具は距離区分に応じた定額（2km未満は支給なし）</p>
+            {isChoujikan && <p>・長時間担当職員（長時間担当保育）は朝夕2回勤務のため通勤距離を1/2換算</p>}
+          </div>
+        </SectionCard>
+      </div>
 
+      {/* ==================== RESULTS ==================== */}
+      <div className="mt-10 space-y-6">
+        <h2 className="text-xl font-bold text-charcoal tracking-tight animate-fade-in">試算結果</h2>
+
+        {/* Annual Income Hero */}
+        <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in-delay-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="sm:col-span-1">
+              <p className="text-xs font-medium text-charcoal/40 mb-1">年収（税・社保控除前）</p>
+              <div className="flex items-baseline gap-1 mt-2">
+                <span className="text-4xl sm:text-5xl font-bold text-accent tracking-tight">
+                  {Math.round(annualIncome / 10000).toLocaleString()}
+                </span>
+                <span className="text-sm text-charcoal/40">万円</span>
+              </div>
+              <p className="text-xs text-charcoal/30 mt-1">
+                （{annualIncome.toLocaleString()}円）
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-charcoal/40 mb-1">概算手取り年収</p>
+              <div className="flex items-baseline gap-1 mt-2">
+                <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
+                  {Math.round(takeHome / 10000).toLocaleString()}
+                </span>
+                <span className="text-sm text-charcoal/40">万円</span>
+              </div>
+              <p className="text-xs text-charcoal/30 mt-1">
+                （税・社保約21%控除の概算）
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-charcoal/40 mb-1">月収合計</p>
+              <div className="flex items-baseline gap-1 mt-2">
+                <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
+                  {monthlyTotal.toLocaleString()}
+                </span>
+                <span className="text-sm text-charcoal/40">円</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly Breakdown */}
+        <SectionCard title="月収内訳" className="animate-fade-in-delay-2">
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[480px]">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">年目</th>
-                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">号給</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">月額報酬</th>
-                </tr>
-              </thead>
+            <table className="w-full text-sm min-w-[400px]">
               <tbody>
-                {kaikeiJob.rows.map((row, i) => (
-                  <tr key={row.year} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
-                    <td className="py-2.5 px-3 text-charcoal/70 font-medium">{row.year}年目</td>
-                    <td className="py-2.5 px-3 text-charcoal/70">{row.gokyu}号給</td>
-                    <td className="py-2.5 px-3 text-right font-semibold text-accent">
-                      {row.monthly.toLocaleString()}円
+                {[
+                  [`月額報酬（${job.name}・${yearNum}年目）`, monthly],
+                  ['通勤手当', tsukinTeate],
+                ].map(([label, val], i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                    <td className="py-3 px-3 text-charcoal/70">{label as string}</td>
+                    <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                      {(val as number).toLocaleString()}円
                     </td>
                   </tr>
                 ))}
+                <tr className="border-t-2 border-accent/20 bg-accent/5">
+                  <td className="py-3 px-3 font-semibold text-charcoal">月収合計</td>
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                    {monthlyTotal.toLocaleString()}円
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
+          <p className="mt-3 text-xs text-charcoal/40">
+            ※ 月額報酬は地域手当（11%）込みの額です。
+          </p>
         </SectionCard>
 
-        {/* 任用条件 */}
-        <SectionCard title="任用条件（労働条件一覧表）" className="animate-fade-in-delay-2">
+        {/* Bonus */}
+        <SectionCard title="ボーナス（期末・勤勉手当）" className="animate-fade-in-delay-3">
+          <div className="overflow-x-auto -mx-2">
+            <table className="w-full text-sm min-w-[400px]">
+              <tbody>
+                <tr className="bg-gray-50/50">
+                  <td className="py-3 px-3 text-charcoal/70">
+                    期末手当（年額）
+                    <span className="text-xs text-charcoal/40 ml-1">1.25 x 2回 = 2.5ヶ月</span>
+                  </td>
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                    {kimatsuTeate.toLocaleString()}円
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-3 text-charcoal/70">
+                    勤勉手当（年額）
+                    <span className="text-xs text-charcoal/40 ml-1">1.05 x 2回 = 2.1ヶ月</span>
+                  </td>
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                    {kinbenTeate.toLocaleString()}円
+                  </td>
+                </tr>
+                <tr className="border-t-2 border-accent/20 bg-accent/5">
+                  <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計</td>
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                    {bonusAnnual.toLocaleString()}円
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-charcoal/40">
+            ※ 月額報酬を基礎に常勤職員と同じ支給月数で計算した概算です。在職期間等により実際の支給額は異なります。
+          </p>
+        </SectionCard>
+      </div>
+
+      {/* ==================== FUTURE SIMULATION ==================== */}
+      <div className="mt-10 space-y-6">
+        <h2 className="text-xl font-bold text-charcoal tracking-tight animate-fade-in">将来シミュレーション</h2>
+
+        {/* Chart */}
+        {simulation.length > 1 && (
+          <SectionCard title="年収推移グラフ" className="animate-fade-in-delay-1">
+            <LineChart data={chartData} />
+          </SectionCard>
+        )}
+
+        {/* Simulation Table */}
+        {simulation.length > 0 && (
+          <SectionCard title="年次シミュレーション結果" className="animate-fade-in-delay-2">
+            <div className="overflow-x-auto -mx-2">
+              <table className="w-full text-sm min-w-[500px]">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年</th>
+                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年齢</th>
+                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">経験年数</th>
+                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">月額報酬</th>
+                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">年収概算</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {simulation.map((row, i) => {
+                    const isMax = row.expYear === 10 && (i === 0 || simulation[i - 1].expYear < 10);
+                    return (
+                      <tr
+                        key={i}
+                        className={`border-b border-gray-100 ${
+                          isMax ? 'bg-amber-50' : i % 2 === 0 ? 'bg-gray-50/30' : ''
+                        }`}
+                      >
+                        <td className="py-2 px-2 text-charcoal/60">
+                          {row.year === 0 ? '現在' : `+${row.year}年`}
+                        </td>
+                        <td className="py-2 px-2 text-charcoal/70 font-medium">
+                          {row.age}歳
+                          {isMax && (
+                            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-700 font-medium">
+                              昇給上限
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2 px-2 text-charcoal/70">{row.expYear}年目{row.expYear === 10 ? '〜' : ''}</td>
+                        <td className="py-2 px-2 text-right text-charcoal font-medium">
+                          {row.monthlySalary.toLocaleString()}円
+                        </td>
+                        <td className="py-2 px-2 text-right font-semibold text-accent">
+                          {Math.round(row.annualIncome / 10000).toLocaleString()}万円
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+              <p>・昇給は経験1年ごとに+2号給、上限9年（10年目以降は同額）</p>
+              <p>・任用は毎年4月1日〜翌年3月31日。再度の任用あり（4回、最長5年。5年経過後、再度受験可）</p>
+            </div>
+          </SectionCard>
+        )}
+      </div>
+
+      {/* ==================== 任用条件 ==================== */}
+      <div className="mt-10 space-y-6">
+        <SectionCard title="任用条件（労働条件一覧表）" className="animate-fade-in-delay-3">
           <div className="overflow-x-auto -mx-2">
             <table className="w-full text-sm min-w-[600px]">
               <thead>
@@ -1081,7 +1377,7 @@ export default function SalaryPage() {
               </thead>
               <tbody>
                 {kaikeiEmploymentRows.map((row, i) => {
-                  const allSame = row.values.every(v => v === row.values[0]);
+                  const allSame = row.values.every((v) => v === row.values[0]);
                   return (
                     <tr key={row.label} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
                       <td className="py-2.5 px-3 text-charcoal/70 font-medium whitespace-nowrap">{row.label}</td>
@@ -1100,9 +1396,27 @@ export default function SalaryPage() {
           </div>
           <p className="mt-3 text-xs text-charcoal/40">{kaikeiEmploymentNote}</p>
         </SectionCard>
-
       </div>
-      )}
-    </PageLayout>
+
+      {/* Info box */}
+      <div className="mt-8 glass-card rounded-xl p-5 animate-fade-in-delay-4">
+        <div className="flex items-start gap-3">
+          <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent">
+              <circle cx="6" cy="6" r="5" />
+              <path d="M6 4v3M6 8.5v.01" />
+            </svg>
+          </div>
+          <div className="text-xs text-charcoal/40 leading-relaxed">
+            <p>
+              このシミュレーターは参考値を表示するものです。実際の給与は経験年数の認定、条例改正等により異なります。
+            </p>
+            <p className="mt-2 text-charcoal/30">
+              ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

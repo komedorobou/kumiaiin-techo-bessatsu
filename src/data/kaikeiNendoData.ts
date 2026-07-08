@@ -147,6 +147,15 @@ export const kaikeiCommuteNotes = [
   '長時間担当保育は朝夕2回勤務のため、通勤距離を1/2換算する。',
 ];
 
+// 距離区分別の支給額（数値）: [2〜4km, 4〜6km, 6〜8km, 8km以上]
+export const kaikeiCommuteAmounts: Record<'car' | 'bike' | 'bicycle', number[]> = {
+  car: [6200, 7800, 9400, 11000],
+  bike: [3600, 4400, 5200, 6000],
+  bicycle: [3000, 3500, 4000, 4500],
+};
+
+export const kaikeiTransitCap = 18000; // 交通機関の月額限度額
+
 /* ==================== 休暇一覧（会計年度任用職員） ==================== */
 // 元データ: 会計年度任用職員 休暇一覧（組合手帳別冊 p.18）
 
