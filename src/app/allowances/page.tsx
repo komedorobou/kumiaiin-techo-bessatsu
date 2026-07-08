@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import PageLayout from '@/components/PageLayout';
+import { kaikeiCommuteVehicleRows, kaikeiCommuteNotes } from '@/data/kaikeiNendoData';
+import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
 type TabId = 'fuyo' | 'jukyo' | 'tsukin' | 'bonus' | 'overtime' | 'tokushu' | 'shokyu' | 'over61' | 'payment';
 
@@ -31,6 +33,7 @@ export default function AllowancesPage() {
       title="手当ガイド"
       subtitle="給与に関する各種手当・制度を確認できます"
     >
+      <StaffModeToggle />
       {/* Tab Navigation */}
       <div className="mb-8 -mx-4 px-4 overflow-x-auto animate-fade-in">
         <div className="flex gap-1 min-w-max pb-2">
@@ -277,7 +280,47 @@ const commuteCarData = [
 
 type VehicleType = 'car' | 'bike' | 'bicycle';
 
+function KaikeiTsukin() {
+  return (
+    <div className="space-y-4">
+      <SectionCard title="交通用具 手当額一覧（会計年度任用職員）">
+        <TableWrapper>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">距離区分（片道）</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自動車</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">二輪・原付</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自転車</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kaikeiCommuteVehicleRows.map((row, i) => (
+                <tr key={i} className="border-b border-gray-100">
+                  <td className="py-2 text-charcoal/70 text-xs">{row.range}</td>
+                  <td className="py-2 text-right text-charcoal/70">{row.car}</td>
+                  <td className="py-2 text-right text-charcoal/70">{row.bike}</td>
+                  <td className="py-2 text-right text-charcoal/70">{row.bicycle}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableWrapper>
+      </SectionCard>
+
+      <SectionCard title="交通機関利用者">
+        <ul className="space-y-2 text-sm text-charcoal/70">
+          {kaikeiCommuteNotes.map((note, i) => (
+            <li key={i} className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>{note}</li>
+          ))}
+        </ul>
+      </SectionCard>
+    </div>
+  );
+}
+
 function TsukinTeate() {
+  const { mode } = useStaffMode();
   const [vehicleType, setVehicleType] = useState<VehicleType>('car');
   const [distanceIndex, setDistanceIndex] = useState(0);
 
@@ -286,6 +329,8 @@ function TsukinTeate() {
     if (!row) return 0;
     return row[vehicleType];
   }, [vehicleType, distanceIndex]);
+
+  if (mode === 'sonota') return <KaikeiTsukin />;
 
   return (
     <div className="space-y-4">

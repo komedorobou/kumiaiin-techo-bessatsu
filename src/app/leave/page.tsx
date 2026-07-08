@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import PageLayout from '@/components/PageLayout';
 import {
   leaveCategories,
@@ -10,6 +10,8 @@ import {
   FamilyChartEntry,
   LeaveSubItem,
 } from '@/data/leaveData';
+import { kaikeiLeaveCategories } from '@/data/kaikeiNendoData';
+import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
 /* ── Category SVG Icons (24px, line-style) ── */
 const categoryIcons: Record<string, ReactNode> = {
@@ -127,16 +129,29 @@ function DocumentIcon() {
 }
 
 export default function LeavePage() {
+  const { mode } = useStaffMode();
   const [selectedCategory, setSelectedCategory] = useState<LeaveCategory | null>(null);
+
+  // 職員区分を切り替えたらカテゴリ選択をリセット
+  useEffect(() => {
+    setSelectedCategory(null);
+  }, [mode]);
+
+  const categories = mode === 'sonota' ? kaikeiLeaveCategories : leaveCategories;
 
   return (
     <PageLayout
       title="休暇ガイド"
-      subtitle="ライフイベントに応じた休暇制度を確認できます（服務・勤怠関係事務 R7.10.1改定準拠）"
+      subtitle={
+        mode === 'sonota'
+          ? 'ライフイベントに応じた休暇制度を確認できます（会計年度任用職員 休暇一覧 準拠）'
+          : 'ライフイベントに応じた休暇制度を確認できます（服務・勤怠関係事務 R7.10.1改定準拠）'
+      }
     >
+      <StaffModeToggle />
       {!selectedCategory ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {leaveCategories.map((cat, i) => (
+          {categories.map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat)}
@@ -339,7 +354,7 @@ function SubItemsList({ items }: { items: LeaveSubItem[] }) {
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">中途採用者の付与日数</span>
+      <span className="text-xs text-charcoal/40 font-medium">付与日数（採用月・任用月別）</span>
       <div className="mt-1.5 overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
         <table className="min-w-full text-xs border-collapse">
           <thead>

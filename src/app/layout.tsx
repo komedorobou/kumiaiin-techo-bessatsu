@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { StaffModeProvider } from '@/components/StaffMode';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -27,7 +28,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="min-h-screen bg-base text-charcoal font-sans antialiased">
-        {children}
+        <StaffModeProvider>{children}</StaffModeProvider>
       </body>
     </html>
   );
