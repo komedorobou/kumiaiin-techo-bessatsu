@@ -5,11 +5,9 @@ import PageLayout from '@/components/PageLayout';
 import { salaryTables, getSalary } from '@/data/salaryData';
 import {
   kaikeiNendoJobs,
-  kaikeiNendoSource,
   kaikeiEmploymentRows,
   kaikeiEmploymentColumns,
   kaikeiEmploymentNote,
-  kaikeiInsuranceRows,
 } from '@/data/kaikeiNendoData';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
@@ -1051,7 +1049,6 @@ export default function SalaryPage() {
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">年目</th>
                   <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">号給</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">給料表1（38.75h）</th>
                   <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">月額報酬</th>
                 </tr>
               </thead>
@@ -1060,9 +1057,6 @@ export default function SalaryPage() {
                   <tr key={row.year} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
                     <td className="py-2.5 px-3 text-charcoal/70 font-medium">{row.year}年目</td>
                     <td className="py-2.5 px-3 text-charcoal/70">{row.gokyu}号給</td>
-                    <td className="py-2.5 px-3 text-right text-charcoal/70">
-                      {row.tableSalary.toLocaleString()}円
-                    </td>
                     <td className="py-2.5 px-3 text-right font-semibold text-accent">
                       {row.monthly.toLocaleString()}円
                     </td>
@@ -1070,13 +1064,6 @@ export default function SalaryPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
-            {kaikeiJob.notes.map((note, i) => (
-              <p key={i}>・{note}</p>
-            ))}
-            <p className="pt-1 text-charcoal/30">{kaikeiNendoSource}</p>
           </div>
         </SectionCard>
 
@@ -1112,22 +1099,6 @@ export default function SalaryPage() {
             </table>
           </div>
           <p className="mt-3 text-xs text-charcoal/40">{kaikeiEmploymentNote}</p>
-        </SectionCard>
-
-        {/* 保険・福利 */}
-        <SectionCard title="健康診断・保険等" className="animate-fade-in-delay-2">
-          <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[400px]">
-              <tbody>
-                {kaikeiInsuranceRows.map((row, i) => (
-                  <tr key={row.label} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
-                    <td className="py-2.5 px-3 text-charcoal/70 font-medium w-40">{row.label}</td>
-                    <td className="py-2.5 px-3 text-charcoal/70">{row.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </SectionCard>
 
       </div>
