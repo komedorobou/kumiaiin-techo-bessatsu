@@ -267,6 +267,9 @@ export default function SalaryPage() {
   const [promotionPlans, setPromotionPlans] = useState<PromotionPlan[]>([]);
   const [nextPlanId, setNextPlanId] = useState(1);
 
+  // 職員区分（正職員 / その他）
+  const [staffMode, setStaffMode] = useState<'seishoku' | 'sonota'>('seishoku');
+
   // 会計年度任用職員 job tab
   const [kaikeiJobId, setKaikeiJobId] = useState(kaikeiNendoJobs[0].id);
   const kaikeiJob = kaikeiNendoJobs.find(j => j.id === kaikeiJobId) ?? kaikeiNendoJobs[0];
@@ -523,9 +526,35 @@ export default function SalaryPage() {
 
   return (
     <PageLayout
-      title="給料シミュレーター"
-      subtitle="給料・手当・ボーナス・年収を試算し、将来の収入推移をシミュレーションできます"
+      title={staffMode === 'seishoku' ? '給料シミュレーター' : '会計年度任用職員の給与'}
+      subtitle={
+        staffMode === 'seishoku'
+          ? '給料・手当・ボーナス・年収を試算し、将来の収入推移をシミュレーションできます'
+          : '児童指導員・長時間担当職員・放課後児童支援員の1〜10年目給与を確認できます'
+      }
     >
+      {/* ==================== 職員区分選択 ==================== */}
+      <div className="glass-card-strong rounded-2xl p-5 sm:p-7 mb-6 animate-fade-in">
+        <label className="block text-xs font-medium text-charcoal/50 mb-3">職員区分</label>
+        <div className="flex items-center gap-3 flex-wrap">
+          {([['seishoku', '正職員'], ['sonota', 'その他（会計年度任用職員）']] as const).map(([val, label]) => (
+            <button
+              key={val}
+              onClick={() => setStaffMode(val)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                staffMode === val
+                  ? 'bg-accent text-white shadow-md'
+                  : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {staffMode === 'seishoku' && (
+      <>
       {/* ==================== INPUT SECTION ==================== */}
       <div className="space-y-6">
         {/* 基本情報 */}
@@ -977,12 +1006,34 @@ export default function SalaryPage() {
         )}
       </div>
 
-      {/* ==================== 会計年度任用職員 ==================== */}
-      <div className="mt-10 space-y-6">
-        <h2 className="text-xl font-bold text-charcoal tracking-tight animate-fade-in">
-          会計年度任用職員の給与（1〜10年目）
-        </h2>
+      {/* Info box */}
+      <div className="mt-8 glass-card rounded-xl p-5 animate-fade-in-delay-4">
+        <div className="flex items-start gap-3">
+          <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent">
+              <circle cx="6" cy="6" r="5" />
+              <path d="M6 4v3M6 8.5v.01" />
+            </svg>
+          </div>
+          <div className="text-xs text-charcoal/40 leading-relaxed">
+            <p>
+              このシミュレーターは参考値を表示するものです。管理職手当・特殊勤務手当等は含まれていません。
+              実際の給与は昇給・昇格の時期、人事評価、条例改正等により異なります。
+            </p>
+            <p className="mt-2 text-charcoal/30">
+              ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
+            </p>
+            <p className="mt-1 text-charcoal/30">
+              ※ 扶養手当は令和8年度以降のルールで計算しています（配偶者手当廃止、子の手当増額）。
+            </p>
+          </div>
+        </div>
+      </div>
+      </>
+      )}
 
+      {staffMode === 'sonota' && (
+      <div className="space-y-6">
         <SectionCard className="animate-fade-in-delay-1">
           {/* Job tabs */}
           <div className="flex items-center gap-2 flex-wrap mb-4">
@@ -1038,30 +1089,7 @@ export default function SalaryPage() {
           </div>
         </SectionCard>
       </div>
-
-      {/* Info box */}
-      <div className="mt-8 glass-card rounded-xl p-5 animate-fade-in-delay-4">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent">
-              <circle cx="6" cy="6" r="5" />
-              <path d="M6 4v3M6 8.5v.01" />
-            </svg>
-          </div>
-          <div className="text-xs text-charcoal/40 leading-relaxed">
-            <p>
-              このシミュレーターは参考値を表示するものです。管理職手当・特殊勤務手当等は含まれていません。
-              実際の給与は昇給・昇格の時期、人事評価、条例改正等により異なります。
-            </p>
-            <p className="mt-2 text-charcoal/30">
-              ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
-            </p>
-            <p className="mt-1 text-charcoal/30">
-              ※ 扶養手当は令和8年度以降のルールで計算しています（配偶者手当廃止、子の手当増額）。
-            </p>
-          </div>
-        </div>
-      </div>
+      )}
     </PageLayout>
   );
 }
