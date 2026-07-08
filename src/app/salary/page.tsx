@@ -3,7 +3,26 @@
 import { useState, useMemo, useCallback } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { salaryTables, getSalary } from '@/data/salaryData';
-import { kaikeiNendoJobs, kaikeiNendoSource } from '@/data/kaikeiNendoData';
+import {
+  kaikeiNendoJobs,
+  kaikeiNendoSource,
+  kaikeiEmploymentRows,
+  kaikeiEmploymentColumns,
+  kaikeiEmploymentNote,
+  kaikeiInsuranceRows,
+  kaikeiCommuteVehicleRows,
+  kaikeiCommuteNotes,
+  kaikeiNenkyuFirstYear,
+  kaikeiNenkyuContinued,
+  kaikeiNenkyuNotes,
+  kaikeiSpecialPaid,
+  kaikeiSpecialUnpaid,
+  kaikeiOtherLeave,
+  kaikeiKibikiRows,
+  kaikeiKibikiNote,
+  kaikeiKakiRows,
+  kaikeiLeaveFootnotes,
+} from '@/data/kaikeiNendoData';
 
 /* ===================== Types ===================== */
 type PositionLevel = 'buchou' | 'riji' | 'kachou' | 'sanji' | 'kachohosa' | 'shukan' | 'tantouchou' | 'shusa' | 'shunin' | 'ippan';
@@ -1086,6 +1105,210 @@ export default function SalaryPage() {
               <p key={i}>・{note}</p>
             ))}
             <p className="pt-1 text-charcoal/30">{kaikeiNendoSource}</p>
+          </div>
+        </SectionCard>
+
+        {/* 任用条件 */}
+        <SectionCard title="任用条件（労働条件一覧表）" className="animate-fade-in-delay-2">
+          <div className="overflow-x-auto -mx-2">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs w-24">項目</th>
+                  {kaikeiEmploymentColumns.map((col) => (
+                    <th key={col} className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {kaikeiEmploymentRows.map((row, i) => {
+                  const allSame = row.values.every(v => v === row.values[0]);
+                  return (
+                    <tr key={row.label} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                      <td className="py-2.5 px-3 text-charcoal/70 font-medium whitespace-nowrap">{row.label}</td>
+                      {allSame ? (
+                        <td className="py-2.5 px-3 text-charcoal/70" colSpan={3}>{row.values[0]}</td>
+                      ) : (
+                        row.values.map((v, j) => (
+                          <td key={j} className="py-2.5 px-3 text-charcoal/70">{v}</td>
+                        ))
+                      )}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-charcoal/40">{kaikeiEmploymentNote}</p>
+        </SectionCard>
+
+        {/* 保険・福利 */}
+        <SectionCard title="健康診断・保険等" className="animate-fade-in-delay-2">
+          <div className="overflow-x-auto -mx-2">
+            <table className="w-full text-sm min-w-[400px]">
+              <tbody>
+                {kaikeiInsuranceRows.map((row, i) => (
+                  <tr key={row.label} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                    <td className="py-2.5 px-3 text-charcoal/70 font-medium w-40">{row.label}</td>
+                    <td className="py-2.5 px-3 text-charcoal/70">{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SectionCard>
+
+        {/* 通勤手当 */}
+        <SectionCard title="通勤手当支給一覧" className="animate-fade-in-delay-3">
+          <div className="overflow-x-auto -mx-2">
+            <table className="w-full text-sm min-w-[480px]">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">片道距離</th>
+                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">自動車</th>
+                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">自動二輪・原付</th>
+                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">自転車</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kaikeiCommuteVehicleRows.map((row, i) => (
+                  <tr key={row.range} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                    <td className="py-2.5 px-3 text-charcoal/70 font-medium">{row.range}</td>
+                    <td className="py-2.5 px-3 text-right text-charcoal/70">{row.car}</td>
+                    <td className="py-2.5 px-3 text-right text-charcoal/70">{row.bike}</td>
+                    <td className="py-2.5 px-3 text-right text-charcoal/70">{row.bicycle}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-3 space-y-1 text-xs text-charcoal/40">
+            {kaikeiCommuteNotes.map((note, i) => (
+              <p key={i}>・{note}</p>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* 年次有給休暇 */}
+        <SectionCard title="年次有給休暇" className="animate-fade-in-delay-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-semibold text-charcoal mb-3">1年目（任用月別）</h4>
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full text-sm min-w-[300px]">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">任用月</th>
+                      <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">付与日数</th>
+                      <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">付与時間</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kaikeiNenkyuFirstYear.map((row, i) => (
+                      <tr key={row.month} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                        <td className="py-2 px-3 text-charcoal/70 font-medium">{row.month}</td>
+                        <td className="py-2 px-3 text-right text-charcoal/70">{row.days}日</td>
+                        <td className="py-2 px-3 text-right text-charcoal/70">{row.hours}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-charcoal mb-3">2年目以降（継続任用）</h4>
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full text-sm min-w-[300px]">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">年目</th>
+                      <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">付与日数</th>
+                      <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">付与時間</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kaikeiNenkyuContinued.map((row, i) => (
+                      <tr key={row.year} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                        <td className="py-2 px-3 text-charcoal/70 font-medium">{row.year}</td>
+                        <td className="py-2 px-3 text-right text-charcoal/70">{row.days}日</td>
+                        <td className="py-2 px-3 text-right text-charcoal/70">{row.hours}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+            {kaikeiNenkyuNotes.map((note, i) => (
+              <p key={i}>・{note}</p>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* 特別休暇・その他の休暇 */}
+        <SectionCard title="特別休暇・その他の休暇" className="animate-fade-in-delay-4">
+          {([
+            ['特別休暇（有給）', kaikeiSpecialPaid],
+            ['特別休暇（無給）', kaikeiSpecialUnpaid],
+            ['その他（無給）', kaikeiOtherLeave],
+          ] as const).map(([heading, items]) => (
+            <div key={heading} className="mb-6 last:mb-0">
+              <h4 className="text-sm font-semibold text-charcoal mb-3">{heading}</h4>
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full text-sm min-w-[480px]">
+                  <tbody>
+                    {items.map((item, i) => (
+                      <tr key={item.name} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                        <td className="py-2.5 px-3 text-charcoal/70 font-medium w-56">{item.name}</td>
+                        <td className="py-2.5 px-3 text-charcoal/70">{item.detail}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div>
+              <h4 className="text-sm font-semibold text-charcoal mb-3">別表1 忌引日数</h4>
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full text-sm min-w-[280px]">
+                  <tbody>
+                    {kaikeiKibikiRows.map((row, i) => (
+                      <tr key={row.kubun} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                        <td className="py-2 px-3 text-charcoal/70">{row.kubun}</td>
+                        <td className="py-2 px-3 text-right font-semibold text-charcoal">{row.days}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-2 text-xs text-charcoal/40">{kaikeiKibikiNote}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-charcoal mb-3">別表2 夏期休暇日数</h4>
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full text-sm min-w-[280px]">
+                  <tbody>
+                    {kaikeiKakiRows.map((row, i) => (
+                      <tr key={row.kinmu} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                        <td className="py-2 px-3 text-charcoal/70">週勤務日数 {row.kinmu}</td>
+                        <td className="py-2 px-3 text-right font-semibold text-charcoal">{row.days}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-2 text-xs text-charcoal/40">※土曜日も1日と数える。</p>
+            </div>
+          </div>
+
+          <div className="mt-6 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+            {kaikeiLeaveFootnotes.map((note, i) => (
+              <p key={i}>・{note}</p>
+            ))}
           </div>
         </SectionCard>
       </div>

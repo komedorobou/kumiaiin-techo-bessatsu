@@ -95,3 +95,150 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
 
 export const kaikeiNendoSource =
   '出典：岸和田市例規集（会計年度任用職員の給与等に関する条例／同施行規則）内容現在 令和8年4月1日、および各職種（月給）任用条件。';
+
+/* ==================== 労働条件一覧表（その3） ==================== */
+
+export const kaikeiEmploymentRows: { label: string; values: [string, string, string] }[] = [
+  {
+    label: '身分',
+    values: ['パートタイム会計年度任用職員', 'パートタイム会計年度任用職員', 'パートタイム会計年度任用職員'],
+  },
+  {
+    label: '任用期間',
+    values: [
+      '毎年4月1日より翌年3月31日まで。人事評価等による能力実証を行ったうえで再度の任用あり（4回、最長5年）。5年経過後、再度受験可。',
+      '毎年4月1日より翌年3月31日まで。人事評価等による能力実証を行ったうえで再度の任用あり（4回、最長5年）。5年経過後、再度受験可。',
+      '毎年4月1日より翌年3月31日まで。人事評価等による能力実証を行ったうえで再度の任用あり（4回、最長5年）。5年経過後、再度受験可。',
+    ],
+  },
+  { label: '当局研修', values: ['年1回', '年1回', '―'] },
+  {
+    label: '担当課',
+    values: ['子ども家庭応援部 子育て施設課', '子ども家庭応援部 子育て支援課', '子ども家庭応援部 子育て施設課'],
+  },
+];
+
+export const kaikeiEmploymentColumns = ['長時間担当保育分会', '学童保育指導員分会', '児童指導員分会'];
+
+export const kaikeiEmploymentNote = '※2008年4月より、学童保育事業は条例化されました。';
+
+export const kaikeiInsuranceRows: { label: string; value: string }[] = [
+  { label: '健康診断', value: '有り' },
+  { label: '健康保険', value: '大阪府市町村職員共済組合加入' },
+  { label: '雇用保険', value: '加入' },
+  { label: '厚生年金', value: '加入' },
+  { label: '労災補償保険', value: '加入' },
+  { label: '厚生会', value: '加入' },
+];
+
+/* ==================== 通勤手当支給一覧 ==================== */
+
+export const kaikeiCommuteVehicleRows: { range: string; car: string; bike: string; bicycle: string }[] = [
+  { range: '2km以上4km未満', car: '6,200円', bike: '3,600円', bicycle: '3,000円' },
+  { range: '4km以上6km未満', car: '7,800円', bike: '4,400円', bicycle: '3,500円' },
+  { range: '6km以上8km未満', car: '9,400円', bike: '5,200円', bicycle: '4,000円' },
+  { range: '8km以上', car: '11,000円', bike: '6,000円', bicycle: '4,500円' },
+];
+
+export const kaikeiCommuteNotes = [
+  '交通機関利用者は定期券の額（限度額 18,000円）。',
+  '長時間担当保育は朝夕2回勤務のため、通勤距離を1/2換算する。',
+];
+
+/* ==================== 休暇一覧 ==================== */
+
+// 年次有給休暇（1年目・任用月別）※時間換算は1日6時間3分勤務の場合
+export const kaikeiNenkyuFirstYear: { month: string; days: number; hours: string }[] = [
+  { month: '4月', days: 13, hours: '79時間' },
+  { month: '5月', days: 12, hours: '73時間' },
+  { month: '6月', days: 10, hours: '61時間' },
+  { month: '7月', days: 9, hours: '55時間' },
+  { month: '8月', days: 8, hours: '49時間' },
+  { month: '9月', days: 7, hours: '43時間' },
+  { month: '10月', days: 5, hours: '31時間' },
+  { month: '11月', days: 4, hours: '25時間' },
+  { month: '12月', days: 3, hours: '19時間' },
+  { month: '1月', days: 2, hours: '13時間' },
+];
+
+// 年次有給休暇（2年目以降・継続任用）
+export const kaikeiNenkyuContinued: { year: string; days: number; hours: string }[] = [
+  { year: '2年目', days: 14, hours: '85時間' },
+  { year: '3年目', days: 15, hours: '91時間' },
+  { year: '4年目', days: 18, hours: '109時間' },
+  { year: '5年目', days: 20, hours: '121時間' },
+];
+
+export const kaikeiNenkyuNotes = [
+  '取得単位は1日（時間単位取得可）。1日までは午前及び午後の半日取得に限り、実時間での取得可能。',
+  '前年付与日数（時間数）に残時間がある場合は、その年の付与時間数を限度に翌年に繰り越すことができる。',
+  '時間換算は週5日・1日6時間3分勤務の場合。',
+];
+
+export interface KaikeiLeaveItem {
+  name: string;
+  detail: string;
+}
+
+// 特別休暇（有給）
+export const kaikeiSpecialPaid: KaikeiLeaveItem[] = [
+  { name: '公民権行使', detail: '必要と認められる日又は時間' },
+  { name: '官公署出頭', detail: '必要と認められる日又は時間' },
+  { name: '骨髄等ドナー', detail: '必要と認められる日又は時間' },
+  { name: '結婚休暇', detail: '連続する5日の範囲内 ※週休日を含む' },
+  { name: '不妊治療のための休暇', detail: '5日（時間単位）※体外受精及び顕微授精に係る通院等の場合は10日' },
+  { name: '産前', detail: '出産の日までの間で申し出た期間（6週間以内に出産する予定である場合）' },
+  { name: '産後', detail: '出産の日の翌日から8週間を経過するまでの期間' },
+  { name: '子の看護等休暇（小学生以下）', detail: '5日（時間単位）※子が2人以上かつ小学校3年生以下の子がある場合は10日' },
+  { name: '出産補助休暇', detail: '2日（1日単位）' },
+  { name: '忌引', detail: '別表1（1日単位）' },
+  { name: '夏期', detail: '別表2 6月から10月の期間内（半日単位）' },
+  { name: '現住居の滅失等（天災・非常災害）', detail: '必要と認められる日又は時間' },
+  { name: '感染症予防', detail: '必要と認められる日又は時間' },
+];
+
+// 特別休暇（無給）
+export const kaikeiSpecialUnpaid: KaikeiLeaveItem[] = [
+  { name: '生理日の就業困難', detail: '1回について3日以内で必要とする期間' },
+  { name: '妊産婦の通院休暇', detail: '必要と認められる時間' },
+  { name: '妊娠中の通勤緩和', detail: '1日につき1時間以内' },
+  { name: '妊娠障害休暇', detail: '産前休暇までの間、5日（半日単位）' },
+  { name: '育児時間', detail: '1日2回各30分（生後1年に達しない子を育てる場合）' },
+  { name: '短期の介護休暇', detail: '5日（時間単位）※要介護者が2人以上いる場合は10日' },
+];
+
+// その他（無給）
+export const kaikeiOtherLeave: KaikeiLeaveItem[] = [
+  { name: '育児休業', detail: '子が一歳に達するまで（一定の場合は、最長で2歳まで）' },
+  { name: '部分休業', detail: '子が3歳に達する日まで、1日のうち2時間以内（30分単位）' },
+  { name: '病気休暇', detail: '連続する30日以内（最初の10日は有給取得可能）' },
+  { name: '介護休暇', detail: '3回まで通算93日以内' },
+  { name: '介護時間', detail: '連続する3年以内（1日2時間まで）' },
+];
+
+// 別表1 忌引日数
+export const kaikeiKibikiRows: { kubun: string; days: string }[] = [
+  { kubun: '配偶者、父母、子', days: '5日' },
+  { kubun: '祖父母、孫、兄弟姉妹', days: '3日' },
+  { kubun: '配偶者の父母', days: '3日' },
+  { kubun: '伯叔父母', days: '1日' },
+];
+
+export const kaikeiKibikiNote =
+  '※死亡日から起算して連続して取得するもので、公休日をはさむ場合はその日も1日と数える。土曜日も1日と数える。（別表1の詳細は原本を確認）';
+
+// 別表2 夏期休暇日数
+export const kaikeiKakiRows: { kinmu: string; days: string }[] = [
+  { kinmu: '週4日以上', days: '4日' },
+  { kinmu: '週3日', days: '3日' },
+  { kinmu: '週2日', days: '2日' },
+  { kinmu: '週1日', days: '1日' },
+];
+
+export const kaikeiLeaveFootnotes = [
+  '年次有給休暇は6月以上の任期が定められている職員又は6月以上継続勤務している職員が対象。',
+  '育児休業は、子が1歳6月に達する日までの間に、任用期間（更新される場合には、更新後の任用期間）が満了することが明らかでないこと、かつ、1週間の勤務日が3日以上又は1年間の勤務日が121日以上の職員が対象。',
+  '部分休業は、1週間の勤務日が3日以上又は1年間の勤務日が121日以上、かつ、1日につき定められた勤務時間が6時間15分以上の職員が対象。',
+  '病気休暇のうち有給となる10日（日・土・休日等を除く）は一の年度につき、同一の疾病に限る。',
+  '介護休暇は、介護予定日から起算して93日を経過する日から6か月経過する日までの間に、任用期間（更新される場合には、更新後の任用期間）が満了することが明らかでないこと。',
+];
