@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { kaikeiCommuteVehicleRows, kaikeiCommuteNotes } from '@/data/kaikeiNendoData';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
@@ -26,8 +26,21 @@ const tabs: TabItem[] = [
   { id: 'payment', label: '給与の支払い', shortLabel: '支払' },
 ];
 
+// 会計年度任用職員には支給が無い手当（タブ自体を非表示）
+const kaikeiHiddenTabs: TabId[] = ['fuyo', 'jukyo', 'over61', 'taishoku'];
+
 export default function AllowancesPage() {
+  const { mode } = useStaffMode();
   const [activeTab, setActiveTab] = useState<TabId>('fuyo');
+
+  const visibleTabs = mode === 'sonota' ? tabs.filter((t) => !kaikeiHiddenTabs.includes(t.id)) : tabs;
+
+  // モード切替時、非表示タブを選択中なら先頭の表示タブへ
+  useEffect(() => {
+    if (mode === 'sonota' && kaikeiHiddenTabs.includes(activeTab)) {
+      setActiveTab('tsukin');
+    }
+  }, [mode, activeTab]);
 
   return (
     <PageLayout
@@ -38,7 +51,7 @@ export default function AllowancesPage() {
       {/* Tab Navigation */}
       <div className="mb-8 -mx-4 px-4 overflow-x-auto animate-fade-in">
         <div className="flex gap-1 min-w-max pb-2">
-          {tabs.map((tab) => (
+          {visibleTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -113,36 +126,27 @@ function FuyoTeate() {
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-2 pr-4 text-charcoal/40 font-medium text-xs">扶養親族</th>
-                <th className="text-right py-2 px-4 text-charcoal/40 font-medium text-xs">令和7年度</th>
-                <th className="text-right py-2 pl-4 text-charcoal/40 font-medium text-xs">令和8年度以降</th>
+                <th className="text-right py-2 pl-4 text-charcoal/40 font-medium text-xs">月額</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-gray-100">
-                <td className="py-3 pr-4 text-charcoal/70">配偶者</td>
-                <td className="py-3 px-4 text-right font-semibold text-accent">3,000円</td>
-                <td className="py-3 pl-4 text-right text-charcoal/40">支給なし</td>
-              </tr>
-              <tr className="border-b border-gray-100">
                 <td className="py-3 pr-4 text-charcoal/70">子</td>
-                <td className="py-3 px-4 text-right font-semibold text-accent">11,500円</td>
                 <td className="py-3 pl-4 text-right font-semibold text-accent">13,000円</td>
               </tr>
               <tr className="border-b border-gray-100">
-                <td className="py-3 pr-4 text-charcoal/70">父母等（課長級以下）</td>
-                <td className="py-3 px-4 text-right font-semibold text-accent">6,500円</td>
+                <td className="py-3 pr-4 text-charcoal/70">配偶者</td>
                 <td className="py-3 pl-4 text-right text-charcoal/40">支給なし</td>
               </tr>
               <tr>
-                <td className="py-3 pr-4 text-charcoal/70">父母等（部長級）</td>
-                <td className="py-3 px-4 text-right font-semibold text-accent">3,500円</td>
+                <td className="py-3 pr-4 text-charcoal/70">父母等</td>
                 <td className="py-3 pl-4 text-right text-charcoal/40">支給なし</td>
               </tr>
             </tbody>
           </table>
         </TableWrapper>
         <p className="mt-4 text-xs text-charcoal/40 leading-relaxed">
-          16歳から22歳の子については、上記の額に5,000円を加算します。
+          16歳から22歳の子については、上記の額に5,000円を加算します。（令和8年度以降の制度。配偶者・父母等の手当は令和8年度に廃止されました）
         </p>
       </SectionCard>
 
@@ -207,13 +211,13 @@ function JukyoTeate() {
             <span className="text-sm text-charcoal/40">円</span>
           </div>
           {allowance !== null && (
-            <div className="mt-4 p-4 rounded-xl bg-accent/5 border border-accent/10">
-              <p className="text-xs text-charcoal/40">住居手当月額</p>
-              <p className="text-2xl font-bold text-accent mt-1">
+            <div className="mt-4 p-4 rounded-xl bg-accent border border-accent">
+              <p className="text-xs text-white/70">住居手当月額</p>
+              <p className="text-2xl font-bold text-white mt-1">
                 {allowance.toLocaleString()}円
               </p>
               {allowance === 0 && (
-                <p className="text-xs text-charcoal/40 mt-1">家賃16,000円以下のため支給対象外です</p>
+                <p className="text-xs text-white/70 mt-1">家賃16,000円以下のため支給対象外です</p>
               )}
             </div>
           )}
@@ -364,13 +368,13 @@ function TsukinTeate() {
           </div>
         </div>
 
-        <div className="mt-4 p-4 rounded-xl bg-accent/5 border border-accent/10">
-          <p className="text-xs text-charcoal/40">通勤手当月額</p>
-          <p className="text-2xl font-bold text-accent mt-1">
+        <div className="mt-4 p-4 rounded-xl bg-accent border border-accent">
+          <p className="text-xs text-white/70">通勤手当月額</p>
+          <p className="text-2xl font-bold text-white mt-1">
             {result > 0 ? `${result.toLocaleString()}円` : '対象外'}
           </p>
           {vehicleType === 'bicycle' && distanceIndex >= 5 && (
-            <p className="text-xs text-charcoal/40 mt-1">自転車は片道12km未満までが支給対象です（正規職員）</p>
+            <p className="text-xs text-white/70 mt-1">自転車は片道12km未満までが支給対象です（正規職員）</p>
           )}
         </div>
         <p className="mt-3 text-xs text-charcoal/40">
@@ -417,7 +421,37 @@ function TsukinTeate() {
 
 /* ==================== 期末・勤勉手当 ==================== */
 
+function KaikeiBonusSection() {
+  return (
+    <div className="space-y-4">
+      <SectionCard title="期末・勤勉手当（会計年度任用職員）">
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">6月期</p>
+            <p className="text-lg font-bold text-white">2.325月</p>
+          </div>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">12月期</p>
+            <p className="text-lg font-bold text-white">2.325月</p>
+          </div>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">年間</p>
+            <p className="text-lg font-bold text-white">4.65月</p>
+          </div>
+        </div>
+        <ul className="space-y-2 text-sm text-charcoal/70">
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>一任用期間が6ヶ月以上、かつ一週間の勤務時間が15.5時間以上の場合に支給されます。</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>新規採用者の場合、初回は一部支給となります。</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>報酬月額を基礎に計算されます。金額の目安は給料シミュレーターで確認できます。</li>
+        </ul>
+      </SectionCard>
+    </div>
+  );
+}
+
 function BonusSection() {
+  const { mode } = useStaffMode();
+  if (mode === 'sonota') return <KaikeiBonusSection />;
   return (
     <div className="space-y-4">
       <SectionCard title="支給率一覧（正規・任期付・会計年度任用職員）">
@@ -501,9 +535,9 @@ function BonusSection() {
             { role: '主幹級', rate: '10%' },
             { role: '担当長・主査・主任級', rate: '5%' },
           ].map((item) => (
-            <div key={item.role} className="p-3 rounded-xl bg-accent/5 text-center">
-              <p className="text-xs text-charcoal/40">{item.role}</p>
-              <p className="text-lg font-bold text-accent mt-1">{item.rate}</p>
+            <div key={item.role} className="p-3 rounded-xl bg-accent text-center">
+              <p className="text-xs text-white/70">{item.role}</p>
+              <p className="text-lg font-bold text-white mt-1">{item.rate}</p>
             </div>
           ))}
         </div>
@@ -534,7 +568,49 @@ function BonusSection() {
 
 /* ==================== 超過勤務手当 ==================== */
 
+function KaikeiOvertimeSection() {
+  return (
+    <div className="space-y-4">
+      <SectionCard title="超過勤務手当・休日給等に係る報酬（会計年度任用職員）">
+        <TableWrapper>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">区分</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">割増率</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-gray-100 bg-gray-50/30">
+                <td className="py-2.5 text-charcoal/70">勤務日（7時間45分に達するまで）</td>
+                <td className="py-2.5 text-right font-semibold text-accent">100/100</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2.5 text-charcoal/70">勤務日（7時間45分を超える時間）</td>
+                <td className="py-2.5 text-right font-semibold text-accent">125/100</td>
+              </tr>
+              <tr className="border-b border-gray-100 bg-gray-50/30">
+                <td className="py-2.5 text-charcoal/70">週休日・休日</td>
+                <td className="py-2.5 text-right font-semibold text-accent">135/100</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2.5 text-charcoal/70">深夜（22時〜翌5時）</td>
+                <td className="py-2.5 text-right font-semibold text-accent">さらに +25/100</td>
+              </tr>
+            </tbody>
+          </table>
+        </TableWrapper>
+        <p className="mt-3 text-xs text-charcoal/40">
+          正規勤務時間を超えて勤務した場合、1時間当たりの額を算出し支給されます。
+        </p>
+      </SectionCard>
+    </div>
+  );
+}
+
 function OvertimeSection() {
+  const { mode } = useStaffMode();
+  if (mode === 'sonota') return <KaikeiOvertimeSection />;
   return (
     <div className="space-y-4">
       <SectionCard title="超過勤務手当の支給率">
@@ -722,8 +798,8 @@ function TaishokuSection() {
   return (
     <div className="space-y-4">
       <SectionCard title="退職手当のしくみ">
-        <div className="p-4 rounded-xl bg-accent/5 text-center mb-4">
-          <p className="text-sm sm:text-base font-bold text-accent">
+        <div className="p-4 rounded-xl bg-accent text-center mb-4">
+          <p className="text-sm sm:text-base font-bold text-white">
             退職手当 ＝ 退職日の給料月額 × 支給率 ＋ 調整額
           </p>
         </div>
@@ -786,22 +862,48 @@ function TaishokuSection() {
 
 /* ==================== 昇給について ==================== */
 
+function KaikeiShokyuSection() {
+  return (
+    <div className="space-y-4">
+      <SectionCard title="昇給について（会計年度任用職員）">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">昇給（経験年数加算）</p>
+            <p className="text-lg font-bold text-white">経験1年ごとに +2号給</p>
+          </div>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">上限</p>
+            <p className="text-lg font-bold text-white">9年（10年目以降は同額）</p>
+          </div>
+        </div>
+        <ul className="space-y-2 text-sm text-charcoal/70">
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>初任号給は職種ごとに決まっています。金額は給料シミュレーターで確認できます。</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>初任給決定における前歴加算あり: 過去10年間において岸和田市で同一職種として任用された期間について、最大9年間・18号給を上限に加算（前歴加算の無い職種等を除く）。</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>初任給決定は同一職種の場合、一会計年度内において初回任用時のみ行われます。</li>
+        </ul>
+      </SectionCard>
+    </div>
+  );
+}
+
 function ShokyuSection() {
+  const { mode } = useStaffMode();
+  if (mode === 'sonota') return <KaikeiShokyuSection />;
   return (
     <div className="space-y-4">
       <SectionCard title="普通昇給">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-          <div className="p-4 rounded-xl bg-accent/5 text-center">
-            <p className="text-xs text-charcoal/40">昇給日</p>
-            <p className="text-lg font-bold text-accent">毎年1月1日</p>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">昇給日</p>
+            <p className="text-lg font-bold text-white">毎年1月1日</p>
           </div>
-          <div className="p-4 rounded-xl bg-accent/5 text-center">
-            <p className="text-xs text-charcoal/40">通常昇給</p>
-            <p className="text-lg font-bold text-accent">4号給</p>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">通常昇給</p>
+            <p className="text-lg font-bold text-white">4号給</p>
           </div>
-          <div className="p-4 rounded-xl bg-accent/5 text-center">
-            <p className="text-xs text-charcoal/40">部長級</p>
-            <p className="text-lg font-bold text-accent">1号給</p>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-xs text-white/70">部長級</p>
+            <p className="text-lg font-bold text-white">1号給</p>
           </div>
         </div>
         <p className="text-sm text-charcoal/60">
@@ -918,10 +1020,10 @@ function PaymentSection() {
   return (
     <div className="space-y-4">
       <SectionCard title="支給日">
-        <div className="p-4 rounded-xl bg-accent/5 text-center mb-4">
-          <p className="text-xs text-charcoal/40">毎月の給与支給日</p>
-          <p className="text-3xl font-bold text-accent mt-1">21日</p>
-          <p className="text-xs text-charcoal/40 mt-1">土曜・日曜・祝日の場合はその前日又は前々日</p>
+        <div className="p-4 rounded-xl bg-accent text-center mb-4">
+          <p className="text-xs text-white/70">毎月の給与支給日</p>
+          <p className="text-3xl font-bold text-white mt-1">21日</p>
+          <p className="text-xs text-white/70 mt-1">土曜・日曜・祝日の場合はその前日又は前々日</p>
         </div>
         <ul className="space-y-1 text-sm text-charcoal/60">
           <li>&bull; 新たに職員となった日から支給を開始し、退職した日をもって終了</li>

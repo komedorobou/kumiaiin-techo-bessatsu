@@ -253,11 +253,11 @@ function KasaiBasis() {
         <h2 className="text-lg font-bold text-charcoal mb-2">基本型契約の加入基準と最高限度</h2>
         <p className="text-xs text-charcoal/60 leading-relaxed mb-4">{kasaiCoverageBasis.intro}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div className="p-4 rounded-xl bg-accent/5 text-center">
-            <p className="text-sm font-bold text-accent">{kasaiCoverageBasis.building}</p>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-sm font-bold text-white">{kasaiCoverageBasis.building}</p>
           </div>
-          <div className="p-4 rounded-xl bg-accent/5 text-center">
-            <p className="text-sm font-bold text-accent">{kasaiCoverageBasis.household}</p>
+          <div className="p-4 rounded-xl bg-accent text-center">
+            <p className="text-sm font-bold text-white">{kasaiCoverageBasis.household}</p>
           </div>
         </div>
         <div className="text-xs text-charcoal/60 space-y-1 mb-6">
