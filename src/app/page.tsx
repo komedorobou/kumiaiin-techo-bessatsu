@@ -82,7 +82,7 @@ export default function Home() {
                   alt=""
                   width={64}
                   height={64}
-                  className="w-16 h-16 rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300"
+                  className="w-20 h-20 rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300"
                 />
                 <div>
                   <h2 className="text-lg font-semibold text-charcoal group-hover:text-accent transition-colors">
