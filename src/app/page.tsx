@@ -33,17 +33,6 @@ const features = [
     ),
   },
   {
-    href: '/insurance',
-    title: '共済ガイド',
-    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、組織共済（弔慰金）を確認できる。',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 37s13-6.5 13-16.5V9L20 4 7 9v11.5C7 30.5 20 37 20 37z" />
-        <path d="M15 20l3.5 3.5 7-7" strokeWidth="2" />
-      </svg>
-    ),
-  },
-  {
     href: '/allowances',
     title: '手当ガイド',
     description: '扶養・住居・通勤・賞与など各種手当の詳細。シミュレーター付き。',
@@ -53,6 +42,17 @@ const features = [
         <path d="M6 16h28M6 24h28" />
         <circle cx="20" cy="20" r="4" />
         <path d="M20 17.5v5M18 19h4" strokeWidth="1.2" />
+      </svg>
+    ),
+  },
+  {
+    href: '/insurance',
+    title: '共済ガイド',
+    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、組織共済（弔慰金）を確認できる。',
+    icon: (
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 37s13-6.5 13-16.5V9L20 4 7 9v11.5C7 30.5 20 37 20 37z" />
+        <path d="M15 20l3.5 3.5 7-7" strokeWidth="2" />
       </svg>
     ),
   },
