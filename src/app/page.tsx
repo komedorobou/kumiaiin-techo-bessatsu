@@ -46,14 +46,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden hero-pattern">
-        <div className="hero-geo" />
-
-        {/* Decorative shapes */}
-        <div className="absolute top-20 right-10 w-64 h-64 rounded-full border border-accent/[0.06] hidden lg:block" />
-        <div className="absolute top-40 right-32 w-32 h-32 rounded-full border border-accent/[0.08] hidden lg:block" />
-        <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-accent/[0.05] hidden lg:block" />
-        <div className="absolute top-28 left-1/4 w-3 h-3 rounded-full bg-accent/10 hidden lg:block" />
-        <div className="absolute top-48 right-1/3 w-2 h-2 rounded-full bg-accent/15 hidden lg:block" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-2xl">

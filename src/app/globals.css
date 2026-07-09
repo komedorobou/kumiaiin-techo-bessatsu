@@ -96,35 +96,6 @@ body {
     radial-gradient(circle at 60% 80%, rgba(27, 77, 79, 0.05) 0%, transparent 50%);
 }
 
-.hero-geo {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.hero-geo::before,
-.hero-geo::after {
-  content: '';
-  position: absolute;
-  border: 1px solid rgba(27, 77, 79, 0.08);
-  border-radius: 50%;
-}
-
-.hero-geo::before {
-  width: 500px;
-  height: 500px;
-  top: -100px;
-  right: -100px;
-}
-
-.hero-geo::after {
-  width: 300px;
-  height: 300px;
-  bottom: -50px;
-  left: -50px;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
