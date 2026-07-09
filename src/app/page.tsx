@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -77,57 +76,24 @@ const features = [
   },
 ];
 
-const BP = process.env.NODE_ENV === 'production' ? '/kumiaiin-techo-bessatsu' : '';
-
 export default function Home() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      v.pause();
-      return;
-    }
-    // iOS Safari対策: muted をプロパティでも立てて明示的に再生。低電力モードは初回タッチで再試行
-    v.muted = true;
-    const tryPlay = () => {
-      v.play().catch(() => {});
-    };
-    tryPlay();
-    const onTouch = () => {
-      tryPlay();
-      window.removeEventListener('touchstart', onTouch);
-    };
-    window.addEventListener('touchstart', onTouch, { passive: true });
-    const onVisible = () => {
-      if (!document.hidden) tryPlay();
-    };
-    document.addEventListener('visibilitychange', onVisible);
-    return () => {
-      window.removeEventListener('touchstart', onTouch);
-      document.removeEventListener('visibilitychange', onVisible);
-    };
-  }, []);
   return (
     <>
       <Header />
 
       {/* Hero: 固定・すりガラス液体の動画。スクロールでコンテンツが上に被さる */}
       <section className="fixed inset-0 z-0 overflow-hidden" aria-label="ヒーロー">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover [object-position:72%_center] sm:[object-position:center]"
-          src={`${BP}/hero/liquid.mp4`}
-          poster={`${BP}/hero/poster.jpg`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        />
+        {/* インク雲: コード生成（動画不使用・全端末で必ず動く） */}
+        <div className="absolute inset-0 cloud-field" aria-hidden="true">
+          <div className="cloud cloud-1" />
+          <div className="cloud cloud-2" />
+          <div className="cloud cloud-3" />
+          <div className="cloud cloud-4" />
+          <div className="cloud cloud-5" />
+          <div className="cloud cloud-6" />
+        </div>
         {/* 可読性: 左からの白フェード＋最下部の沈み */}
-        <div className="absolute inset-0 bg-gradient-to-r from-base/95 via-base/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-base/85 via-base/30 to-transparent sm:w-3/4" />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-base/70 to-transparent" />
 
         <div className="relative z-10 h-full flex items-center">
