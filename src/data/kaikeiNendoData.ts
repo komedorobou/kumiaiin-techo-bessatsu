@@ -93,6 +93,32 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
       '38.75時間＝フルタイム基準（週38時間45分）。30時間＝放課後児童支援員の規定労働時間。',
     ],
   },
+  {
+    id: 'jimu',
+    name: '一般事務員',
+    subtitle:
+      '行政事務全般（窓口業務・文書処理事務など）／月給パートタイム・週4日28時間の場合・地域手当11%込み',
+    rows: [
+      { year: 1, gokyu: 39, tableSalary: 250300, monthly: 200757 },
+      { year: 2, gokyu: 41, tableSalary: 253100, monthly: 203003 },
+      { year: 3, gokyu: 43, tableSalary: 255600, monthly: 205008 },
+      { year: 4, gokyu: 45, tableSalary: 258100, monthly: 207013 },
+      { year: 5, gokyu: 47, tableSalary: 260500, monthly: 208938 },
+      { year: 6, gokyu: 49, tableSalary: 262800, monthly: 210783 },
+      { year: 7, gokyu: 51, tableSalary: 265000, monthly: 212547 },
+      { year: 8, gokyu: 53, tableSalary: 267000, monthly: 214151 },
+      { year: 9, gokyu: 55, tableSalary: 269000, monthly: 215755 },
+      { year: 10, gokyu: 57, tableSalary: 271000, monthly: 217359 },
+    ],
+    notes: [
+      '初任給は会計年度任用職員給料表1の39号給（施行規則第3条・別表第2「一般事務員」）。',
+      '報酬額＝給料月額 × 1.11（地域手当11%・条例第4条）× 週勤務時間28 ÷ 38.75 を四捨五入（条例第13条第1項第1号）。',
+      '1年目（39号給）＝200,757円は岸和田市 会計年度任用職員採用試験案内（令和8年7月・週4日28時間勤務の場合）の公表実額と一致。',
+      '昇給は経験1年ごとに+2号給、上限9年（10年目で+18号の57号給）。施行規則第3条第2項第2号による。',
+      '勤務時間は配属先により週28〜31時間程度・週4〜5日。上表は週28時間の場合の額。',
+      '別ルートとして時給制の登録募集（事務等・時給1,434円）もあり。上表は採用試験による月給パートタイム。',
+    ],
+  },
 ];
 
 export const kaikeiNendoSource =
