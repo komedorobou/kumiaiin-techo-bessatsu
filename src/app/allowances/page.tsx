@@ -90,7 +90,7 @@ export default function AllowancesPage() {
 function SectionCard({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="glass-card-strong rounded-2xl p-5 sm:p-7 mb-4">
-      {title && <h3 className="text-base font-semibold text-charcoal mb-4">{title}</h3>}
+      {title && <h3 className="text-[16px] font-semibold text-charcoal mb-4">{title}</h3>}
       {children}
     </div>
   );
@@ -705,7 +705,7 @@ function OvertimeSection() {
           ].map((item) => (
             <div key={item.time} className="bg-white/60 rounded-xl p-3 text-center border border-gray-100">
               <div className="text-xs text-charcoal/70">{item.time}</div>
-              <div className="text-base font-bold text-accent mt-1">{item.amount}</div>
+              <div className="text-[16px] font-bold text-accent mt-1">{item.amount}</div>
             </div>
           ))}
         </div>
@@ -799,7 +799,7 @@ function TaishokuSection() {
     <div className="space-y-4">
       <SectionCard title="退職手当のしくみ">
         <div className="p-4 rounded-xl bg-accent text-center mb-4">
-          <p className="text-sm sm:text-base font-bold text-white">
+          <p className="text-sm sm:text-[16px] font-bold text-white">
             退職手当 ＝ 退職日の給料月額 × 支給率 ＋ 調整額
           </p>
         </div>

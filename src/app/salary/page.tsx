@@ -240,7 +240,7 @@ function SectionCard({
   return (
     <div className={`glass-card-strong rounded-2xl p-5 sm:p-7 ${className}`}>
       {title && (
-        <h3 className="text-base font-semibold text-charcoal mb-4 flex items-center gap-2">
+        <h3 className="text-[16px] font-semibold text-charcoal mb-4 flex items-center gap-2">
           {title}
         </h3>
       )}

@@ -12,7 +12,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="glass-tile w-9 h-9 rounded-xl flex items-center justify-center">
-              <span className="text-accent text-base font-bold leading-none">組</span>
+              <span className="text-accent text-[15px] font-bold leading-none">組</span>
             </div>
             <span className="text-sm font-semibold text-charcoal hidden sm:block group-hover:text-accent transition-colors">
               岸和田市職員労働組合

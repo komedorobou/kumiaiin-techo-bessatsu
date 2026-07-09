@@ -87,13 +87,13 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-2xl">
             <div className="animate-fade-in">
-              <p className="text-sm sm:text-base font-semibold text-accent/70 tracking-wide mb-3">
+              <p className="text-sm sm:text-[16px] font-semibold text-accent/70 tracking-wide mb-3">
                 岸和田市職員労働組合
               </p>
               <h1 className="text-3xl sm:text-5xl font-bold text-charcoal tracking-tight leading-tight">
                 組合員ポータル
               </h1>
-              <p className="mt-6 text-base sm:text-lg text-charcoal/70 leading-relaxed max-w-lg">
+              <p className="mt-6 text-[16px] sm:text-lg text-charcoal/70 leading-relaxed max-w-lg">
                 組合員手帳別冊のデジタル版。
                 <br className="hidden sm:block" />
                 給料・休暇・共済・規約の情報にすばやくアクセス。
