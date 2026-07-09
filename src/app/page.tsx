@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -76,21 +77,44 @@ const features = [
   },
 ];
 
+const BP = process.env.NODE_ENV === 'production' ? '/kumiaiin-techo-bessatsu' : '';
+
 export default function Home() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      videoRef.current?.pause();
+    }
+  }, []);
   return (
     <>
       <Header />
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden hero-pattern">
+      {/* Hero: 固定・すりガラス液体の動画。スクロールでコンテンツが上に被さる */}
+      <section className="fixed inset-0 z-0 overflow-hidden" aria-label="ヒーロー">
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover [object-position:72%_center] sm:[object-position:center]"
+          src={`${BP}/hero/liquid.mp4`}
+          poster={`${BP}/hero/poster.jpg`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
+        {/* 可読性: 左からの白フェード＋最下部の沈み */}
+        <div className="absolute inset-0 bg-gradient-to-r from-base/95 via-base/55 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-base/70 to-transparent" />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="max-w-2xl">
-            <div className="animate-fade-in">
-              <p className="text-sm sm:text-[16px] font-semibold text-accent/70 tracking-wide mb-3">
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
+            <div className="max-w-2xl animate-fade-in">
+              <p className="text-sm sm:text-[16px] font-semibold text-accent/80 tracking-wide mb-3">
                 岸和田市職員労働組合
               </p>
-              <h1 className="text-3xl sm:text-5xl font-bold text-charcoal tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-6xl font-bold text-charcoal tracking-tight leading-tight">
                 組合員ポータル
               </h1>
               <p className="mt-6 text-[16px] sm:text-lg text-charcoal/70 leading-relaxed max-w-lg">
@@ -101,10 +125,21 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* スクロールキュー */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-accent/60">
+          <span className="text-[11px] font-medium tracking-widest">SCROLL</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
+            <path d="M3 6l5 5 5-5" />
+          </svg>
+        </div>
       </section>
 
+      {/* ここから下がヒーローの上に被さってくる */}
+      <div className="relative z-10 mt-[100svh]">
       {/* Feature Cards */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 relative z-20 pb-24">
+      <section className="bg-base rounded-t-3xl shadow-[0_-24px_60px_-20px_rgba(27,77,79,0.35)] pt-12 pb-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {features.map((feature, i) => (
             <Link
@@ -136,9 +171,11 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        </div>
       </section>
 
       <Footer />
+      </div>
     </>
   );
 }
