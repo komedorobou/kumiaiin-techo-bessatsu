@@ -199,7 +199,7 @@ function KasaiAbout() {
 
         <h3 className="text-sm font-semibold text-charcoal mb-3">加入できる物件（建物・家財）― 組合員が居住する物件の加入が第一条件です</h3>
         <div className="overflow-x-auto -mx-2 mb-3">
-          <table className="w-full text-xs min-w-[560px]">
+          <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-2 px-3 text-charcoal/65 font-medium">所有者</th>
@@ -414,7 +414,7 @@ function JishinTable({ title, rows, label1, label2 }: { title: string; rows: Jis
     <div>
       <h3 className="text-sm font-semibold text-charcoal mb-3">{title}</h3>
       <div className="overflow-x-auto -mx-2">
-        <table className="w-full text-xs min-w-[640px]">
+        <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-gray-200 text-charcoal/65">
               <th className="text-left py-2 px-2 font-medium">破損割合</th>
@@ -557,7 +557,24 @@ function KasaiClaim() {
         </div>
 
         <h3 className="text-sm font-semibold text-charcoal mb-3">請求に必要な書類</h3>
-        <div className="overflow-x-auto -mx-2">
+        {/* スマホ: 事由ごとの必要書類リスト */}
+        <div className="sm:hidden space-y-4">
+          {kasaiDocRows.map((row) => (
+            <div key={row.event} className="border-b border-gray-100 pb-3">
+              <p className="text-xs font-semibold text-charcoal mb-1.5">{row.event}</p>
+              <div className="space-y-0.5">
+                {row.docs.map((d, j) =>
+                  d ? (
+                    <p key={j} className="text-xs text-charcoal/70">・{kasaiDocHeaders[j]}</p>
+                  ) : null
+                )}
+                {row.other && <p className="text-xs text-charcoal/60 mt-1">※ {row.other}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* PC: マトリクス表 */}
+        <div className="hidden sm:block overflow-x-auto -mx-2">
           <table className="w-full text-xs min-w-[680px]">
             <thead>
               <tr className="border-b border-gray-200 text-charcoal/65">
@@ -951,7 +968,7 @@ function ClaimSection() {
 
         <h3 className="text-sm font-semibold text-charcoal mb-3">そろえていただく書類</h3>
         <div className="overflow-x-auto -mx-2">
-          <table className="w-full text-sm min-w-[480px]">
+          <table className="w-full text-sm">
             <tbody>
               {claimDocuments.map((row, i) => (
                 <tr key={row.kind} className={`border-b border-gray-100 align-top ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>

@@ -352,6 +352,63 @@ function SubItemsList({ items }: { items: LeaveSubItem[] }) {
 
 /* ── データテーブル ── */
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
+  // 列数が多く行数が少ない横長表は、スマホでは転置して縦に表示する（横スクロールで埋まるのを防ぐ）
+  const wide = headers.length >= 8 && rows.length <= 3;
+  if (wide) {
+    return (
+      <div>
+        <span className="text-xs text-charcoal/65 font-medium">付与日数（採用月・任用月別）</span>
+        {/* スマホ: 転置表 */}
+        <div className="sm:hidden mt-1.5">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr>
+                <th className="py-1.5 px-2 text-left font-medium text-charcoal/70 border-b border-gray-200">{headers[0]}</th>
+                {rows.map((r, i) => (
+                  <th key={i} className="py-1.5 px-2 text-right font-medium text-charcoal/70 border-b border-gray-200">{r[0]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {headers.slice(1).map((h, i) => (
+                <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/40' : ''}>
+                  <td className="py-1.5 px-2 text-left font-medium text-charcoal/70 border-b border-gray-100">{h}</td>
+                  {rows.map((r, ri) => (
+                    <td key={ri} className="py-1.5 px-2 text-right text-charcoal/70 border-b border-gray-100">{r[i + 1]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* PC: 従来の横型 */}
+        <div className="hidden sm:block mt-1.5 overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+          <table className="min-w-full text-xs border-collapse">
+            <thead>
+              <tr>
+                {headers.map((h, i) => (
+                  <th key={i} className={`py-1.5 px-2 text-center font-medium text-charcoal/70 border-b border-gray-200 ${i === 0 ? 'text-left sticky left-0 bg-white/90 z-10' : ''}`}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} className={`py-1.5 px-2 text-center text-charcoal/70 border-b border-gray-100 ${ci === 0 ? 'text-left font-medium sticky left-0 bg-white/90 z-10' : ''}`}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <span className="text-xs text-charcoal/65 font-medium">付与日数（採用月・任用月別）</span>

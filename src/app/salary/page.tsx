@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { salaryTables, getSalary } from '@/data/salaryData';
 import {
@@ -133,11 +133,23 @@ function getPositionAddRate(position: PositionLevel, age: number): number {
 
 /* ===================== SVG Chart ===================== */
 function LineChart({ data }: { data: { label: string; value: number }[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [measuredW, setMeasuredW] = useState(800);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setMeasuredW(Math.max(300, el.clientWidth));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   if (data.length < 2) return null;
-  const W = 800;
+  // viewBox幅＝実描画幅にすることで、スマホでも文字が縮小されず読める
+  const W = measuredW;
   const H = 300;
-  const PAD_L = 70;
-  const PAD_R = 20;
+  const PAD_L = W < 500 ? 48 : 70;
+  const PAD_R = W < 500 ? 12 : 20;
   const PAD_T = 20;
   const PAD_B = 50;
   const chartW = W - PAD_L - PAD_R;
@@ -162,12 +174,13 @@ function LineChart({ data }: { data: { label: string; value: number }[] }) {
     minVal + (range / yTicks) * i
   );
 
-  // X-axis labels (show every N labels to avoid crowding)
-  const labelInterval = Math.max(1, Math.ceil(data.length / 10));
+  // X-axis labels (show every N labels to avoid crowding; narrow widths show fewer)
+  const maxLabels = Math.max(4, Math.floor(W / 80));
+  const labelInterval = Math.max(1, Math.ceil(data.length / maxLabels));
 
   return (
-    <div className="overflow-x-auto -mx-2">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full min-w-[500px]" preserveAspectRatio="xMidYMid meet">
+    <div ref={containerRef}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" preserveAspectRatio="xMidYMid meet">
         {/* Grid lines */}
         {yTickValues.map((v, i) => {
           const y = PAD_T + chartH - ((v - minVal) / range) * chartH;
@@ -719,7 +732,7 @@ export default function SalaryPage() {
         {/* Monthly Breakdown */}
         <SectionCard title="月収内訳" className="animate-fade-in-delay-2">
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[400px]">
+            <table className="w-full text-sm">
               <tbody>
                 {[
                   ['給料（基本給）', baseSalary],
@@ -731,14 +744,14 @@ export default function SalaryPage() {
                 ].map(([label, val], i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
                     <td className="py-3 px-3 text-charcoal/70">{label as string}</td>
-                    <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                    <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                       {(val as number).toLocaleString()}円
                     </td>
                   </tr>
                 ))}
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
                   <td className="py-3 px-3 font-semibold text-charcoal">月収合計</td>
-                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {monthlyTotal.toLocaleString()}円
                   </td>
                 </tr>
@@ -750,11 +763,11 @@ export default function SalaryPage() {
         {/* Bonus */}
         <SectionCard title="ボーナス（期末・勤勉手当）" className="animate-fade-in-delay-3">
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[400px]">
+            <table className="w-full text-sm">
               <tbody>
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">期末勤勉手当基礎額</td>
-                  <td className="py-3 px-3 text-right text-charcoal">
+                  <td className="py-3 px-3 text-right text-charcoal whitespace-nowrap">
                     {bonusBase.toLocaleString()}円
                   </td>
                 </tr>
@@ -771,7 +784,7 @@ export default function SalaryPage() {
                       （加算率{(positionAddRate * 100).toFixed(0)}%）
                     </span>
                   </td>
-                  <td className="py-3 px-3 text-right text-charcoal">
+                  <td className="py-3 px-3 text-right text-charcoal whitespace-nowrap">
                     {yakushokuKasanGaku.toLocaleString()}円
                   </td>
                 </tr>
@@ -780,7 +793,7 @@ export default function SalaryPage() {
                     期末手当（年額）
                     <span className="text-xs text-charcoal/65 ml-1">1.25 x 2回 = 2.5ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                     {kimatsuTeate.toLocaleString()}円
                   </td>
                 </tr>
@@ -789,13 +802,13 @@ export default function SalaryPage() {
                     勤勉手当（年額）
                     <span className="text-xs text-charcoal/65 ml-1">1.05 x 2回 = 2.1ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                     {kinbenTeate.toLocaleString()}円
                   </td>
                 </tr>
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
                   <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計</td>
-                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {bonusAnnual.toLocaleString()}円
                   </td>
                 </tr>
@@ -878,13 +891,13 @@ export default function SalaryPage() {
         {simulation.length > 0 && (
           <SectionCard title="年次シミュレーション結果" className="animate-fade-in-delay-3">
             <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm min-w-[550px]">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
+                    <th className="hidden sm:table-cell text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
                     <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年齢</th>
-                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">等級</th>
-                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">号給</th>
+                    <th className="hidden sm:table-cell text-left py-2 px-2 text-charcoal/65 font-medium text-xs">等級</th>
+                    <th className="hidden sm:table-cell text-left py-2 px-2 text-charcoal/65 font-medium text-xs">号給</th>
                     <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">給料月額</th>
                     <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">年収概算</th>
                   </tr>
@@ -909,7 +922,7 @@ export default function SalaryPage() {
                             : ''
                         }`}
                       >
-                        <td className="py-2 px-2 text-charcoal/60">
+                        <td className="hidden sm:table-cell py-2 px-2 text-charcoal/60">
                           {row.year === 0 ? '現在' : `+${row.year}年`}
                         </td>
                         <td className="py-2 px-2 text-charcoal/70 font-medium">
@@ -930,12 +943,12 @@ export default function SalaryPage() {
                             </span>
                           )}
                         </td>
-                        <td className="py-2 px-2 text-charcoal/70">{row.grade}級</td>
-                        <td className="py-2 px-2 text-charcoal/70">{row.step}号</td>
-                        <td className="py-2 px-2 text-right text-charcoal font-medium">
+                        <td className="hidden sm:table-cell py-2 px-2 text-charcoal/70">{row.grade}級</td>
+                        <td className="hidden sm:table-cell py-2 px-2 text-charcoal/70">{row.step}号</td>
+                        <td className="py-2 px-2 text-right text-charcoal font-medium whitespace-nowrap">
                           {row.monthlySalary.toLocaleString()}円
                         </td>
-                        <td className="py-2 px-2 text-right font-semibold text-accent">
+                        <td className="py-2 px-2 text-right font-semibold text-accent whitespace-nowrap">
                           {Math.round(row.annualIncome / 10000).toLocaleString()}万円
                         </td>
                       </tr>
@@ -1217,7 +1230,7 @@ function KaikeiSection() {
         {/* Monthly Breakdown */}
         <SectionCard title="月収内訳" className="animate-fade-in-delay-2">
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[400px]">
+            <table className="w-full text-sm">
               <tbody>
                 {[
                   [`月額報酬（${job.name}・${yearNum}年目${hours !== null ? `・週${hours}時間` : ''}）`, monthly],
@@ -1225,14 +1238,14 @@ function KaikeiSection() {
                 ].map(([label, val], i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
                     <td className="py-3 px-3 text-charcoal/70">{label as string}</td>
-                    <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                    <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                       {(val as number).toLocaleString()}円
                     </td>
                   </tr>
                 ))}
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
                   <td className="py-3 px-3 font-semibold text-charcoal">月収合計</td>
-                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {monthlyTotal.toLocaleString()}円
                   </td>
                 </tr>
@@ -1247,14 +1260,14 @@ function KaikeiSection() {
         {/* Bonus */}
         <SectionCard title="ボーナス（期末・勤勉手当）" className="animate-fade-in-delay-3">
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-sm min-w-[400px]">
+            <table className="w-full text-sm">
               <tbody>
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
                     6月期
                     <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                     {kimatsuTeate.toLocaleString()}円
                   </td>
                 </tr>
@@ -1263,13 +1276,13 @@ function KaikeiSection() {
                     12月期
                     <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal">
+                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
                     {kinbenTeate.toLocaleString()}円
                   </td>
                 </tr>
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
                   <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計（4.65ヶ月）</td>
-                  <td className="py-3 px-3 text-right font-bold text-accent text-lg">
+                  <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {bonusAnnual.toLocaleString()}円
                   </td>
                 </tr>
@@ -1297,10 +1310,10 @@ function KaikeiSection() {
         {simulation.length > 0 && (
           <SectionCard title="年次シミュレーション結果" className="animate-fade-in-delay-2">
             <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm min-w-[500px]">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
+                    <th className="hidden sm:table-cell text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
                     <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年齢</th>
                     <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">経験年数</th>
                     <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">月額報酬</th>
@@ -1317,7 +1330,7 @@ function KaikeiSection() {
                           isMax ? 'bg-amber-50' : i % 2 === 0 ? 'bg-gray-50/30' : ''
                         }`}
                       >
-                        <td className="py-2 px-2 text-charcoal/60">
+                        <td className="hidden sm:table-cell py-2 px-2 text-charcoal/60">
                           {row.year === 0 ? '現在' : `+${row.year}年`}
                         </td>
                         <td className="py-2 px-2 text-charcoal/70 font-medium">
@@ -1329,10 +1342,10 @@ function KaikeiSection() {
                           )}
                         </td>
                         <td className="py-2 px-2 text-charcoal/70">{row.expYear}年目{row.expYear === 10 ? '〜' : ''}</td>
-                        <td className="py-2 px-2 text-right text-charcoal font-medium">
+                        <td className="py-2 px-2 text-right text-charcoal font-medium whitespace-nowrap">
                           {row.monthlySalary.toLocaleString()}円
                         </td>
-                        <td className="py-2 px-2 text-right font-semibold text-accent">
+                        <td className="py-2 px-2 text-right font-semibold text-accent whitespace-nowrap">
                           {Math.round(row.annualIncome / 10000).toLocaleString()}万円
                         </td>
                       </tr>
@@ -1352,7 +1365,31 @@ function KaikeiSection() {
       {/* ==================== 任用条件 ==================== */}
       <div className="mt-10 space-y-6">
         <SectionCard title="任用条件（労働条件一覧表）" className="animate-fade-in-delay-3">
-          <div className="overflow-x-auto -mx-2">
+          {/* スマホ: 項目ごとのスタック表示（共通値は1つに畳む） */}
+          <div className="sm:hidden space-y-4">
+            {kaikeiEmploymentRows.map((row) => {
+              const allSame = row.values.every((v) => v === row.values[0]);
+              return (
+                <div key={row.label} className="border-b border-gray-100 pb-3">
+                  <p className="text-xs font-semibold text-charcoal mb-1.5">{row.label}</p>
+                  {allSame ? (
+                    <p className="text-sm text-charcoal/70 leading-relaxed">{row.values[0]}</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {row.values.map((v, j) => (
+                        <p key={j} className="text-sm text-charcoal/70 leading-relaxed">
+                          <span className="text-xs font-medium text-accent mr-1.5">{kaikeiEmploymentColumns[j]}</span>
+                          {v}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {/* PC: 従来の3分会テーブル */}
+          <div className="hidden sm:block overflow-x-auto -mx-2">
             <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-gray-200">
