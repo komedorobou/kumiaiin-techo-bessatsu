@@ -82,9 +82,31 @@ const BP = process.env.NODE_ENV === 'production' ? '/kumiaiin-techo-bessatsu' : 
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      videoRef.current?.pause();
+      v.pause();
+      return;
     }
+    // iOS Safari対策: muted をプロパティでも立てて明示的に再生。低電力モードは初回タッチで再試行
+    v.muted = true;
+    const tryPlay = () => {
+      v.play().catch(() => {});
+    };
+    tryPlay();
+    const onTouch = () => {
+      tryPlay();
+      window.removeEventListener('touchstart', onTouch);
+    };
+    window.addEventListener('touchstart', onTouch, { passive: true });
+    const onVisible = () => {
+      if (!document.hidden) tryPlay();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('touchstart', onTouch);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
   return (
     <>
