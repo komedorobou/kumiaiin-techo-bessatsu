@@ -78,7 +78,63 @@ const features = [
 ];
 
 export default function Home() {
-  // 雲はJS駆動: OSの視差軽減設定やCSSアニメ無効化の影響を受けず必ず動く
+  // 本体: WebGL流体シミュレーション（Navier-Stokes・物理演算）。失敗時は下の雲JSが背景を担う
+  useEffect(() => {
+    const container = document.getElementById('fluidContainer');
+    if (!container) return;
+    let fluid: { stop: () => void } | null = null;
+    let ambient: ReturnType<typeof setInterval> | null = null;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    (async () => {
+      try {
+        const mod = await import('webgl-fluid-enhanced');
+        const FluidClass = mod.default;
+        const f = new FluidClass(container as HTMLElement);
+        const lite = window.matchMedia('(max-width: 900px)').matches;
+        f.setConfig({
+          simResolution: lite ? 96 : 128,
+          dyeResolution: lite ? 512 : 1024,
+          densityDissipation: 0.32,
+          velocityDissipation: 0.22,
+          pressure: 0.8,
+          pressureIterations: lite ? 12 : 20,
+          curl: 26,
+          splatRadius: 0.28,
+          splatForce: 5200,
+          shading: true,
+          colorful: false,
+          colorPalette: ['#1B4D4F', '#2A6F72', '#3E8487', '#5D9496', '#A88652'],
+          hover: true,
+          backgroundColor: '#FAF9F4',
+          transparent: false,
+          brightness: 0.9,
+          bloom: false,
+          sunrays: false,
+        });
+        f.start();
+        fluid = f;
+        const wrap = document.getElementById('fluidWrap');
+        if (wrap) wrap.style.opacity = '1';
+        // 初手の見せ場: 開いた瞬間に墨が走る
+        timeouts.push(setTimeout(() => f.multipleSplats(6), 150));
+        timeouts.push(setTimeout(() => f.multipleSplats(4), 650));
+        timeouts.push(setTimeout(() => f.multipleSplats(3), 1400));
+        // 触らなくても生き続ける環境スプラット
+        ambient = setInterval(() => {
+          if (!document.hidden && window.scrollY < window.innerHeight) f.multipleSplats(2 + Math.floor(Math.random() * 2));
+        }, 3800);
+      } catch {
+        /* WebGL不可: JS雲フォールバックがそのまま見える */
+      }
+    })();
+    return () => {
+      timeouts.forEach(clearTimeout);
+      if (ambient) clearInterval(ambient);
+      fluid?.stop();
+    };
+  }, []);
+
+  // 雲はJS駆動: OSの視差軽減設定やCSSアニメ無効化の影響を受けず必ず動く（WebGL失敗時のフォールバック兼下地）
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>('.cloud'));
     if (nodes.length === 0) return;
@@ -126,11 +182,15 @@ export default function Home() {
           <div className="cloud cloud-5" />
           <div className="cloud cloud-6" />
         </div>
+        {/* 物理演算流体（Navier-Stokes）: 触ると墨が混ざる */}
+        <div id="fluidWrap" className="absolute inset-0 opacity-0 transition-opacity duration-700" aria-hidden="true">
+          <div id="fluidContainer" className="w-full h-full" />
+        </div>
         {/* 可読性: 左からの白フェード＋最下部の沈み */}
-        <div className="absolute inset-0 bg-gradient-to-r from-base/85 via-base/30 to-transparent sm:w-3/4" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-base/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-base/85 via-base/30 to-transparent sm:w-3/4 pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-base/70 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 h-full flex items-center">
+        <div className="relative z-10 h-full flex items-center pointer-events-none">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
             <div className="max-w-2xl animate-fade-in">
               <p className="text-sm sm:text-[16px] font-semibold text-accent/80 tracking-wide mb-3">
