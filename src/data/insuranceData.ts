@@ -1,310 +1,268 @@
 /**
- * 共済・保険データ
- * 元データ: 岸和田市職員労働組合 組合員手帳別冊 セット共済の章
- *
- * NOTE: PDFテキスト抽出で一部数値が欠落しているため、
- * 自治労連共済の一般的な保障内容に基づくデータを使用。
+ * セット共済データ（自治労連共済）
+ * 元データ: セット共済パンフレット（大阪自治労連事業本部・2024年4月版）
+ * 掛金・保障額はパンフレット記載の実額
  */
 
-export interface InsurancePlan {
+export interface SetKyosaiPlan {
   id: string;
   name: string;
-  monthlyPremium: number;
-  coverage: {
-    trafficDeath: number;      // 交通死亡（万円）
-    accidentDeath: number;     // 不慮死亡（万円）
-    normalDeath: number;       // 普通死亡（万円）
-    trafficHospital: number;   // 交通入院日額（円）
-    accidentHospital: number;  // 不慮入院日額（円）
-    normalHospital: number;    // 普通入院日額（円）
-    trafficOutpatient: number; // 交通通院日額（円）
-    accidentOutpatient: number;// 不慮通院日額（円）
-    disability: string;        // 障害保障
-    surgery: string;           // 手術見舞金
-  };
-  target: string;              // 対象者
-  recommended: string[];       // おすすめタグ
+  category: 'adult' | 'medical' | 'child';
+  monthly: number; // 月掛金（円）
+  // 入院保障（日額・円）: [病気・ケガ, がん※1, 不慮の事故, 交通事故]
+  hosp: [number, number, number, number];
+  // 通院保障（日額・円）: [病気, ケガ・不慮の事故※2, ギプス装着整骨院, 交通事故※3, 安静加療加算, 交通ギプス装着整骨院]
+  outp: [number, number, number, number, number, number];
+  // 死亡・重度障害（万円）: [病気・ケガ, 不慮の事故, 交通事故]
+  death: [number, number, number];
+  // 後遺障害（3級〜14級）: [病気・ケガ, 不慮の事故, 交通事故]
+  disability: [string, string, string];
+  surgery: number; // 手術見舞金（円）
+  u40: number; // サポートU40（年額・円）
 }
 
-export const insurancePlans: InsurancePlan[] = [
+export const setKyosaiPlans: SetKyosaiPlan[] = [
+  // ─── 大人のセット型（組合員本人・配偶者・19歳以上の子） ───
+  { id: 's1', name: '1型', category: 'adult', monthly: 11500, hosp: [10000, 14250, 18500, 33500], outp: [5000, 5000, 2500, 7500, 5000, 3750], death: [2500, 4000, 5000], disability: ['1,350万〜60万円', '2,700万〜120万円', '3,600万〜160万円'], surgery: 60000, u40: 18000 },
+  { id: 's2', name: '2型', category: 'adult', monthly: 10370, hosp: [9000, 13250, 17500, 29500], outp: [4500, 4500, 2250, 6000, 4500, 3000], death: [2250, 3600, 4400], disability: ['1,215万〜54万円', '2,430万〜108万円', '3,150万〜140万円'], surgery: 60000, u40: 16200 },
+  { id: 's3', name: '3型', category: 'adult', monthly: 9110, hosp: [9000, 12750, 16500, 28500], outp: [4500, 4500, 2250, 6000, 4500, 3000], death: [1840, 3100, 3900], disability: ['1,134万〜50万4千円', '2,268万〜100万8千円', '2,988万〜132万8千円'], surgery: 60000, u40: 13240 },
+  { id: 's4', name: '4型', category: 'adult', monthly: 8070, hosp: [7000, 10500, 14000, 23000], outp: [3500, 3500, 1750, 4500, 3500, 2250], death: [1710, 2800, 3400], disability: ['981万〜43万6千円', '1,962万〜87万2千円', '2,502万〜111万2千円'], surgery: 60000, u40: 12310 },
+  { id: 's5', name: '5型', category: 'adult', monthly: 6880, hosp: [6000, 8750, 11500, 20500], outp: [3000, 3000, 1500, 4500, 3000, 2250], death: [1500, 2400, 3000], disability: ['810万〜36万円', '1,620万〜72万円', '2,160万〜96万円'], surgery: 30000, u40: 10800 },
+  { id: 's6', name: '6型', category: 'adult', monthly: 5740, hosp: [4000, 6000, 8000, 14000], outp: [2000, 2000, 1000, 3000, 2000, 1500], death: [1300, 2200, 2600], disability: ['810万〜36万円', '1,620万〜72万円', '1,980万〜88万円'], surgery: 30000, u40: 9360 },
+  { id: 's7', name: '7型', category: 'adult', monthly: 4630, hosp: [5000, 7500, 10000, 16000], outp: [2500, 2500, 1250, 3000, 2500, 1500], death: [850, 1400, 1800], disability: ['495万〜22万円', '990万〜44万円', '1,350万〜60万円'], surgery: 60000, u40: 6120 },
+  { id: 's8', name: '8型', category: 'adult', monthly: 3330, hosp: [5000, 7250, 9500, 15500], outp: [2500, 2500, 1250, 3000, 2500, 1500], death: [500, 900, 1300], disability: ['360万〜16万円', '720万〜32万円', '1,080万〜48万円'], surgery: 30000, u40: 3600 },
+  { id: 's9', name: '9型', category: 'adult', monthly: 2230, hosp: [3000, 4500, 6000, 12000], outp: [1500, 1500, 750, 3000, 1500, 1500], death: [310, 600, 1000], disability: ['261万〜11万6千円', '522万〜23万2千円', '882万〜39万2千円'], surgery: 30000, u40: 2230 },
+  { id: 's10', name: '10型', category: 'adult', monthly: 1140, hosp: [2000, 3000, 4000, 7000], outp: [1000, 1000, 500, 1500, 1000, 750], death: [100, 200, 400], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 720 },
+  // ─── 医療特化プラン（大人のセット型） ───
+  { id: 'mA', name: 'A型', category: 'medical', monthly: 3280, hosp: [10000, 11000, 12000, 15000], outp: [5000, 5000, 2500, 1500, 5000, 750], death: [200, 300, 500], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 60000, u40: 1440 },
+  { id: 'mB', name: 'B型', category: 'medical', monthly: 2860, hosp: [8000, 9000, 10000, 13000], outp: [4000, 4000, 2000, 1500, 4000, 750], death: [200, 300, 500], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 60000, u40: 1440 },
+  { id: 'mC', name: 'C型', category: 'medical', monthly: 2050, hosp: [5000, 6000, 7000, 10000], outp: [2500, 2500, 1250, 1500, 2500, 750], death: [200, 300, 500], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 1440 },
+  { id: 'mD', name: 'D型', category: 'medical', monthly: 1840, hosp: [4000, 5000, 6000, 9000], outp: [2000, 2000, 1000, 1500, 2000, 750], death: [200, 300, 500], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 1440 },
+  { id: 'mE', name: 'E型', category: 'medical', monthly: 1630, hosp: [3000, 4000, 5000, 8000], outp: [1500, 1500, 750, 1500, 1500, 750], death: [200, 300, 500], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 1440 },
+  // ─── 子どものセット型（18歳まで） ───
+  { id: 'c1', name: 'C1型', category: 'child', monthly: 2830, hosp: [5000, 7500, 10000, 22000], outp: [2500, 2500, 1250, 6000, 2500, 3000], death: [500, 800, 1600], disability: ['270万〜12万円', '540万〜24万円', '1,260万〜56万円'], surgery: 60000, u40: 1800 },
+  { id: 'c2', name: 'C2型', category: 'child', monthly: 1690, hosp: [3000, 4500, 6000, 15000], outp: [1500, 1500, 750, 4500, 1500, 2250], death: [300, 400, 1000], disability: ['90万〜4万円', '180万〜8万円', '720万〜32万円'], surgery: 30000, u40: 1080 },
+  { id: 'c3', name: 'C3型', category: 'child', monthly: 960, hosp: [2000, 3000, 4000, 7000], outp: [1000, 1000, 500, 1500, 1000, 750], death: [100, 200, 400], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 360 },
+  { id: 'c4', name: 'C4型', category: 'child', monthly: 710, hosp: [1000, 1500, 2000, 5000], outp: [500, 500, 250, 1500, 500, 750], death: [100, 200, 400], disability: ['90万〜4万円', '180万〜8万円', '360万〜16万円'], surgery: 30000, u40: 360 },
+];
+
+export const planCategories = [
+  { id: 'adult', label: '大人のセット型（1〜10型）', note: '年齢が60歳までの組合員・配偶者・19歳以上の子が加入できます。' },
+  { id: 'medical', label: '医療特化プラン（A〜E型）', note: '大人のセット型のうち、死亡保障を抑えて入院・通院保障に特化したプランです。' },
+  { id: 'child', label: '子どものセット型（C1〜C4型）', note: '年齢が18歳までの子どもが加入できます。0歳はC3・C4型のみ加入できます。' },
+] as const;
+
+export const planTableNotes = [
+  '※1 がんは「悪性がん」で生検以降の入院期間が給付対象（1日〜180日）。上皮内がん、異形成、下垂体腺腫、筋腫、血管腫、子宮頸部0期、子宮内膜症、脂肪腫、腺腫、大腸粘膜内癌、脳腫瘍（良性）、肉芽腫、平滑筋腫、ページェット病、ボーエン病、ポリープ、囊胞のう腫、その他これに類する疾病は給付対象となりません。',
+  '※2 鎖骨、肋骨、脊椎、骨盤骨、上肢・下肢（ともに指除く）における骨折、脱臼、腱断裂の場合、安静加療期間は不要です（ただし、ギプス装着期間がある場合、接骨院・整骨院への通院は除く）。',
+  '※3 交通事故の保障は、事故日から180日目までの入院・通院（整骨院・整骨院含む）。ギプス装着期間の合計180日が限度です。',
+  '※4 手術見舞金は、共済契約の申込日以降に初めて発病した病気を原因として、効力発生日以降に受けた手術（自治労連共済規定の手術）を対象に給付します（入院しない場合も給付）。',
+  '◆交通事故死亡共済金は交通災害共済による入・通院給付金を含んだ支払金額です。',
+  '●組合員本人の加入が条件です。効力発生日の年齢でご確認ください。',
+  '●加入中に健康告知に該当しても現契約で継続できます。',
+  '●ドナー見舞金もあります: 被共済者が臓器移植のドナー（臓器提供者）となった場合、病気入院日額10日分を給付。',
+];
+
+// 61歳〜65歳未満の継続加入
+export const seniorContinuation =
+  '60歳までに加入した方は、61歳から65歳未満まで継続加入できます。加入できる型は7・8・9・10・C・D・E型です（61歳以上の新規加入はできません）。';
+
+// 慢性疾患に罹患している子どもの型の移行表（19歳から移行できる型）
+export const childTransition = [
+  { from: 'C1型', to: '8型・9型・10型・C型・D型・E型' },
+  { from: 'C2型', to: '9型・10型・E型' },
+  { from: 'C3型', to: '10型' },
+  { from: 'C4型', to: '10型' },
+];
+
+// サポートU40
+export const supportU40 = {
+  description:
+    '若年層の掛金負担を軽減する制度です。対象は所属する組合の効力開始日において40歳以下の組合員、配偶者、子どもで、加入している型に応じた年額が還元されます。',
+  example:
+    '例）父: セット1型で18,000円/年、母: セット5型で10,800円/年、子: C1型で1,800円/年 → 家族で合計30,600円/年のプレゼント',
+};
+
+/* ==================== 特徴（あなたを支える安心のサポート） ==================== */
+
+export const kyosaiFeatures = [
+  { title: '掛金の70%を給付に', detail: '自治労連のセット共済は「もうけ」を必要としない組合の共済（たすけあい）。70%が給付にあてられ、剰余金がでれば加入者に還元されます。民間生保では集めた保険料の80%近くが宣伝費や株主配当・利益などに充てられ、給付は10〜20%しか充てられません。' },
+  { title: '掛金は年齢・性別に関係なく一律', detail: '40歳以下の方には、さらに掛金負担の軽減となるおトクな「サポートU40」があります。' },
+  { title: '必要な保障を自由に選択', detail: '家族それぞれのライフステージに合わせて、満期継続時に保障の見直しができます。お子さんの成長に合わせてお選びください。' },
+  { title: '日帰りから長期入院まで保障', detail: '入院は日帰りから1共済期間180日の長期入院まで保障します。' },
+  { title: '通院だけでも保障', detail: '入院していなくても、医師より連続5日以上の安静加療が必要と診断された場合、1共済期間90日を限度に病気・ケガを問わず通院だけでも保障します。' },
+  { title: '病気後遺障害も保障', detail: '労働能力等の喪失の程度に応じて、労基法の身体障害等級の1級から14級まで保障します。' },
+  { title: '慢性疾患でも継続加入OK', detail: '加入後に慢性疾患になっても、同じセット型なら継続加入できます。もちろん、慢性疾患の病気も含めて同じ保障が受けられます。' },
+  { title: '診断書料も補助', detail: '1共済期間、1通5,000円の診断書料補助を2通まで保障します。' },
+];
+
+/* ==================== 加入にあたって知っておきたいこと ==================== */
+
+export const enrollmentRules = [
   {
-    id: 'type1',
-    name: '1型',
-    monthlyPremium: 1200,
-    coverage: {
-      trafficDeath: 1170,
-      accidentDeath: 670,
-      normalDeath: 400,
-      trafficHospital: 7000,
-      accidentHospital: 5000,
-      normalHospital: 3500,
-      trafficOutpatient: 2000,
-      accidentOutpatient: 1500,
-      disability: '交通: 最高1,170万円 / 不慮: 最高670万円',
-      surgery: '入院を伴う手術: 50,000円',
-    },
-    target: '本人・配偶者・18歳以上の子',
-    recommended: ['充実保障', '一人暮らし'],
+    title: '加入できる人',
+    detail:
+      '組合員とその配偶者、子ども。配偶者と子どもの加入は組合員本人の加入が条件となります。「健康告知」や「重度障害」に該当しない人が対象です。組合員本人が健康告知に該当して加入できない場合に限って、該当しない配偶者・子どものみ加入できます（「新規加入申込書」に加えて「家族加入申請書」を添付）。',
   },
   {
-    id: 'type2',
-    name: '2型',
-    monthlyPremium: 1800,
-    coverage: {
-      trafficDeath: 1760,
-      accidentDeath: 1010,
-      normalDeath: 600,
-      trafficHospital: 10000,
-      accidentHospital: 7500,
-      normalHospital: 5000,
-      trafficOutpatient: 3000,
-      accidentOutpatient: 2000,
-      disability: '交通: 最高1,760万円 / 不慮: 最高1,010万円',
-      surgery: '入院を伴う手術: 50,000円',
-    },
-    target: '本人・配偶者・18歳以上の子',
-    recommended: ['おすすめ', '家族持ち'],
+    title: '加入できる年齢',
+    detail:
+      '効力開始日の年齢が0歳から60歳までの人。61歳以上の方は新規加入できません。60歳までに加入された方は61歳から65歳未満まで継続加入できます（ただし加入型は7・8・9・10・C・D・E型に限定）。0歳の子どもが加入できるセット型はC3・C4型です。',
+  },
+  { title: '共済期間', detail: '共済期間は1年間です。期間内の中途変更・解約はできません。' },
+  { title: '年末所得税控除は対象外', detail: '自治労連共済は労働組合が労働組合法により自主的に行う共済なので、年末所得税控除の対象となりません。' },
+  {
+    title: '二重加入について',
+    detail:
+      '夫婦ともに自治労連組合員の場合は、自治労連共済での被共済者の二重加入はできません。①夫婦の場合はそれぞれが所属する自治労連加盟の組合で加入してください。②子どもを加入させる場合は夫婦どちらか一方で加入してください。',
   },
   {
-    id: 'type3',
-    name: '3型',
-    monthlyPremium: 2600,
-    coverage: {
-      trafficDeath: 2340,
-      accidentDeath: 1340,
-      normalDeath: 800,
-      trafficHospital: 14000,
-      accidentHospital: 10000,
-      normalHospital: 7000,
-      trafficOutpatient: 4000,
-      accidentOutpatient: 3000,
-      disability: '交通: 最高2,340万円 / 不慮: 最高1,340万円',
-      surgery: '入院を伴う手術: 50,000円',
-    },
-    target: '本人・配偶者・18歳以上の子',
-    recommended: ['手厚い保障'],
+    title: '個人還元金',
+    detail:
+      '決算して剰余金が生じた場合は、加入者に割り戻されます。自治労連共済事業年度（6月〜5月）における給付額が144,000円を超える人を除きます。',
   },
   {
-    id: 'typeA',
-    name: 'A型',
-    monthlyPremium: 600,
-    coverage: {
-      trafficDeath: 500,
-      accidentDeath: 300,
-      normalDeath: 200,
-      trafficHospital: 3000,
-      accidentHospital: 2000,
-      normalHospital: 1500,
-      trafficOutpatient: 1000,
-      accidentOutpatient: 500,
-      disability: '交通: 最高500万円 / 不慮: 最高300万円',
-      surgery: '入院を伴う手術: 30,000円',
-    },
-    target: '本人・配偶者・18歳以上の子（60歳以上可）',
-    recommended: ['シニア向け', 'お手頃'],
-  },
-  {
-    id: 'typeB',
-    name: 'B型',
-    monthlyPremium: 300,
-    coverage: {
-      trafficDeath: 250,
-      accidentDeath: 150,
-      normalDeath: 100,
-      trafficHospital: 1500,
-      accidentHospital: 1000,
-      normalHospital: 750,
-      trafficOutpatient: 500,
-      accidentOutpatient: 250,
-      disability: '交通: 最高250万円 / 不慮: 最高150万円',
-      surgery: '入院を伴う手術: 20,000円',
-    },
-    target: '本人・配偶者・18歳以上の子（60歳以上可）',
-    recommended: ['最小限', 'シニア向け'],
-  },
-  {
-    id: 'typeC',
-    name: 'C型',
-    monthlyPremium: 350,
-    coverage: {
-      trafficDeath: 300,
-      accidentDeath: 200,
-      normalDeath: 100,
-      trafficHospital: 2000,
-      accidentHospital: 1500,
-      normalHospital: 1000,
-      trafficOutpatient: 500,
-      accidentOutpatient: 300,
-      disability: '交通: 最高300万円 / 不慮: 最高200万円',
-      surgery: '入院を伴う手術: 20,000円',
-    },
-    target: '本人・配偶者・18歳以上の子（60歳以上可）',
-    recommended: ['シニア向け'],
-  },
-  {
-    id: 'typeD',
-    name: 'D型',
-    monthlyPremium: 200,
-    coverage: {
-      trafficDeath: 200,
-      accidentDeath: 100,
-      normalDeath: 50,
-      trafficHospital: 1000,
-      accidentHospital: 700,
-      normalHospital: 500,
-      trafficOutpatient: 300,
-      accidentOutpatient: 200,
-      disability: '交通: 最高200万円 / 不慮: 最高100万円',
-      surgery: 'なし',
-    },
-    target: '本人・配偶者・18歳以上の子（60歳以上可）',
-    recommended: ['最小限'],
-  },
-  {
-    id: 'typeE',
-    name: 'E型',
-    monthlyPremium: 150,
-    coverage: {
-      trafficDeath: 150,
-      accidentDeath: 70,
-      normalDeath: 30,
-      trafficHospital: 700,
-      accidentHospital: 500,
-      normalHospital: 300,
-      trafficOutpatient: 200,
-      accidentOutpatient: 100,
-      disability: '交通: 最高150万円 / 不慮: 最高70万円',
-      surgery: 'なし',
-    },
-    target: '本人・配偶者・18歳以上の子（60歳以上可）',
-    recommended: ['最小限'],
+    title: '退職される時',
+    detail:
+      '退職後は、既往症にかかわりなく、セット共済からシニア共済に移行できます（4月1日時点で満80歳のシニア共済加入者は「医療終身型」が選択できます）。',
   },
 ];
 
-// 子供用プラン
-export const childPlans: InsurancePlan[] = [
+/* ==================== 健康告知 ==================== */
+
+export const healthNoticeIntro =
+  '申込時には必ず健康告知チェックシートによる申告が必要です。右記の項目のいずれか1つでも該当すれば、加入はできません。申告内容が事実と異なる場合には契約が無効となり、共済金はお支払いできません。';
+
+export const healthNoticeItems = [
+  '申込日に慢性疾患（別記）に罹患している人。※慢性疾患により以前治療を受けていた方、ならびに経過観察中の方も含みます。かつて診断された人・罹患したことのある人・定期的に通院されている人が加入（または増口）される場合、医師の「完治証明書」が必要となります。',
+  '病気やケガ（軽い風邪や軽度のケガは除く）のため、申込日に休業または安静加療をしている人（休業・安静加療を要すると診断されている人を含む）。',
+  '病気やケガのため、申込日の前日から起算して30日の間に、通算して14日以上の休業または安静加療をした人。',
+  '病気やケガのため、申込日の前日から起算して180日の間に、連続して14日以上の休業または安静加療をした人。',
+  '病気やケガのため、申込日の前日から起算して1年間に、連続して30日以上の休業または安静加療をした人。',
+  '病気やケガのため、申込日の前日から起算して1年間に、開頭、開腹、開胸、または腹腔鏡等の手術を受けたことがある人。',
+  '0歳は上記に加えて、①生まれる前や生まれてすぐの退院前の時点での加入はできません ②先天性疾患等の診断をすでに受けていた場合、慢性疾患にあたる疾患なら加入できません ③先天性疾患等が原因での病気後遺障害保障は受けられません。',
+];
+
+export const healthTerms = [
   {
-    id: 'typeC1',
-    name: 'C1型（子供用）',
-    monthlyPremium: 100,
-    coverage: {
-      trafficDeath: 100,
-      accidentDeath: 60,
-      normalDeath: 30,
-      trafficHospital: 1000,
-      accidentHospital: 700,
-      normalHospital: 500,
-      trafficOutpatient: 300,
-      accidentOutpatient: 200,
-      disability: '交通: 最高100万円 / 不慮: 最高60万円',
-      surgery: 'なし',
-    },
-    target: '18歳未満の子',
-    recommended: ['子供向け'],
+    term: '安静加療とは',
+    detail: '入院しなくとも自宅においてその傷病の治癒に向け安静を保つ必要のあること。',
   },
   {
-    id: 'typeC2',
-    name: 'C2型（子供用）',
-    monthlyPremium: 200,
-    coverage: {
-      trafficDeath: 200,
-      accidentDeath: 120,
-      normalDeath: 60,
-      trafficHospital: 2000,
-      accidentHospital: 1400,
-      normalHospital: 1000,
-      trafficOutpatient: 600,
-      accidentOutpatient: 400,
-      disability: '交通: 最高200万円 / 不慮: 最高120万円',
-      surgery: '入院を伴う手術: 20,000円',
-    },
-    target: '18歳未満の子',
-    recommended: ['子供向け', 'おすすめ'],
+    term: '慢性疾患とは',
+    detail:
+      '①新生物（がん・ポリープの一部・肉腫・白血病・良性腫瘍の一部など） ②高血圧症 ③心疾患（心臓病など） ④脳血管疾患（脳出血・脳血栓症・脳軟化症など） ⑤糖尿病・肝臓病・すい臓病・腎臓病（腎炎・人工透析）・ネフローゼ、肺疾患（肺炎・肺結核など） ⑥精神疾患（うつ病など）およびアルコール依存症・統合失調症など ⑦骨髄および神経の疾患（骨髄炎・骨膜炎・脳性麻痺など） ⑧血管および血液の疾患（血友病・脾臓疾患・動脈硬化症・動脈瘤・血栓症など） ⑨その他上記に相当すると認められる疾患。',
+  },
+  {
+    term: '不慮の事故とは',
+    detail:
+      '急激、偶然かつ外因性による事故をいいます。（1）急激とは、事故から傷害の発生までの経過が直接的で時間的感覚のないこと（慢性、反復性または持続性が認められるものは含まない） （2）偶然とは、事故の発生または事故による傷害の発生が被共済者にとって予見できないこと （3）外因とは、事故および事故の原因が被共済者の身体の外部から作用すること。ただし、モーターボート・スキューバダイビング・フリークライミング・バンジージャンプ・スカイダイビング・パラグライダー・銃を使用する狩猟・車両等による競技・興行・試運転（いずれも練習を含む）など、危険性の高い運動行為への参加は不慮の事故扱いから除外されます。',
+  },
+  {
+    term: '後遺障害とは',
+    detail:
+      '労働基準法施行規則別表第二「身体障害等級表」1〜14級に該当する障害をいいます。重度障害はそのうち1級、2級および3級の2・3・4をいいます（身体障害者手帳に記載されている等級とは異なります）。重度障害に該当して共済金が支払われても、組合員であれば3共済期間、医療共済（入・通院保障）を継続することができます。その間、家族も現契約で継続できます。',
   },
 ];
 
-export interface DiagnosisQuestion {
-  id: string;
-  question: string;
-  options: {
-    label: string;
-    value: string;
-    next?: string;
-  }[];
-}
+export const notChronicDiseases = [
+  '高尿酸血症（痛風）', '高脂血症', '痔', '前立腺肥大症',
+  '喘息（気管支・アトピーアレルギー性）', 'アトピー性皮膚炎', '椎間板ヘルニア', '緑内障・白内障',
+  '尿管結石・腎結石・胆石', '橋本病', 'バセドウ病', '十二指腸潰瘍',
+];
 
-export const diagnosisQuestions: DiagnosisQuestion[] = [
+export const chronicDiseases = [
+  '糖尿病', '高血圧症', '不整脈', '子宮内膜症',
+  '卵巣のう腫', '脂肪肝', '大腸ポリープ', 'てんかん',
+  '染色体異常', '潰瘍性大腸炎', '自律神経失調症', '適応障害',
+];
+
+/* ==================== 給付の手続き ==================== */
+
+export const claimSteps = [
+  'ケガや病気になったら、組合へ連絡を。交通事故にあったら、すぐ警察へ！自転車・バイクの自損事故の場合でも警察に届け出てください。ケガや不慮事故、交通事故の事故報告書は速やかに。',
+  '共済金支払請求書と必要書類をそろえて組合へ提出。',
+  '給付金の給付明細書をお届けします。',
+];
+
+export const claimDocuments = [
   {
-    id: 'q1',
-    question: '加入されるのはどなたですか？',
-    options: [
-      { label: '本人', value: 'self', next: 'q2' },
-      { label: '配偶者', value: 'spouse', next: 'q2' },
-      { label: '子供（18歳未満）', value: 'child_under18', next: 'q_child' },
-      { label: '子供（18歳以上）', value: 'child_over18', next: 'q2' },
+    kind: '入院・通院',
+    docs: ['当共済会所定の診断書', 'ケガ・不慮の事故の場合: 事故報告書', '交通事故の場合: 交通事故証明書、事故報告書'],
+  },
+  {
+    kind: '死亡',
+    docs: [
+      '死亡診断書または死体検案書（コピー可）',
+      '共済金受取人と亡くなられた方の関係がわかる戸籍謄本',
+      '共済金受取人の印鑑証明書',
+      'ケガ・不慮の事故の場合: 事故報告書',
+      '交通事故の場合: 交通事故証明書、事故報告書',
     ],
   },
   {
-    id: 'q2',
-    question: '年齢をお選びください。',
-    options: [
-      { label: '59歳以下', value: 'under60', next: 'q3' },
-      { label: '60歳以上', value: 'over60', next: 'q3_senior' },
-    ],
-  },
-  {
-    id: 'q3',
-    question: 'どの程度の保障を希望しますか？',
-    options: [
-      { label: '手厚く備えたい', value: 'full' },
-      { label: 'バランス重視', value: 'balanced' },
-      { label: '最低限でよい', value: 'minimum' },
-    ],
-  },
-  {
-    id: 'q3_senior',
-    question: 'どの程度の保障を希望しますか？',
-    options: [
-      { label: 'しっかり備えたい', value: 'full_senior' },
-      { label: '標準的な保障', value: 'balanced_senior' },
-      { label: '最低限でよい', value: 'minimum_senior' },
-    ],
-  },
-  {
-    id: 'q_child',
-    question: 'お子様の保障レベルを選んでください。',
-    options: [
-      { label: '標準', value: 'child_standard' },
-      { label: '手厚く', value: 'child_full' },
+    kind: '後遺障害',
+    docs: [
+      '当共済会所定の後遺障害診断書',
+      'ケガ・不慮の事故の場合: 事故報告書',
+      '交通事故の場合: 交通事故証明書、事故報告書',
+      '公的証明書（自賠責保険の「後遺障害等級認定票」の写し等）',
     ],
   },
 ];
 
-export function getRecommendedPlans(answers: Record<string, string>): InsurancePlan[] {
-  const person = answers.q1;
+export const claimNotes = [
+  '事故報告書・診断書は、当共済会所定の用紙を使用してください。',
+  '診断書料補助として1共済期間2通を限度に1通5,000円をお支払いします。',
+  '上記以外で必要な書類を求める場合があります。',
+  '給付は、自治労連共済規約にもとづきお支払いします。必要に応じて調査する場合は、お支払いまでに時間をいただく場合があります。',
+];
 
-  if (person === 'child_under18') {
-    if (answers.q_child === 'child_full') {
-      return [childPlans[1], childPlans[0]];
-    }
-    return [childPlans[0], childPlans[1]];
-  }
+export const claimExclusionsCommon = [
+  '被共済者または共済金受取人の犯罪行為によって、共済金請求事由が発生したもの',
+  '共済契約者の故意・重大な過失によって、被共済者を死亡させたり、病気・ケガをさせたとき',
+  '美容整形、健康保険適用外の検査入院、正常分娩、疾病を直接の原因としない不妊手術等の入院・通院',
+  '病気・ケガの発生日から1年を経過した日以後に初めて入院したリハビリ入院',
+  'アルコール依存症による2回目以降の入院・通院',
+  '麻薬、あへん、大麻または覚醒剤等の使用による入院・通院',
+  '戦争、その他の変乱によるとき',
+  '共済金請求事由発生の日から3年間、共済金の請求をしなかったとき（時効）',
+  '共済契約の申込日前に発病した病気の治療を目的として手術を受けた場合で、共済契約の効力発生日から起算して2年を経過せずに受けた手術',
+  '初めての効力発生日（増口の場合も含む）より前にすでに罹患していた病気・ケガを原因として後遺障害になったとき（死亡または重度障害となったときは死亡共済金を支払うが、効力発生日から60日以内は70%、180日以内は50%、1年以内は30%削減）',
+  '自殺および故意、または重大な過失により後遺障害になったとき（死亡または重度障害となったときは死亡共済金を支払うが、初めての効力発生日から満1年以内の自殺および故意・重大な過失による死亡（重度障害）は50%削減）',
+  '被共済者の闘争行為によって後遺障害となったとき',
+];
 
-  const isOver60 = answers.q2 === 'over60';
-  const level = answers.q3 || answers.q3_senior || '';
+export const claimExclusionsAccident = [
+  '初めての効力発生日より前にすでに罹患していた傷害を原因として入院したとき',
+  '自殺および故意または重大な過失がもとで入院したとき',
+  '被共済者の闘争行為による入院',
+  '歩行中、自転車搭乗中に、信号のある踏切を信号を無視して立ち入った場合、歩行中の交通機関への飛び乗り、飛び降りをした場合など',
+  '事故日から2年経過後の入院',
+];
 
-  if (isOver60) {
-    if (level.includes('full')) return [insurancePlans.find(p => p.id === 'typeA')!, insurancePlans.find(p => p.id === 'typeC')!];
-    if (level.includes('balanced')) return [insurancePlans.find(p => p.id === 'typeC')!, insurancePlans.find(p => p.id === 'typeB')!];
-    return [insurancePlans.find(p => p.id === 'typeD')!, insurancePlans.find(p => p.id === 'typeE')!];
-  }
+export const claimExclusionsTraffic = [
+  '無免許運転、飲酒運転、違法薬物服用時の運転（同乗者も含む）',
+  '最高速度違反、信号無視、未整備車、違法改造車の運転（運転者のみ）',
+  'ハイヤー・タクシーの運転中',
+  '被共済者である親族が、職業運転手（運輸・運送業等）である場合の職業上の運転',
+  '地震、噴火、津波、洪水、暴風雨等、その他これらに類する天災',
+  '頸部症候群（いわゆる「むち打ち症」）、または腰・背痛で他覚症状のないもの',
+  '海外における交通事故',
+  '交通事故証明書の提出がない場合',
+];
 
-  if (level === 'full') return [insurancePlans[2], insurancePlans[1]];
-  if (level === 'balanced') return [insurancePlans[1], insurancePlans[0]];
-  return [insurancePlans[0], insurancePlans.find(p => p.id === 'typeA')!];
-}
+export const sekkotsuinNotes = [
+  '不慮事故の場合、医師による連続5日以上の安静加療指示（要診断書）後の同一部位・同一傷害に対する通院が対象。',
+  '交通事故の場合、医師による診断後（要診断書）の同一部位・同一傷害に対する通院が対象。交通事故の場合、安静加療期間は不要。',
+  '鍼灸院、カイロプラクティック等は、病院または診療所に準じる扱いにはなりません。',
+];
 
-// 共済規程（慶弔見舞金）
+export const kyosaiContact =
+  '詳細は組合事務所へお問い合わせください。発行: 大阪自治労連事業本部（大阪市北区天神橋1-13-15 大阪グリーン会館4階 TEL 06-6354-7223）';
+
+/* ==================== 共済規程（慶弔見舞金） ==================== */
+
 export const mutualAidBenefits = [
   { event: '組合員が結婚したとき', amount: '30,000円' },
   { event: '組合員又は配偶者が出産したとき', amount: '10,000円' },

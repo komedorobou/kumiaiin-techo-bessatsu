@@ -34,8 +34,8 @@ const features = [
   },
   {
     href: '/insurance',
-    title: '共済かんたん診断',
-    description: '質問に答えるだけで最適なセット共済プランを提案。保障内容も比較できる。',
+    title: 'セット共済',
+    description: '自治労連セット共済の全プラン比較・加入条件・健康告知・給付手続きを確認できる。',
     icon: (
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 37s13-6.5 13-16.5V9L20 4 7 9v11.5C7 30.5 20 37 20 37z" />
