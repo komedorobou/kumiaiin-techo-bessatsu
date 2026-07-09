@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -77,6 +78,39 @@ const features = [
 ];
 
 export default function Home() {
+  // 雲はJS駆動: OSの視差軽減設定やCSSアニメ無効化の影響を受けず必ず動く
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.cloud'));
+    if (nodes.length === 0) return;
+    const params = nodes.map((_, i) => ({
+      ax: 4 + (i % 3) * 1.6,           // 振幅(vmax相当のpx換算は下で)
+      ay: 3 + ((i + 1) % 3) * 1.4,
+      sx: 0.16 + i * 0.03,            // 角速度
+      sy: 0.12 + i * 0.035,
+      ph: i * 1.7,
+      rot: (i % 2 === 0 ? 1 : -1) * (2 + i),
+      sc: 0.08 + (i % 3) * 0.03,
+    }));
+    const vmax = Math.max(window.innerWidth, window.innerHeight) / 100;
+    let raf = 0;
+    let last = 0;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (now - last < 33) return;
+      last = now;
+      const t = now / 1000;
+      nodes.forEach((n, i) => {
+        const p = params[i];
+        const x = Math.sin(t * p.sx + p.ph) * p.ax * vmax;
+        const y = Math.cos(t * p.sy + p.ph) * p.ay * vmax;
+        const r = Math.sin(t * p.sx * 0.7 + p.ph) * p.rot;
+        const sc = 1 + Math.sin(t * p.sy * 0.9 + p.ph) * p.sc;
+        n.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${r}deg) scale(${sc})`;
+      });
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
   return (
     <>
       <Header />
