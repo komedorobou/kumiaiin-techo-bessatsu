@@ -11,14 +11,9 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2 group">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`${process.env.NODE_ENV === 'production' ? '/kumiaiin-techo-bessatsu' : ''}/icons/logo.webp`}
-              alt="組"
-              width={36}
-              height={36}
-              className="w-10 h-10 rounded-lg"
-            />
+            <div className="glass-tile w-9 h-9 rounded-xl flex items-center justify-center">
+              <span className="text-accent text-base font-bold leading-none">組</span>
+            </div>
             <span className="text-sm font-semibold text-charcoal hidden sm:block group-hover:text-accent transition-colors">
               岸和田市職員労働組合
             </span>
