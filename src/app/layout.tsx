@@ -11,7 +11,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: '組合員ポータル | 岸和田市職員労働組合',
   description: '岸和田市職員労働組合の組合員手帳別冊デジタル版。給料シミュレーター、休暇ガイド、共済ガイド、規約ビューアを提供します。',
-  manifest: '/manifest.json',
+  manifest:
+    process.env.NODE_ENV === 'production'
+      ? '/kumiaiin-techo-bessatsu/manifest.json'
+      : '/manifest.json',
 };
 
 export default function RootLayout({
