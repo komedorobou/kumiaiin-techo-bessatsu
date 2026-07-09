@@ -1,126 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-
-/* ヒーロー: 糸が撚り合わさって綱になる（組=糸偏・労働組合の主題） */
-function HeroThreads() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let W = 0, H = 0, mobile = false;
-    let threads: { y0: number; amp: number; phase: number; speed: number; alpha: number; strong: boolean; brass: boolean }[] = [];
-
-    const build = () => {
-      W = canvas.clientWidth;
-      H = canvas.clientHeight;
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      mobile = W < 640;
-      const N = mobile ? 140 : 300;
-      let seed = 42;
-      const rnd = () => {
-        seed = (seed * 1664525 + 1013904223) >>> 0;
-        return seed / 4294967296;
-      };
-      threads = Array.from({ length: N }, () => ({
-        y0: H * (0.04 + 0.92 * rnd()),
-        amp: (mobile ? 5 : 8) + rnd() * (mobile ? 14 : 24),
-        phase: rnd() * Math.PI * 2,
-        speed: 0.35 + rnd() * 0.75,
-        alpha: (mobile ? 0.022 : 0.014) + rnd() * (mobile ? 0.06 : 0.042),
-        strong: rnd() < 0.02,
-        brass: rnd() < 0.006,
-      }));
-    };
-
-    let t = 0;
-    let raf = 0;
-    let last = 0;
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      const cx = W * (mobile ? 0.94 : 0.82);
-      const cy = H * (mobile ? 0.26 : 0.62);
-      for (const th of threads) {
-        const sway = Math.sin(t * 0.5 * th.speed + th.phase) * th.amp;
-        const jitter = Math.sin(t * 0.8 + th.phase * 3) * 1.1;
-        ctx.beginPath();
-        ctx.moveTo(-24, th.y0 + sway * 0.35);
-        ctx.bezierCurveTo(
-          W * 0.28, th.y0 + sway,
-          W * 0.58, th.y0 + (cy - th.y0) * 0.6 + sway * 0.45,
-          cx, cy + (th.y0 - cy) * 0.015 + jitter
-        );
-        if (th.brass) {
-          ctx.strokeStyle = `rgba(168, 134, 82, ${0.4})`;
-          ctx.lineWidth = 1.1;
-        } else if (th.strong) {
-          ctx.strokeStyle = 'rgba(27, 77, 79, 0.28)';
-          ctx.lineWidth = 1.0;
-        } else {
-          ctx.strokeStyle = `rgba(27, 77, 79, ${th.alpha})`;
-          ctx.lineWidth = 0.6;
-        }
-        ctx.stroke();
-      }
-      // 収束後の綱: 撚りを重ねた太い束が右端へ抜ける
-      const ropeStrands = 9;
-      for (let i = 0; i < ropeStrands; i++) {
-        const off = (i - (ropeStrands - 1) / 2) * 1.9;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + off);
-        const wob = Math.sin(t * 0.9 + i) * 1.4;
-        ctx.bezierCurveTo(
-          cx + (W - cx) * 0.35, cy + off * 1.4 + wob,
-          cx + (W - cx) * 0.7, cy + off * 0.8 - wob,
-          W + 24, cy + off * 0.6
-        );
-        ctx.strokeStyle = i === 4 ? 'rgba(168, 134, 82, 0.55)' : 'rgba(27, 77, 79, 0.42)';
-        ctx.lineWidth = 2.0;
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.arc(cx, cy, 3.4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(27, 77, 79, 0.6)';
-      ctx.fill();
-      // 本文ゾーンの可読性: 左側に白のフェードを重ねる
-      const fade = ctx.createLinearGradient(0, 0, W * 0.72, 0);
-      fade.addColorStop(0, 'rgba(250, 250, 249, 0.82)');
-      fade.addColorStop(0.55, 'rgba(250, 250, 249, 0.35)');
-      fade.addColorStop(1, 'rgba(250, 250, 249, 0)');
-      ctx.fillStyle = fade;
-      ctx.fillRect(0, 0, W * 0.72, H);
-    };
-
-    const loop = (now: number) => {
-      raf = requestAnimationFrame(loop);
-      if (now - last < 33) return; // 30fps
-      last = now;
-      t += 0.033;
-      draw();
-    };
-
-    build();
-    draw();
-    if (!reduced) raf = requestAnimationFrame(loop);
-    const onResize = () => { build(); draw(); };
-    window.addEventListener('resize', onResize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
-  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />;
-}
 
 const featureIcons: Record<string, React.ReactNode> = {
   salary: (
@@ -200,7 +83,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden hero-pattern">
-        <HeroThreads />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-2xl">
