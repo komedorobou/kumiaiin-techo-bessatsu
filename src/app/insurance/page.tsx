@@ -69,7 +69,7 @@ type SetMode = 'plans' | 'features' | 'notice' | 'claim';
 
 export default function InsurancePage() {
   const [kyosai, setKyosai] = useState<Kyosai>('set');
-  const [setMode, setSetMode] = useState<SetMode>('plans');
+  const [setMode, setSetMode] = useState<SetMode>('features');
 
   return (
     <PageLayout
@@ -77,27 +77,24 @@ export default function InsurancePage() {
       subtitle="セット共済・火災共済・組織共済の内容を確認できます"
     >
       {/* 共済の種類 */}
-      <div className="glass-card-strong rounded-2xl p-5 sm:p-7 mb-6 animate-fade-in">
-        <label className="block text-xs font-medium text-charcoal/50 mb-3">共済の種類</label>
-        <div className="flex items-center gap-3 flex-wrap">
-          {([
-            ['set', 'セット共済'],
-            ['kasai', '火災共済'],
-            ['soshiki', '組織共済（弔慰金）'],
-          ] as const).map(([val, label]) => (
-            <button
-              key={val}
-              onClick={() => setKyosai(val)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                kyosai === val
-                  ? 'bg-accent text-white shadow-md'
-                  : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6 animate-fade-in">
+        {([
+          ['set', 'セット共済'],
+          ['kasai', '火災共済'],
+          ['soshiki', '組織共済（弔慰金）'],
+        ] as const).map(([val, label]) => (
+          <button
+            key={val}
+            onClick={() => setKyosai(val)}
+            className={`px-2 sm:px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold text-center transition-all ${
+              kyosai === val
+                ? 'bg-accent text-white shadow-md'
+                : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {kyosai === 'set' && (
@@ -105,8 +102,8 @@ export default function InsurancePage() {
           {/* セット共済内タブ */}
           <div className="flex gap-2 mb-8 flex-wrap animate-fade-in-delay-1">
             {([
-              { key: 'plans', label: 'プラン一覧' },
               { key: 'features', label: '特徴・加入' },
+              { key: 'plans', label: 'プラン一覧' },
               { key: 'notice', label: '健康告知' },
               { key: 'claim', label: '給付の手続き' },
             ] as const).map(({ key, label }) => (
