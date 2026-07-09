@@ -43,7 +43,7 @@ export function StaffModeToggle() {
       <div className="flex items-center gap-3 flex-wrap">
         {([
           ['seishoku', '正職員'],
-          ['sonota', 'その他（会計年度任用職員）'],
+          ['sonota', '会計年度任用職員'],
         ] as const).map(([val, label]) => (
           <button
             key={val}
