@@ -5,7 +5,7 @@ import PageLayout from '@/components/PageLayout';
 import { kaikeiCommuteVehicleRows, kaikeiCommuteNotes } from '@/data/kaikeiNendoData';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
-type TabId = 'fuyo' | 'jukyo' | 'tsukin' | 'bonus' | 'overtime' | 'tokushu' | 'shokyu' | 'over61' | 'payment';
+type TabId = 'fuyo' | 'jukyo' | 'tsukin' | 'bonus' | 'overtime' | 'tokushu' | 'shokyu' | 'over61' | 'taishoku' | 'payment';
 
 interface TabItem {
   id: TabId;
@@ -22,6 +22,7 @@ const tabs: TabItem[] = [
   { id: 'tokushu', label: '特殊勤務手当', shortLabel: '特殊' },
   { id: 'shokyu', label: '昇給について', shortLabel: '昇給' },
   { id: 'over61', label: '61歳以後の給与', shortLabel: '61歳~' },
+  { id: 'taishoku', label: '退職手当', shortLabel: '退職' },
   { id: 'payment', label: '給与の支払い', shortLabel: '支払' },
 ];
 
@@ -64,6 +65,7 @@ export default function AllowancesPage() {
         {activeTab === 'tokushu' && <TokushuSection />}
         {activeTab === 'shokyu' && <ShokyuSection />}
         {activeTab === 'over61' && <Over61Section />}
+        {activeTab === 'taishoku' && <TaishokuSection />}
         {activeTab === 'payment' && <PaymentSection />}
       </div>
     </PageLayout>
@@ -699,6 +701,84 @@ function TokushuSection() {
             </div>
           ))}
         </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+/* ==================== 退職手当 ==================== */
+
+const taishokuRates = [
+  { years: '5年', jiko: '2.51月', teinen: '4.19月' },
+  { years: '10年', jiko: '5.02月', teinen: '8.37月' },
+  { years: '15年', jiko: '10.38月', teinen: '16.22月' },
+  { years: '20年', jiko: '19.67月', teinen: '24.59月' },
+  { years: '25年', jiko: '28.04月', teinen: '33.27月' },
+  { years: '30年', jiko: '34.74月', teinen: '40.80月' },
+  { years: '35年（上限）', jiko: '39.76月', teinen: '47.71月' },
+];
+
+function TaishokuSection() {
+  return (
+    <div className="space-y-4">
+      <SectionCard title="退職手当のしくみ">
+        <div className="p-4 rounded-xl bg-accent/5 text-center mb-4">
+          <p className="text-sm sm:text-base font-bold text-accent">
+            退職手当 ＝ 退職日の給料月額 × 支給率 ＋ 調整額
+          </p>
+        </div>
+        <p className="text-sm text-charcoal/60">
+          支給率は勤続年数と退職理由（自己都合か、定年・応募認定退職などか）で決まります。
+        </p>
+      </SectionCard>
+
+      <SectionCard title="支給率早見表（調整率83.7%込みの月数）">
+        <TableWrapper>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">勤続年数</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自己都合</th>
+                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">定年・応募認定等</th>
+              </tr>
+            </thead>
+            <tbody>
+              {taishokuRates.map((row, i) => (
+                <tr key={row.years} className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-gray-50/30' : ''}`}>
+                  <td className="py-2.5 text-charcoal/70 font-medium">{row.years}</td>
+                  <td className="py-2.5 text-right text-charcoal/70">{row.jiko}</td>
+                  <td className="py-2.5 text-right font-semibold text-accent">{row.teinen}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableWrapper>
+        <p className="mt-3 text-xs text-charcoal/40">
+          例）定年退職・勤続35年・給料月額40万円の場合: 40万円 × 47.71月 ≒ 約1,908万円 ＋ 調整額
+        </p>
+      </SectionCard>
+
+      <SectionCard title="調整額とは">
+        <p className="text-sm text-charcoal/60 mb-3">
+          在職中の職責（職務の級など）に応じた区分ごとの月額を、高い方から60月分合計して基本額に加算するものです。
+        </p>
+        <ul className="space-y-2 text-sm text-charcoal/70">
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>区分は月額65,000円〜0円の8区分（職務の級等に応じて市長が定める）</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>自己都合退職: 勤続9年以下は0円、勤続10〜24年は半額</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>定年等の退職でも勤続1〜4年は半額</li>
+        </ul>
+      </SectionCard>
+
+      <SectionCard title="知っておきたいポイント">
+        <ul className="space-y-2 text-sm text-charcoal/70">
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>支給率の上限は勤続35年（定年等47.71月分）</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>定年前早期退職（応募認定退職等）は、定年までの残年数1年につき給料月額を3%割増して計算</li>
+          <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>勤続期間は在職月数で計算。休職・停職等の期間は一部除算あり</li>
+          <li className="flex gap-2"><span className="text-red-400 shrink-0">&bull;</span>懲戒免職等の場合は全部又は一部が不支給となることがあります</li>
+        </ul>
+        <p className="mt-4 text-xs text-charcoal/40">
+          出典: 職員の退職手当に関する条例（昭和32年12月20日条例第16号）内容現在 令和8年4月1日。実際の支給額は人事課にご確認ください。
+        </p>
       </SectionCard>
     </div>
   );
