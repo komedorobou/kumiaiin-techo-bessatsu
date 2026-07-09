@@ -28,45 +28,96 @@ import {
   SetKyosaiPlan,
 } from '@/data/insuranceData';
 
-type Mode = 'plans' | 'features' | 'notice' | 'claim' | 'benefits';
+type Kyosai = 'set' | 'kasai' | 'soshiki';
+type SetMode = 'plans' | 'features' | 'notice' | 'claim';
 
 export default function InsurancePage() {
-  const [mode, setMode] = useState<Mode>('plans');
+  const [kyosai, setKyosai] = useState<Kyosai>('set');
+  const [setMode, setSetMode] = useState<SetMode>('plans');
 
   return (
     <PageLayout
-      title="セット共済"
-      subtitle="自治労連セット共済のプラン・加入条件・給付手続きを確認できます"
+      title="共済ガイド"
+      subtitle="セット共済・火災共済・組織共済の内容を確認できます"
     >
-      {/* Mode tabs */}
-      <div className="flex gap-2 mb-8 flex-wrap animate-fade-in-delay-1">
-        {([
-          { key: 'plans', label: 'プラン一覧' },
-          { key: 'features', label: '特徴・加入' },
-          { key: 'notice', label: '健康告知' },
-          { key: 'claim', label: '給付の手続き' },
-          { key: 'benefits', label: '慶弔見舞金' },
-        ] as const).map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setMode(key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              mode === key
-                ? 'bg-accent text-white'
-                : 'bg-white text-charcoal/50 hover:text-accent hover:bg-accent/5'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      {/* 共済の種類 */}
+      <div className="glass-card-strong rounded-2xl p-5 sm:p-7 mb-6 animate-fade-in">
+        <label className="block text-xs font-medium text-charcoal/50 mb-3">共済の種類</label>
+        <div className="flex items-center gap-3 flex-wrap">
+          {([
+            ['set', 'セット共済'],
+            ['kasai', '火災共済'],
+            ['soshiki', '組織共済（弔慰金）'],
+          ] as const).map(([val, label]) => (
+            <button
+              key={val}
+              onClick={() => setKyosai(val)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                kyosai === val
+                  ? 'bg-accent text-white shadow-md'
+                  : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {mode === 'plans' && <PlanSection />}
-      {mode === 'features' && <FeaturesSection />}
-      {mode === 'notice' && <NoticeSection />}
-      {mode === 'claim' && <ClaimSection />}
-      {mode === 'benefits' && <BenefitsList />}
+      {kyosai === 'set' && (
+        <>
+          {/* セット共済内タブ */}
+          <div className="flex gap-2 mb-8 flex-wrap animate-fade-in-delay-1">
+            {([
+              { key: 'plans', label: 'プラン一覧' },
+              { key: 'features', label: '特徴・加入' },
+              { key: 'notice', label: '健康告知' },
+              { key: 'claim', label: '給付の手続き' },
+            ] as const).map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setSetMode(key)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  setMode === key
+                    ? 'bg-accent text-white'
+                    : 'bg-white text-charcoal/50 hover:text-accent hover:bg-accent/5'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {setMode === 'plans' && <PlanSection />}
+          {setMode === 'features' && <FeaturesSection />}
+          {setMode === 'notice' && <NoticeSection />}
+          {setMode === 'claim' && <ClaimSection />}
+        </>
+      )}
+
+      {kyosai === 'kasai' && <KasaiSection />}
+      {kyosai === 'soshiki' && <BenefitsList />}
     </PageLayout>
+  );
+}
+
+/* ==================== 火災共済（準備中） ==================== */
+
+function KasaiSection() {
+  return (
+    <div className="glass-card-strong rounded-2xl p-10 sm:p-16 animate-fade-in text-center">
+      <div className="w-14 h-14 rounded-2xl bg-accent/5 flex items-center justify-center text-accent mx-auto mb-5">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 11l9-8 9 8" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9 21v-6h6v6" />
+        </svg>
+      </div>
+      <h2 className="text-lg font-bold text-charcoal mb-2">火災共済</h2>
+      <p className="text-sm text-charcoal/50">
+        コンテンツは現在準備中です。詳しくは組合事務所へお問い合わせください。
+      </p>
+    </div>
   );
 }
 
@@ -453,9 +504,9 @@ function ClaimSection() {
 function BenefitsList() {
   return (
     <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in">
-      <h2 className="text-lg font-bold text-charcoal mb-1">市職労共済規程 慶弔見舞金</h2>
+      <h2 className="text-lg font-bold text-charcoal mb-1">組織共済（弔慰金）</h2>
       <p className="text-xs text-charcoal/40 mb-6">
-        事由発生日より1年以内に請求してください
+        市職労共済規程 慶弔見舞金 ― 事由発生日より1年以内に請求してください
       </p>
 
       <div className="space-y-0">

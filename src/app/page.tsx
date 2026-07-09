@@ -34,8 +34,8 @@ const features = [
   },
   {
     href: '/insurance',
-    title: 'セット共済',
-    description: '自治労連セット共済の全プラン比較・加入条件・健康告知・給付手続きを確認できる。',
+    title: '共済ガイド',
+    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、組織共済（弔慰金）を確認できる。',
     icon: (
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 37s13-6.5 13-16.5V9L20 4 7 9v11.5C7 30.5 20 37 20 37z" />
