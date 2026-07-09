@@ -72,10 +72,11 @@ const commuteVehicleData = [
 
 function getCommuteAllowanceVehicle(method: 'car' | 'bike' | 'bicycle', distanceKm: number): number {
   if (distanceKm < 2) return 0;
-  // over 25km: base 22900 + 3900 per 5km, max 46300
+  // over 25km: base 22900 + 3900 per 5km, max 46300（通勤手当支給規則 別表。自転車は12km以上の区分なし）
   if (distanceKm >= 25) {
+    if (method === 'bicycle') return 0;
     const extra = Math.floor((distanceKm - 25) / 5) * 3900;
-    const base = method === 'car' ? 22900 : method === 'bike' ? 12000 : 0;
+    const base = method === 'car' ? 22900 : 12000;
     return Math.min(base + extra, 46300);
   }
   const row = commuteVehicleData.find(r => distanceKm >= r.min && distanceKm < r.max);
@@ -86,29 +87,16 @@ function getCommuteAllowanceVehicle(method: 'car' | 'bike' | 'bicycle', distance
 /* ===================== Calculation Helpers ===================== */
 
 function calcFuyoTeate(
-  hasSpouse: boolean,
   numChildren: number,
   numChildren16to22: number,
   numParents: number,
-  position: PositionLevel,
-  useR8: boolean
+  position: PositionLevel
 ): number {
-  let total = 0;
-  if (useR8) {
-    // R8 onwards: spouse 0, child 13000 (+5000 for 16-22), parents 0
-    total += numChildren * 13000;
-    total += numChildren16to22 * 5000;
-  } else {
-    // R7: spouse 3000, child 11500 (+5000 for 16-22), parents 6500/3500
-    if (hasSpouse) total += 3000;
-    total += numChildren * 11500;
-    total += numChildren16to22 * 5000;
-    if (position === 'buchou' || position === 'riji') {
-      total += numParents * 3500;
-    } else {
-      total += numParents * 6500;
-    }
-  }
+  // R8.4.1現行の給与条例第15条: 配偶者は扶養親族の範囲外（廃止済み）。
+  // 子13,000円＋特定期間(16〜22歳)の子1人につき5,000円加算、
+  // 父母等（孫・60歳以上父母祖父母・弟妹・障害者）6,500円（1等級等職員＝部長・理事級は3,500円）
+  let total = numChildren * 13000 + numChildren16to22 * 5000;
+  total += numParents * (position === 'buchou' || position === 'riji' ? 3500 : 6500);
   return total;
 }
 
@@ -258,7 +246,6 @@ export default function SalaryPage() {
   const [position, setPosition] = useState<PositionLevel>('ippan');
 
   // Dependents
-  const [hasSpouse, setHasSpouse] = useState(false);
   const [numChildren, setNumChildren] = useState<number | ''>('');
   const [numChildren16to22, setNumChildren16to22] = useState<number | ''>('');
   const [numParents, setNumParents] = useState<number | ''>('');
@@ -321,9 +308,6 @@ export default function SalaryPage() {
     }
   }, [activeModel]);
 
-  // Use R8 rules (R8 onwards = from 2026)
-  const useR8 = true; // Current date is 2026
-
   // Current table data
   const currentTable = useMemo(
     () => salaryTables.find((t) => t.id === tableId)!,
@@ -364,8 +348,8 @@ export default function SalaryPage() {
   const baseSalary = getSalary(tableId, grade, step) ?? 0;
 
   const fuyoTeate = useMemo(
-    () => calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, useR8),
-    [hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, useR8]
+    () => calcFuyoTeate(numChildrenNum, numChildren16to22Num, numParentsNum, position),
+    [numChildrenNum, numChildren16to22Num, numParentsNum, position]
   );
 
   const kanrishokuTeate = kanrishokuTeateMap[position] ?? 0;
@@ -469,7 +453,7 @@ export default function SalaryPage() {
       const effectiveSalary = curAge >= 61 ? Math.floor(sal * 0.7) : sal;
 
       // Calculate annual income for this year
-      const yFuyo = calcFuyoTeate(hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum, position, true);
+      const yFuyo = calcFuyoTeate(numChildrenNum, numChildren16to22Num, numParentsNum, position);
       const yKanri = kanrishokuTeateMap[position] ?? 0;
       const yChiiki = Math.floor((effectiveSalary + yFuyo + yKanri) * 0.11);
       const yJukyo = calcHousingAllowance(housingType, rentNum);
@@ -509,7 +493,7 @@ export default function SalaryPage() {
     return results;
   }, [
     grade, step, ageNum, position, tableId, currentTable, promotionPlans,
-    hasSpouse, numChildrenNum, numChildren16to22Num, numParentsNum,
+    numChildrenNum, numChildren16to22Num, numParentsNum,
     housingType, rentNum, commuteMethod, commuteDistanceNum, sixMonthPassNum,
   ]);
 
@@ -589,32 +573,7 @@ export default function SalaryPage() {
 
         {/* 扶養家族 */}
         <SectionCard title="扶養家族" className="animate-fade-in-delay-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label className={labelCls}>配偶者</label>
-              <div className="flex items-center gap-3 h-[42px]">
-                <button
-                  onClick={() => setHasSpouse(true)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    hasSpouse
-                      ? 'bg-accent text-white shadow-md'
-                      : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
-                  }`}
-                >
-                  あり
-                </button>
-                <button
-                  onClick={() => setHasSpouse(false)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    !hasSpouse
-                      ? 'bg-accent text-white shadow-md'
-                      : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
-                  }`}
-                >
-                  なし
-                </button>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className={labelCls}>子の人数</label>
               <div className="flex items-center gap-2">
@@ -640,6 +599,9 @@ export default function SalaryPage() {
               </div>
             </div>
           </div>
+          <p className="mt-4 text-xs text-charcoal/40">
+            ※ 配偶者に係る扶養手当は令和8年4月に廃止されたため入力欄はありません。父母等＝孫・60歳以上の父母や祖父母・弟妹・障害のある扶養親族（月6,500円、部長・理事級は3,500円）。
+          </p>
         </SectionCard>
 
         {/* 住居 */}
@@ -783,11 +745,6 @@ export default function SalaryPage() {
               </tbody>
             </table>
           </div>
-          {kanrishokuTeate === 0 && (position === 'buchou' || position === 'kachou' || position === 'shukan') && (
-            <p className="mt-3 text-xs text-charcoal/40">
-              ※ 管理職手当は役職により異なるため、上記には含まれていません。実際の月収はこれに管理職手当が加算されます。
-            </p>
-          )}
         </SectionCard>
 
         {/* Bonus */}
@@ -906,6 +863,7 @@ export default function SalaryPage() {
             <p>・58歳以降: 昇給停止</p>
             <p>・61歳以降: 給料月額 x 0.7（7割措置）</p>
             <p>・昇格時は現在の給料に最も近い号給に読み替えます</p>
+            <p>・役職なしの場合、44歳以降はボーナスの職務段階別加算10%を見込んで計算します（44歳の年に年収が一段上がります）</p>
           </div>
         </SectionCard>
 
@@ -1001,14 +959,14 @@ export default function SalaryPage() {
           </div>
           <div className="text-xs text-charcoal/40 leading-relaxed">
             <p>
-              このシミュレーターは参考値を表示するものです。管理職手当・特殊勤務手当等は含まれていません。
+              このシミュレーターは参考値を表示するものです。特殊勤務手当等は含まれていません。
               実際の給与は昇給・昇格の時期、人事評価、条例改正等により異なります。
             </p>
             <p className="mt-2 text-charcoal/30">
               ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
             </p>
             <p className="mt-1 text-charcoal/30">
-              ※ 扶養手当は令和8年度以降のルールで計算しています（配偶者手当廃止、子の手当増額）。
+              ※ 扶養手当は令和8年度以降のルールで計算しています（配偶者手当廃止・子13,000円・父母等6,500円、給与条例第15条）。
             </p>
           </div>
         </div>
