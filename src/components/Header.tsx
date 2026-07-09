@@ -17,7 +17,7 @@ export default function Header() {
               alt="組"
               width={36}
               height={36}
-              className="w-9 h-9 rounded-lg"
+              className="w-10 h-10 rounded-lg"
             />
             <span className="text-sm font-semibold text-charcoal hidden sm:block group-hover:text-accent transition-colors">
               岸和田市職員労働組合
