@@ -5,6 +5,7 @@ import PageLayout from '@/components/PageLayout';
 import { salaryTables, getSalary } from '@/data/salaryData';
 import {
   kaikeiNendoJobs,
+  kaikeiMonthlyFromTable,
   kaikeiEmploymentRows,
   kaikeiEmploymentColumns,
   kaikeiEmploymentNote,
@@ -1041,6 +1042,7 @@ function KaikeiSection() {
   const [jobId, setJobId] = useState(kaikeiNendoJobs[0].id);
   const [yearNum, setYearNum] = useState(1);
   const [age, setAge] = useState<number | ''>('');
+  const [weeklyHours, setWeeklyHours] = useState<number | null>(null);
 
   // Commute
   const [commuteMethod, setCommuteMethod] = useState<CommuteMethod>('transit');
@@ -1053,7 +1055,13 @@ function KaikeiSection() {
   const passNum = sixMonthPass === '' ? 0 : sixMonthPass;
   const isChoujikan = jobId === 'choujikan';
 
-  const monthly = job.rows[Math.min(Math.max(yearNum, 1), 10) - 1].monthly;
+  const hours = job.weeklyHoursOptions
+    ? weeklyHours ?? job.defaultWeeklyHours ?? job.weeklyHoursOptions[0]
+    : null;
+  const rowMonthly = (row: (typeof job.rows)[number]) =>
+    hours !== null ? kaikeiMonthlyFromTable(row.tableSalary, hours) : row.monthly;
+
+  const monthly = rowMonthly(job.rows[Math.min(Math.max(yearNum, 1), 10) - 1]);
 
   const tsukinTeate = useMemo(
     () => calcKaikeiCommute(commuteMethod, distanceNum, passNum, isChoujikan),
@@ -1084,7 +1092,7 @@ function KaikeiSection() {
 
     for (let y = 0; y <= maxYears; y++) {
       const expYear = Math.min(yearNum + y, 10);
-      const m = job.rows[expYear - 1].monthly;
+      const m = rowMonthly(job.rows[expYear - 1]);
       const yBonus = Math.floor(m * 2.325) * 2;
       const yAnnual = (m + tsukinTeate) * 12 + yBonus;
       results.push({
@@ -1096,7 +1104,7 @@ function KaikeiSection() {
       });
     }
     return results;
-  }, [ageNum, yearNum, job, tsukinTeate]);
+  }, [ageNum, yearNum, job, tsukinTeate, hours]);
 
   const chartData = useMemo(
     () => simulation.map((s) => ({ label: `${s.age}歳`, value: s.annualIncome })),
@@ -1118,12 +1126,33 @@ function KaikeiSection() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className={labelCls}>職種</label>
-              <select value={jobId} onChange={(e) => setJobId(e.target.value)} className={inputCls}>
+              <select
+                value={jobId}
+                onChange={(e) => {
+                  setJobId(e.target.value);
+                  setWeeklyHours(null);
+                }}
+                className={inputCls}
+              >
                 {kaikeiNendoJobs.map((j) => (
                   <option key={j.id} value={j.id}>{j.name}</option>
                 ))}
               </select>
             </div>
+            {job.weeklyHoursOptions && hours !== null && (
+              <div>
+                <label className={labelCls}>週勤務時間（配属先による）</label>
+                <select
+                  value={hours}
+                  onChange={(e) => setWeeklyHours(Number(e.target.value))}
+                  className={inputCls}
+                >
+                  {job.weeklyHoursOptions.map((h) => (
+                    <option key={h} value={h}>週{h}時間</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div>
               <label className={labelCls}>何年目</label>
               <select value={yearNum} onChange={(e) => setYearNum(Number(e.target.value))} className={inputCls}>
@@ -1233,7 +1262,7 @@ function KaikeiSection() {
             <table className="w-full text-sm min-w-[400px]">
               <tbody>
                 {[
-                  [`月額報酬（${job.name}・${yearNum}年目）`, monthly],
+                  [`月額報酬（${job.name}・${yearNum}年目${hours !== null ? `・週${hours}時間` : ''}）`, monthly],
                   ['通勤手当', tsukinTeate],
                 ].map(([label, val], i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
