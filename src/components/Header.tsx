@@ -31,7 +31,7 @@ export default function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent/5 transition-colors"
+            className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-accent/5 transition-colors"
             aria-label="メニュー"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -77,7 +77,7 @@ function MobileNavLink({ href, children, onClick }: { href: string; children: Re
     <Link
       href={href}
       onClick={onClick}
-      className="px-4 py-3 text-sm font-medium text-charcoal/80 hover:text-accent rounded-lg hover:bg-accent/5 transition-all"
+      className="px-4 py-3 min-h-[44px] flex items-center text-sm font-medium text-charcoal/80 hover:text-accent rounded-lg hover:bg-accent/5 transition-all"
     >
       {children}
     </Link>

@@ -87,7 +87,7 @@ export default function RulesPage() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/30"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/60"
               >
                 <circle cx="7" cy="7" r="4.5" />
                 <path d="M10.5 10.5L14 14" />
@@ -105,13 +105,13 @@ export default function RulesPage() {
           {/* Search results */}
           {searchResults && searchResults.length > 0 ? (
             <div className="mb-4">
-              <p className="text-[10px] text-charcoal/40 mb-2">{searchResults.length}件の結果</p>
+              <p className="text-[10px] text-charcoal/65 mb-2">{searchResults.length}件の結果</p>
               <div className="space-y-1">
                 {searchResults.slice(0, 20).map((r, i) => (
                   <button
                     key={i}
                     onClick={() => navigateToArticle(r.chapter.id)}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent/5 transition-colors"
+                    className="w-full text-left px-3 py-2 min-h-[44px] rounded-lg hover:bg-accent/5 transition-colors"
                   >
                     <p className="text-[10px] text-accent/60">{r.chapter.title}</p>
                     <p
@@ -123,7 +123,7 @@ export default function RulesPage() {
               </div>
             </div>
           ) : searchResults && searchQuery.trim() ? (
-            <p className="text-xs text-charcoal/30 mb-4 px-3">該当する条文が見つかりません</p>
+            <p className="text-xs text-charcoal/60 mb-4 px-3">該当する条文が見つかりません</p>
           ) : null}
 
           {/* Chapter nav */}
@@ -132,10 +132,10 @@ export default function RulesPage() {
               <button
                 key={ch.id}
                 onClick={() => navigateToArticle(ch.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs transition-all ${
+                className={`w-full text-left px-3 py-2.5 min-h-[44px] flex items-center rounded-lg text-xs transition-all ${
                   selectedChapter === ch.id
                     ? 'bg-accent/10 text-accent font-medium'
-                    : 'text-charcoal/50 hover:bg-accent/5 hover:text-charcoal/70'
+                    : 'text-charcoal/70 hover:bg-accent/5 hover:text-charcoal/70'
                 }`}
               >
                 {ch.title}
@@ -195,7 +195,7 @@ export default function RulesPage() {
                     {prev ? (
                       <button
                         onClick={() => navigateToArticle(prev.id)}
-                        className="text-xs text-charcoal/40 hover:text-accent transition-colors flex items-center gap-1"
+                        className="text-xs text-charcoal/65 hover:text-accent transition-colors flex items-center gap-1"
                       >
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M9 3L5 7l4 4" />
@@ -206,7 +206,7 @@ export default function RulesPage() {
                     {next ? (
                       <button
                         onClick={() => navigateToArticle(next.id)}
-                        className="text-xs text-charcoal/40 hover:text-accent transition-colors flex items-center gap-1"
+                        className="text-xs text-charcoal/65 hover:text-accent transition-colors flex items-center gap-1"
                       >
                         {next.title}
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">

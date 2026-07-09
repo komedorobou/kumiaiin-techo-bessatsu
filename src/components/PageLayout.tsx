@@ -20,7 +20,7 @@ export default function PageLayout({
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-2 text-sm text-charcoal/50">{subtitle}</p>
+              <p className="mt-2 text-sm text-charcoal/70">{subtitle}</p>
             )}
           </div>
           {children}

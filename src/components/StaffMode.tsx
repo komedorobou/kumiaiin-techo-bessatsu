@@ -39,7 +39,7 @@ export function StaffModeToggle() {
 
   return (
     <div className="glass-card-strong rounded-2xl p-5 sm:p-7 mb-6 animate-fade-in">
-      <label className="block text-xs font-medium text-charcoal/50 mb-3">職員区分</label>
+      <label className="block text-xs font-medium text-charcoal/70 mb-3">職員区分</label>
       <div className="flex items-center gap-3 flex-wrap">
         {([
           ['seishoku', '正職員'],
@@ -48,10 +48,10 @@ export function StaffModeToggle() {
           <button
             key={val}
             onClick={() => setMode(val)}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`px-5 py-2.5 min-h-[44px] inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all ${
               mode === val
                 ? 'bg-accent text-white shadow-md'
-                : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+                : 'bg-white/60 text-charcoal/70 border border-gray-200 hover:border-accent/30'
             }`}
           >
             {label}

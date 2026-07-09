@@ -86,10 +86,10 @@ export default function InsurancePage() {
           <button
             key={val}
             onClick={() => setKyosai(val)}
-            className={`px-2 sm:px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold text-center transition-all ${
+            className={`px-2 sm:px-5 py-3 min-h-[44px] inline-flex items-center justify-center rounded-xl text-xs sm:text-sm font-semibold text-center transition-all ${
               kyosai === val
                 ? 'bg-accent text-white shadow-md'
-                : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+                : 'bg-white/60 text-charcoal/70 border border-gray-200 hover:border-accent/30'
             }`}
           >
             {label}
@@ -110,10 +110,10 @@ export default function InsurancePage() {
               <button
                 key={key}
                 onClick={() => setSetMode(key)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-4 py-2 min-h-[44px] inline-flex items-center justify-center rounded-full text-sm font-medium transition-all ${
                   setMode === key
                     ? 'bg-accent text-white'
-                    : 'bg-white text-charcoal/50 hover:text-accent hover:bg-accent/5'
+                    : 'bg-white text-charcoal/70 hover:text-accent hover:bg-accent/5'
                 }`}
               >
                 {label}
@@ -157,7 +157,7 @@ function KasaiSection() {
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               mode === key
                 ? 'bg-accent text-white'
-                : 'bg-white text-charcoal/50 hover:text-accent hover:bg-accent/5'
+                : 'bg-white text-charcoal/70 hover:text-accent hover:bg-accent/5'
             }`}
           >
             {label}
@@ -179,7 +179,7 @@ function KasaiAbout() {
     <div className="animate-fade-in space-y-6">
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
         <h2 className="text-lg font-bold text-charcoal mb-1">組合のたすけあいだから、掛金は安くメリットたくさん</h2>
-        <p className="text-xs text-charcoal/40 mb-6">自治労連共済の特徴 ― 風水害特約を新設</p>
+        <p className="text-xs text-charcoal/65 mb-6">自治労連共済の特徴 ― 風水害特約を新設</p>
         <div className="space-y-4">
           {kasaiFeatures.map((f, i) => (
             <div key={i} className="rounded-xl border border-gray-100 bg-white/50 p-4">
@@ -195,17 +195,17 @@ function KasaiAbout() {
 
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
         <h2 className="text-lg font-bold text-charcoal mb-2">加入にあたって知っておきたいこと</h2>
-        <p className="text-xs text-charcoal/50 leading-relaxed mb-6">{kasaiEnrollmentIntro}</p>
+        <p className="text-xs text-charcoal/70 leading-relaxed mb-6">{kasaiEnrollmentIntro}</p>
 
         <h3 className="text-sm font-semibold text-charcoal mb-3">加入できる物件（建物・家財）― 組合員が居住する物件の加入が第一条件です</h3>
         <div className="overflow-x-auto -mx-2 mb-3">
           <table className="w-full text-xs min-w-[560px]">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-charcoal/40 font-medium">所有者</th>
-                <th className="text-left py-2 px-3 text-charcoal/40 font-medium">居住者</th>
-                <th className="text-center py-2 px-3 text-charcoal/40 font-medium">建物</th>
-                <th className="text-center py-2 px-3 text-charcoal/40 font-medium">家財</th>
+                <th className="text-left py-2 px-3 text-charcoal/65 font-medium">所有者</th>
+                <th className="text-left py-2 px-3 text-charcoal/65 font-medium">居住者</th>
+                <th className="text-center py-2 px-3 text-charcoal/65 font-medium">建物</th>
+                <th className="text-center py-2 px-3 text-charcoal/65 font-medium">家財</th>
               </tr>
             </thead>
             <tbody>
@@ -220,7 +220,7 @@ function KasaiAbout() {
             </tbody>
           </table>
         </div>
-        <div className="p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1 mb-6">
+        <div className="p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1 mb-6">
           {kasaiEligibleNotes.map((n, i) => (
             <p key={i}>・{n}</p>
           ))}
@@ -239,7 +239,7 @@ function KasaiAbout() {
         </div>
       </div>
 
-      <div className="glass-card rounded-xl p-5 text-xs text-charcoal/50 leading-relaxed">
+      <div className="glass-card rounded-xl p-5 text-xs text-charcoal/70 leading-relaxed">
         {kasaiIndependenceNote}
       </div>
     </div>
@@ -271,9 +271,9 @@ function KasaiBasis() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">構造</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">加入限度口数</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">保障額</th>
+                  <th className="text-left py-2 px-3 text-charcoal/65 font-medium text-xs">構造</th>
+                  <th className="text-right py-2 px-3 text-charcoal/65 font-medium text-xs">加入限度口数</th>
+                  <th className="text-right py-2 px-3 text-charcoal/65 font-medium text-xs">保障額</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,16 +286,16 @@ function KasaiBasis() {
                 ))}
               </tbody>
             </table>
-            <p className="mt-2 text-xs text-charcoal/40">（ ）内は特定地域</p>
+            <p className="mt-2 text-xs text-charcoal/65">（ ）内は特定地域</p>
           </div>
           <div>
             <h3 className="text-sm font-semibold text-charcoal mb-3">家財加入基準（同居世帯人数）</h3>
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">世帯人数</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">加入限度口数</th>
-                  <th className="text-right py-2 px-3 text-charcoal/40 font-medium text-xs">限度額</th>
+                  <th className="text-left py-2 px-3 text-charcoal/65 font-medium text-xs">世帯人数</th>
+                  <th className="text-right py-2 px-3 text-charcoal/65 font-medium text-xs">加入限度口数</th>
+                  <th className="text-right py-2 px-3 text-charcoal/65 font-medium text-xs">限度額</th>
                 </tr>
               </thead>
               <tbody>
@@ -311,7 +311,7 @@ function KasaiBasis() {
           </div>
         </div>
 
-        <div className="mt-6 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+        <div className="mt-6 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
           <p className="font-semibold text-charcoal/60">あなたの加入できる保障額の計算方法</p>
           {kasaiCalcNotes.map((n, i) => (
             <p key={i}>・{n}</p>
@@ -327,7 +327,7 @@ function KasaiBasis() {
             <div key={i} className="p-3 rounded-xl bg-accent/5 text-xs text-charcoal/70 leading-relaxed">{item}</div>
           ))}
         </div>
-        <div className="text-xs text-charcoal/40 space-y-1">
+        <div className="text-xs text-charcoal/65 space-y-1">
           {taikaStructure.notes.map((n, i) => (
             <p key={i}>※{n}</p>
           ))}
@@ -357,7 +357,7 @@ function KasaiCoverage() {
     <div className="animate-fade-in space-y-6">
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
         <h2 className="text-lg font-bold text-charcoal mb-1">火災等の保障</h2>
-        <p className="text-xs text-charcoal/40 mb-6">急激・偶然・外因による事故にたいして、火災だけでなく様々なケースに対応しております。</p>
+        <p className="text-xs text-charcoal/65 mb-6">急激・偶然・外因による事故にたいして、火災だけでなく様々なケースに対応しております。</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {kasaiCoveredEvents.map((e) => (
             <div key={e.name} className="rounded-xl border border-gray-100 bg-white/50 p-4">
@@ -416,7 +416,7 @@ function JishinTable({ title, rows, label1, label2 }: { title: string; rows: Jis
       <div className="overflow-x-auto -mx-2">
         <table className="w-full text-xs min-w-[640px]">
           <thead>
-            <tr className="border-b border-gray-200 text-charcoal/40">
+            <tr className="border-b border-gray-200 text-charcoal/65">
               <th className="text-left py-2 px-2 font-medium">破損割合</th>
               <th className="text-right py-2 px-2 font-medium">{label1}<br />1口あたり</th>
               <th className="text-right py-2 px-2 font-medium">{label2}<br />1口あたり</th>
@@ -479,12 +479,12 @@ function KasaiDisaster() {
         <div className="overflow-x-auto -mx-2">
           <table className="w-full text-xs min-w-[720px]">
             <thead>
-              <tr className="border-b border-gray-200 text-charcoal/40">
+              <tr className="border-b border-gray-200 text-charcoal/65">
                 <th rowSpan={2} className="text-left py-2 px-2 font-medium">破損割合</th>
                 <th colSpan={3} className="py-2 px-2 font-medium border-l border-gray-200">建物と家財の両方に加入（1物件あたり）</th>
                 <th colSpan={3} className="py-2 px-2 font-medium border-l border-gray-200">建物だけ・家財だけの加入（1物件あたり）</th>
               </tr>
-              <tr className="border-b border-gray-200 text-charcoal/40">
+              <tr className="border-b border-gray-200 text-charcoal/65">
                 <th className="text-right py-2 px-2 font-medium border-l border-gray-200">1口あたり共済金</th>
                 <th className="text-right py-2 px-2 font-medium">基本型 最高限度額</th>
                 <th className="text-right py-2 px-2 font-medium">特約型 最高限度額</th>
@@ -508,7 +508,7 @@ function KasaiDisaster() {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-charcoal/40">{fusuigaiTableNote}</p>
+        <p className="mt-2 text-xs text-charcoal/65">{fusuigaiTableNote}</p>
       </div>
 
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
@@ -532,7 +532,7 @@ function KasaiDisaster() {
           <JishinTable title="持家 ― 火災・倒壊見舞金（1口あたりの支払額と損害認定基準）" rows={jishinOwnedTable} label1="①100口まで" label2="②101〜500口" />
           <JishinTable title="借家 ― 火災・倒壊見舞金（1口あたりの支払額と損害認定基準）" rows={jishinRentalTable} label1="①50口まで" label2="②51〜150口" />
         </div>
-        <div className="mt-3 text-xs text-charcoal/40 space-y-1">
+        <div className="mt-3 text-xs text-charcoal/65 space-y-1">
           {jishinTableNotes.map((n, i) => (
             <p key={i}>{n}</p>
           ))}
@@ -560,7 +560,7 @@ function KasaiClaim() {
         <div className="overflow-x-auto -mx-2">
           <table className="w-full text-xs min-w-[680px]">
             <thead>
-              <tr className="border-b border-gray-200 text-charcoal/40">
+              <tr className="border-b border-gray-200 text-charcoal/65">
                 <th className="text-left py-2 px-2 font-medium">事由</th>
                 {kasaiDocHeaders.map((h) => (
                   <th key={h} className="text-center py-2 px-2 font-medium">{h}</th>
@@ -581,7 +581,7 @@ function KasaiClaim() {
             </tbody>
           </table>
         </div>
-        <div className="mt-3 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+        <div className="mt-3 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
           {kasaiDocNotes.map((n, i) => (
             <p key={i}>・{n}</p>
           ))}
@@ -608,7 +608,7 @@ function KasaiClaim() {
                   <tr key={i} className={`border-b border-gray-100 ${p.label === '合計' ? 'bg-accent/5 font-semibold' : ''}`}>
                     <td className="py-2 px-2 text-charcoal/70">
                       {p.label}
-                      {p.note && <span className="block text-[10px] text-charcoal/40">{p.note}</span>}
+                      {p.note && <span className="block text-[10px] text-charcoal/65">{p.note}</span>}
                     </td>
                     <td className="py-2 px-2 text-right text-charcoal font-medium whitespace-nowrap">{p.amount}</td>
                   </tr>
@@ -617,7 +617,7 @@ function KasaiClaim() {
             </table>
           </div>
         </div>
-        <p className="mt-3 text-xs text-charcoal/40">{kasaiExample.note}</p>
+        <p className="mt-3 text-xs text-charcoal/65">{kasaiExample.note}</p>
       </div>
 
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
@@ -627,7 +627,7 @@ function KasaiClaim() {
             <li key={i} className="flex gap-2 text-xs text-charcoal/60 leading-relaxed"><span className="text-red-400 shrink-0">{i + 1}.</span>{e}</li>
           ))}
         </ul>
-        <p className="mt-6 text-xs text-charcoal/40">{kasaiContact}</p>
+        <p className="mt-6 text-xs text-charcoal/65">{kasaiContact}</p>
       </div>
     </div>
   );
@@ -648,10 +648,10 @@ function PlanSection() {
           <button
             key={c.id}
             onClick={() => setCategory(c.id)}
-            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`px-4 py-2.5 min-h-[44px] inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all ${
               category === c.id
                 ? 'bg-accent text-white shadow-md'
-                : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+                : 'bg-white/60 text-charcoal/70 border border-gray-200 hover:border-accent/30'
             }`}
           >
             {c.label}
@@ -667,16 +667,16 @@ function PlanSection() {
             <table className="w-full text-xs min-w-[1100px]">
               <thead>
                 <tr className="border-b border-gray-200 bg-accent/5">
-                  <th rowSpan={2} className="text-left p-2 font-medium text-charcoal/50 sticky left-0 bg-white/95 z-10">型</th>
-                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/50">月掛金</th>
+                  <th rowSpan={2} className="text-left p-2 font-medium text-charcoal/70 sticky left-0 bg-white/95 z-10">型</th>
+                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/70">月掛金</th>
                   <th colSpan={4} className="p-2 font-semibold text-charcoal/70 border-l border-gray-200">入院保障（日額）</th>
                   <th colSpan={6} className="p-2 font-semibold text-charcoal/70 border-l border-gray-200">通院保障（日額）</th>
                   <th colSpan={3} className="p-2 font-semibold text-charcoal/70 border-l border-gray-200">死亡・重度障害</th>
                   <th colSpan={3} className="p-2 font-semibold text-charcoal/70 border-l border-gray-200">後遺障害（3〜14級）</th>
-                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/50 border-l border-gray-200">手術見舞金※4</th>
-                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/50 border-l border-gray-200">サポートU40（年額）</th>
+                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/70 border-l border-gray-200">手術見舞金※4</th>
+                  <th rowSpan={2} className="text-right p-2 font-medium text-charcoal/70 border-l border-gray-200">サポートU40（年額）</th>
                 </tr>
-                <tr className="border-b border-gray-200 text-charcoal/40">
+                <tr className="border-b border-gray-200 text-charcoal/65">
                   <th className="p-2 font-medium border-l border-gray-200">病気・ケガ</th>
                   <th className="p-2 font-medium">がん※1</th>
                   <th className="p-2 font-medium">不慮の事故</th>
@@ -756,17 +756,17 @@ function PlanSection() {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-charcoal/40">
+        <p className="mt-2 text-xs text-charcoal/65">
           現在加入中で慢性疾患に罹患している子どもが、新しい効力発生日時点で19歳となったときは、上表の範囲内でセット型を選択してください。現契約からの移行を確保するセット型（ピンク）を選択する場合はチェックシートが必要です。
         </p>
       </div>
 
       {/* Notes */}
-      <div className="glass-card rounded-xl p-5 text-xs text-charcoal/50 space-y-1.5 leading-relaxed">
+      <div className="glass-card rounded-xl p-5 text-xs text-charcoal/70 space-y-1.5 leading-relaxed">
         {planTableNotes.map((note, i) => (
           <p key={i}>{note}</p>
         ))}
-        <p className="pt-2 text-charcoal/40">
+        <p className="pt-2 text-charcoal/65">
           加入中に健康告知に該当しても現契約で継続できます。共済期間は1年間（月払い・給料天引き）。{kyosaiContact}
         </p>
       </div>
@@ -787,14 +787,14 @@ function PlanCard({ plan }: { plan: SetKyosaiPlan }) {
           <h3 className="font-bold text-charcoal">{plan.name}</h3>
           <p className="text-lg font-bold text-accent mt-1">
             {plan.monthly.toLocaleString()}
-            <span className="text-xs font-normal text-charcoal/40">円/月</span>
+            <span className="text-xs font-normal text-charcoal/65">円/月</span>
           </p>
-          <p className="text-[11px] text-charcoal/40 mt-0.5">
+          <p className="text-[11px] text-charcoal/65 mt-0.5">
             入院日額 {plan.hosp[0].toLocaleString()}円〜 ／ 死亡・重度障害 最高{plan.death[2].toLocaleString()}万円
           </p>
         </div>
         <div className={`transition-transform ${open ? 'rotate-180' : ''}`}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-charcoal/30">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-charcoal/60">
             <path d="M4 6l4 4 4-4" />
           </svg>
         </div>
@@ -836,7 +836,7 @@ function PlanCard({ plan }: { plan: SetKyosaiPlan }) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between py-0.5">
-      <span className="text-charcoal/40">{label}</span>
+      <span className="text-charcoal/65">{label}</span>
       <span className="font-medium text-charcoal/70">{value}</span>
     </div>
   );
@@ -849,7 +849,7 @@ function FeaturesSection() {
     <div className="animate-fade-in space-y-6">
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
         <h2 className="text-lg font-bold text-charcoal mb-1">組合員みんなの助け合い ―「もうけ」を目的としません</h2>
-        <p className="text-xs text-charcoal/40 mb-6">安い掛金で大きな保障を実現</p>
+        <p className="text-xs text-charcoal/65 mb-6">安い掛金で大きな保障を実現</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {kyosaiFeatures.map((f, i) => (
             <div key={i} className="rounded-xl border border-gray-100 bg-white/50 p-4">
@@ -966,7 +966,7 @@ function ClaimSection() {
             </tbody>
           </table>
         </div>
-        <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+        <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
           {claimNotes.map((n, i) => (
             <p key={i}>・{n}</p>
           ))}
@@ -975,7 +975,7 @@ function ClaimSection() {
 
       <div className="glass-card-strong rounded-2xl p-6 sm:p-8">
         <h2 className="text-lg font-bold text-charcoal mb-1">ご注意ください</h2>
-        <p className="text-xs text-charcoal/40 mb-6">給付にあたっては「自治労連共済規約・細則」の支払基準に基づきお支払いします</p>
+        <p className="text-xs text-charcoal/65 mb-6">給付にあたっては「自治労連共済規約・細則」の支払基準に基づきお支払いします</p>
 
         <h3 className="text-sm font-semibold text-charcoal mb-2">つぎの場合は共済金をお支払いできません（全ての共済に共通）</h3>
         <ul className="space-y-1.5 mb-6">
@@ -1005,7 +1005,7 @@ function ClaimSection() {
           ))}
         </ul>
 
-        <p className="mt-6 text-xs text-charcoal/40">{kyosaiContact}</p>
+        <p className="mt-6 text-xs text-charcoal/65">{kyosaiContact}</p>
       </div>
     </div>
   );
@@ -1017,7 +1017,7 @@ function BenefitsList() {
   return (
     <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in">
       <h2 className="text-lg font-bold text-charcoal mb-1">組織共済（弔慰金）</h2>
-      <p className="text-xs text-charcoal/40 mb-6">
+      <p className="text-xs text-charcoal/65 mb-6">
         市職労共済規程 慶弔見舞金 ― 事由発生日より1年以内に請求してください
       </p>
 

@@ -7,11 +7,11 @@ export default function Footer() {
             <div className="w-6 h-6 rounded-md bg-accent flex items-center justify-center">
               <span className="text-white text-xs font-bold">K</span>
             </div>
-            <span className="text-xs text-charcoal/50">
+            <span className="text-xs text-charcoal/70">
               岸和田市職員労働組合
             </span>
           </div>
-          <p className="text-xs text-charcoal/40">
+          <p className="text-xs text-charcoal/65">
             組合員手帳別冊デジタル版
           </p>
         </div>

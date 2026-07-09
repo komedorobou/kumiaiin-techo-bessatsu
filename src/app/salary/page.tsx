@@ -508,8 +508,8 @@ export default function SalaryPage() {
 
   // ===================== Input classes =====================
   const inputCls =
-    'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
-  const labelCls = 'block text-xs font-medium text-charcoal/50 mb-1.5';
+    'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
+  const labelCls = 'block text-xs font-medium text-charcoal/70 mb-1.5';
   const sliderCls = 'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1B4D4F]';
   const miniInputCls = 'w-20 bg-white/80 border border-gray-200 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
 
@@ -557,7 +557,7 @@ export default function SalaryPage() {
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                 <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
-                <span className="text-xs text-charcoal/40">歳</span>
+                <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
             <div>
@@ -579,7 +579,7 @@ export default function SalaryPage() {
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={6} value={numChildrenNum} onChange={(e) => { const v = Number(e.target.value); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={`${sliderCls} flex-1`} />
                 <input type="number" min={0} max={6} value={numChildren} placeholder="0" onChange={(e) => { if (e.target.value === '') { setNumChildren(''); return; } const v = Math.max(0, Math.min(6, Number(e.target.value))); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={miniInputCls} />
-                <span className="text-xs text-charcoal/40">人</span>
+                <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
             <div>
@@ -587,7 +587,7 @@ export default function SalaryPage() {
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={numChildrenNum} value={numChildren16to22Num} onChange={(e) => setNumChildren16to22(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                 <input type="number" min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Math.max(0, Math.min(numChildrenNum, Number(e.target.value))))} className={miniInputCls} />
-                <span className="text-xs text-charcoal/40">人</span>
+                <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
             <div>
@@ -595,11 +595,11 @@ export default function SalaryPage() {
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={4} value={numParentsNum} onChange={(e) => setNumParents(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                 <input type="number" min={0} max={4} value={numParents} placeholder="0" onChange={(e) => setNumParents(e.target.value === '' ? '' : Math.max(0, Math.min(4, Number(e.target.value))))} className={miniInputCls} />
-                <span className="text-xs text-charcoal/40">人</span>
+                <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
           </div>
-          <p className="mt-4 text-xs text-charcoal/40">
+          <p className="mt-4 text-xs text-charcoal/65">
             ※ 配偶者に係る扶養手当は令和8年4月に廃止されたため入力欄はありません。父母等＝孫・60歳以上の父母や祖父母・弟妹・障害のある扶養親族（月6,500円、部長・理事級は3,500円）。
           </p>
         </SectionCard>
@@ -609,15 +609,15 @@ export default function SalaryPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelCls}>住居区分</label>
-              <div className="flex items-center gap-2 h-[42px]">
+              <div className="flex items-center gap-2 min-h-[44px]">
                 {([['rent', '賃貸'], ['own', '持家'], ['other', 'その他']] as const).map(([val, label]) => (
                   <button
                     key={val}
                     onClick={() => setHousingType(val)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    className={`px-4 py-2 min-h-[44px] inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all ${
                       housingType === val
                         ? 'bg-accent text-white shadow-md'
-                        : 'bg-white/60 text-charcoal/50 border border-gray-200 hover:border-accent/30'
+                        : 'bg-white/60 text-charcoal/70 border border-gray-200 hover:border-accent/30'
                     }`}
                   >
                     {label}
@@ -631,7 +631,7 @@ export default function SalaryPage() {
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={150000} step={1000} value={rentNum} onChange={(e) => setRent(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                   <input type="number" min={0} step={1000} value={rent} placeholder="55000" onChange={(e) => setRent(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
-                  <span className="text-xs text-charcoal/40">円</span>
+                  <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>
             )}
@@ -655,7 +655,7 @@ export default function SalaryPage() {
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={50} step={1} value={commuteDistanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                   <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
-                  <span className="text-xs text-charcoal/40">km</span>
+                  <span className="text-xs text-charcoal/65">km</span>
                 </div>
               </div>
             )}
@@ -665,7 +665,7 @@ export default function SalaryPage() {
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={300000} step={1000} value={sixMonthPassNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                   <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
-                  <span className="text-xs text-charcoal/40">円</span>
+                  <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>
             )}
@@ -681,36 +681,36 @@ export default function SalaryPage() {
         <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in-delay-1">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="sm:col-span-1">
-              <p className="text-xs font-medium text-charcoal/40 mb-1">年収（税・社保控除前）</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">年収（税・社保控除前）</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-4xl sm:text-5xl font-bold text-accent tracking-tight">
                   {Math.round(annualIncome / 10000).toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">万円</span>
+                <span className="text-sm text-charcoal/65">万円</span>
               </div>
-              <p className="text-xs text-charcoal/30 mt-1">
+              <p className="text-xs text-charcoal/60 mt-1">
                 （{annualIncome.toLocaleString()}円）
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-charcoal/40 mb-1">概算手取り年収</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">概算手取り年収</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
                   {Math.round(takeHome / 10000).toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">万円</span>
+                <span className="text-sm text-charcoal/65">万円</span>
               </div>
-              <p className="text-xs text-charcoal/30 mt-1">
+              <p className="text-xs text-charcoal/60 mt-1">
                 （税・社保約21%控除の概算）
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-charcoal/40 mb-1">月収合計</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">月収合計</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
                   {monthlyTotal.toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">円</span>
+                <span className="text-sm text-charcoal/65">円</span>
               </div>
             </div>
           </div>
@@ -759,7 +759,7 @@ export default function SalaryPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-3 text-charcoal/50 text-xs pl-6">
+                  <td className="py-3 px-3 text-charcoal/70 text-xs pl-6">
                     内訳: 給料{baseSalary.toLocaleString()} + 扶養{fuyoTeate.toLocaleString()} + 地域{chiikiTeate.toLocaleString()} + 役職加算{yakushokuKasanGaku.toLocaleString()}
                   </td>
                   <td></td>
@@ -767,7 +767,7 @@ export default function SalaryPage() {
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
                     役職加算額
-                    <span className="text-xs text-charcoal/40 ml-1">
+                    <span className="text-xs text-charcoal/65 ml-1">
                       （加算率{(positionAddRate * 100).toFixed(0)}%）
                     </span>
                   </td>
@@ -778,7 +778,7 @@ export default function SalaryPage() {
                 <tr>
                   <td className="py-3 px-3 text-charcoal/70">
                     期末手当（年額）
-                    <span className="text-xs text-charcoal/40 ml-1">1.25 x 2回 = 2.5ヶ月</span>
+                    <span className="text-xs text-charcoal/65 ml-1">1.25 x 2回 = 2.5ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kimatsuTeate.toLocaleString()}円
@@ -787,7 +787,7 @@ export default function SalaryPage() {
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
                     勤勉手当（年額）
-                    <span className="text-xs text-charcoal/40 ml-1">1.05 x 2回 = 2.1ヶ月</span>
+                    <span className="text-xs text-charcoal/65 ml-1">1.05 x 2回 = 2.1ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kinbenTeate.toLocaleString()}円
@@ -839,7 +839,7 @@ export default function SalaryPage() {
                 </div>
                 <button
                   onClick={() => removePromotionPlan(plan.id)}
-                  className="text-charcoal/30 hover:text-red-400 transition-colors p-1"
+                  className="text-charcoal/60 hover:text-red-400 transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
                   title="削除"
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -850,7 +850,7 @@ export default function SalaryPage() {
             ))}
             <button
               onClick={addPromotionPlan}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-accent bg-accent/5 hover:bg-accent/10 border border-accent/10 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl text-sm font-medium text-accent bg-accent/5 hover:bg-accent/10 border border-accent/10 transition-all"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 1v12M1 7h12" />
@@ -858,7 +858,7 @@ export default function SalaryPage() {
               昇格プランを追加
             </button>
           </div>
-          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
             <p>・通常: 毎年+4号昇給（1月1日）、部長級は+1号</p>
             <p>・58歳以降: 昇給停止</p>
             <p>・61歳以降: 給料月額 x 0.7（7割措置）</p>
@@ -881,12 +881,12 @@ export default function SalaryPage() {
               <table className="w-full text-sm min-w-[550px]">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年</th>
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年齢</th>
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">等級</th>
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">号給</th>
-                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">給料月額</th>
-                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">年収概算</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年齢</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">等級</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">号給</th>
+                    <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">給料月額</th>
+                    <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">年収概算</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -957,15 +957,15 @@ export default function SalaryPage() {
               <path d="M6 4v3M6 8.5v.01" />
             </svg>
           </div>
-          <div className="text-xs text-charcoal/40 leading-relaxed">
+          <div className="text-xs text-charcoal/65 leading-relaxed">
             <p>
               このシミュレーターは参考値を表示するものです。特殊勤務手当等は含まれていません。
               実際の給与は昇給・昇格の時期、人事評価、条例改正等により異なります。
             </p>
-            <p className="mt-2 text-charcoal/30">
+            <p className="mt-2 text-charcoal/60">
               ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
             </p>
-            <p className="mt-1 text-charcoal/30">
+            <p className="mt-1 text-charcoal/60">
               ※ 扶養手当は令和8年度以降のルールで計算しています（配偶者手当廃止・子13,000円・父母等6,500円、給与条例第15条）。
             </p>
           </div>
@@ -1070,8 +1070,8 @@ function KaikeiSection() {
   );
 
   const inputCls =
-    'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
-  const labelCls = 'block text-xs font-medium text-charcoal/50 mb-1.5';
+    'w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
+  const labelCls = 'block text-xs font-medium text-charcoal/70 mb-1.5';
   const sliderCls = 'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1B4D4F]';
   const miniInputCls = 'w-20 bg-white/80 border border-gray-200 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all';
 
@@ -1124,11 +1124,11 @@ function KaikeiSection() {
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                 <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
-                <span className="text-xs text-charcoal/40">歳</span>
+                <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
           </div>
-          <p className="mt-4 text-xs text-charcoal/40">{job.subtitle}</p>
+          <p className="mt-4 text-xs text-charcoal/65">{job.subtitle}</p>
         </SectionCard>
 
         {/* 通勤 */}
@@ -1148,7 +1148,7 @@ function KaikeiSection() {
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={30} step={1} value={distanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                   <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
-                  <span className="text-xs text-charcoal/40">km</span>
+                  <span className="text-xs text-charcoal/65">km</span>
                 </div>
               </div>
             )}
@@ -1158,12 +1158,12 @@ function KaikeiSection() {
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={300000} step={1000} value={passNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
                   <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
-                  <span className="text-xs text-charcoal/40">円</span>
+                  <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>
             )}
           </div>
-          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+          <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
             <p>・交通機関利用者は定期券の額（月額限度 18,000円）</p>
             <p>・交通用具は距離区分に応じた定額（片道2km（直線1.5km）未満は支給なし）</p>
             {isChoujikan && <p>・長時間担当職員（長時間担当保育）は朝夕2回勤務のため通勤距離を1/2換算</p>}
@@ -1179,36 +1179,36 @@ function KaikeiSection() {
         <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in-delay-1">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="sm:col-span-1">
-              <p className="text-xs font-medium text-charcoal/40 mb-1">年収（税・社保控除前）</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">年収（税・社保控除前）</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-4xl sm:text-5xl font-bold text-accent tracking-tight">
                   {Math.round(annualIncome / 10000).toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">万円</span>
+                <span className="text-sm text-charcoal/65">万円</span>
               </div>
-              <p className="text-xs text-charcoal/30 mt-1">
+              <p className="text-xs text-charcoal/60 mt-1">
                 （{annualIncome.toLocaleString()}円）
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-charcoal/40 mb-1">概算手取り年収</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">概算手取り年収</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
                   {Math.round(takeHome / 10000).toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">万円</span>
+                <span className="text-sm text-charcoal/65">万円</span>
               </div>
-              <p className="text-xs text-charcoal/30 mt-1">
+              <p className="text-xs text-charcoal/60 mt-1">
                 （税・社保約21%控除の概算）
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-charcoal/40 mb-1">月収合計</p>
+              <p className="text-xs font-medium text-charcoal/65 mb-1">月収合計</p>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
                   {monthlyTotal.toLocaleString()}
                 </span>
-                <span className="text-sm text-charcoal/40">円</span>
+                <span className="text-sm text-charcoal/65">円</span>
               </div>
             </div>
           </div>
@@ -1239,7 +1239,7 @@ function KaikeiSection() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-charcoal/40">
+          <p className="mt-3 text-xs text-charcoal/65">
             ※ 月額報酬は地域手当（11%）込みの額です。
           </p>
         </SectionCard>
@@ -1252,7 +1252,7 @@ function KaikeiSection() {
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
                     6月期
-                    <span className="text-xs text-charcoal/40 ml-1">2.325ヶ月</span>
+                    <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kimatsuTeate.toLocaleString()}円
@@ -1261,7 +1261,7 @@ function KaikeiSection() {
                 <tr>
                   <td className="py-3 px-3 text-charcoal/70">
                     12月期
-                    <span className="text-xs text-charcoal/40 ml-1">2.325ヶ月</span>
+                    <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kinbenTeate.toLocaleString()}円
@@ -1276,7 +1276,7 @@ function KaikeiSection() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-charcoal/40">
+          <p className="mt-3 text-xs text-charcoal/65">
             ※ 一任用期間が6ヶ月以上、かつ一週間の勤務時間が15.5時間以上の場合に支給。新規採用者の場合、初回は一部支給。月額報酬を基礎にした概算です。
           </p>
         </SectionCard>
@@ -1300,11 +1300,11 @@ function KaikeiSection() {
               <table className="w-full text-sm min-w-[500px]">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年</th>
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">年齢</th>
-                    <th className="text-left py-2 px-2 text-charcoal/40 font-medium text-xs">経験年数</th>
-                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">月額報酬</th>
-                    <th className="text-right py-2 px-2 text-charcoal/40 font-medium text-xs">年収概算</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">年齢</th>
+                    <th className="text-left py-2 px-2 text-charcoal/65 font-medium text-xs">経験年数</th>
+                    <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">月額報酬</th>
+                    <th className="text-right py-2 px-2 text-charcoal/65 font-medium text-xs">年収概算</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1341,7 +1341,7 @@ function KaikeiSection() {
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
+            <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/65 space-y-1">
               <p>・昇給は経験1年ごとに+2号給、上限9年（10年目以降は同額）</p>
               <p>・任用は毎年4月1日〜翌年3月31日。再度の任用あり（4回、最長5年。5年経過後、再度受験可）</p>
             </div>
@@ -1356,9 +1356,9 @@ function KaikeiSection() {
             <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs w-24">項目</th>
+                  <th className="text-left py-2 px-3 text-charcoal/65 font-medium text-xs w-24">項目</th>
                   {kaikeiEmploymentColumns.map((col) => (
-                    <th key={col} className="text-left py-2 px-3 text-charcoal/40 font-medium text-xs">{col}</th>
+                    <th key={col} className="text-left py-2 px-3 text-charcoal/65 font-medium text-xs">{col}</th>
                   ))}
                 </tr>
               </thead>
@@ -1381,7 +1381,7 @@ function KaikeiSection() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-charcoal/40">{kaikeiEmploymentNote}</p>
+          <p className="mt-3 text-xs text-charcoal/65">{kaikeiEmploymentNote}</p>
         </SectionCard>
       </div>
 
@@ -1394,11 +1394,11 @@ function KaikeiSection() {
               <path d="M6 4v3M6 8.5v.01" />
             </svg>
           </div>
-          <div className="text-xs text-charcoal/40 leading-relaxed">
+          <div className="text-xs text-charcoal/65 leading-relaxed">
             <p>
               このシミュレーターは参考値を表示するものです。実際の給与は経験年数の認定、条例改正等により異なります。
             </p>
-            <p className="mt-2 text-charcoal/30">
+            <p className="mt-2 text-charcoal/60">
               ※ 手取り概算は税・社会保険料を約21%として計算した概算値です。実際の控除額は家族構成・各種控除により異なります。
             </p>
           </div>

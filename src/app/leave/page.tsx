@@ -155,7 +155,7 @@ export default function LeavePage() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat)}
-              className={`glass-card-strong rounded-2xl p-6 text-left hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group animate-fade-in-delay-${Math.min(i + 1, 4)}`}
+              className={`glass-card-strong rounded-2xl p-6 min-h-[44px] text-left hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group animate-fade-in-delay-${Math.min(i + 1, 4)}`}
             >
               <div className="w-10 h-10 rounded-xl bg-accent/5 flex items-center justify-center text-accent mb-3 group-hover:bg-accent/10 transition-colors">
                 {categoryIcons[cat.id] || cat.emoji}
@@ -163,7 +163,7 @@ export default function LeavePage() {
               <h2 className="text-lg font-semibold text-charcoal group-hover:text-accent transition-colors">
                 {cat.title}
               </h2>
-              <p className="mt-2 text-xs text-charcoal/40 leading-relaxed">
+              <p className="mt-2 text-xs text-charcoal/65 leading-relaxed">
                 {cat.description}
               </p>
               <div className="mt-4 flex items-center gap-1 text-xs text-accent/40 group-hover:text-accent/70 transition-colors">
@@ -179,7 +179,7 @@ export default function LeavePage() {
         <div>
           <button
             onClick={() => setSelectedCategory(null)}
-            className="flex items-center gap-2 text-sm text-charcoal/40 hover:text-accent transition-colors mb-8 animate-fade-in"
+            className="flex items-center gap-2 min-h-[44px] text-sm text-charcoal/65 hover:text-accent transition-colors mb-8 animate-fade-in"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <path d="M10 4L6 8l4 4" />
@@ -193,7 +193,7 @@ export default function LeavePage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-charcoal">{selectedCategory.title}</h2>
-              <p className="text-xs text-charcoal/40">{selectedCategory.description}</p>
+              <p className="text-xs text-charcoal/65">{selectedCategory.description}</p>
             </div>
           </div>
 
@@ -217,7 +217,7 @@ function LeaveCard({ item, index }: { item: LeaveItem; index: number }) {
     >
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full p-5 sm:p-6 text-left flex items-start justify-between gap-4"
+        className="w-full p-5 sm:p-6 min-h-[44px] text-left flex items-start justify-between gap-4"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -259,7 +259,7 @@ function LeaveCard({ item, index }: { item: LeaveItem; index: number }) {
             {/* 必要書類 */}
             {item.documents && (
               <div>
-                <span className="text-xs text-charcoal/40 font-medium inline-flex items-center gap-1">
+                <span className="text-xs text-charcoal/65 font-medium inline-flex items-center gap-1">
                   <DocumentIcon />
                   必要書類
                 </span>
@@ -320,7 +320,7 @@ function PayBadge({ type }: { type: string }) {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">{label}</span>
+      <span className="text-xs text-charcoal/65 font-medium">{label}</span>
       <p className="text-charcoal/70 mt-0.5 leading-relaxed whitespace-pre-line">{value}</p>
     </div>
   );
@@ -330,7 +330,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 function SubItemsList({ items }: { items: LeaveSubItem[] }) {
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">詳細</span>
+      <span className="text-xs text-charcoal/65 font-medium">詳細</span>
       <div className="mt-1.5 space-y-1.5">
         {items.map((sub, i) => (
           <div key={i} className="flex gap-2 items-start">
@@ -340,7 +340,7 @@ function SubItemsList({ items }: { items: LeaveSubItem[] }) {
             <div className="flex-1 min-w-0">
               <span className="text-charcoal/70 text-sm">{sub.value}</span>
               {sub.note && (
-                <span className="block text-xs text-charcoal/40 mt-0.5">{sub.note}</span>
+                <span className="block text-xs text-charcoal/65 mt-0.5">{sub.note}</span>
               )}
             </div>
           </div>
@@ -354,7 +354,7 @@ function SubItemsList({ items }: { items: LeaveSubItem[] }) {
 function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">付与日数（採用月・任用月別）</span>
+      <span className="text-xs text-charcoal/65 font-medium">付与日数（採用月・任用月別）</span>
       <div className="mt-1.5 overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
         <table className="min-w-full text-xs border-collapse">
           <thead>
@@ -362,7 +362,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
               {headers.map((h, i) => (
                 <th
                   key={i}
-                  className={`py-1.5 px-2 text-center font-medium text-charcoal/50 border-b border-gray-200 ${i === 0 ? 'text-left sticky left-0 bg-white/90 z-10' : ''}`}
+                  className={`py-1.5 px-2 text-center font-medium text-charcoal/70 border-b border-gray-200 ${i === 0 ? 'text-left sticky left-0 bg-white/90 z-10' : ''}`}
                 >
                   {h}
                 </th>
@@ -409,7 +409,7 @@ function PayTimeline({ steps }: { steps: TimelineStep[] }) {
 
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">給与支給の流れ</span>
+      <span className="text-xs text-charcoal/65 font-medium">給与支給の流れ</span>
       <div className="mt-2 flex flex-col gap-0">
         {steps.map((step, i) => (
           <div key={i} className="flex items-stretch gap-3">
@@ -429,7 +429,7 @@ function PayTimeline({ steps }: { steps: TimelineStep[] }) {
                 )}
               </div>
               {step.pay && (
-                <span className="text-[11px] text-charcoal/50 mt-0.5 block">{step.pay}</span>
+                <span className="text-[11px] text-charcoal/70 mt-0.5 block">{step.pay}</span>
               )}
             </div>
           </div>
@@ -451,12 +451,12 @@ function FamilyDaysChart({ entries }: { entries: FamilyChartEntry[] }) {
     4: 'bg-accent/10 text-accent/80 border-accent/15',
     3: 'bg-accent/8 text-accent/70 border-accent/12',
     2: 'bg-accent/5 text-accent/60 border-accent/10',
-    1: 'bg-gray-50 text-charcoal/50 border-gray-200',
+    1: 'bg-gray-50 text-charcoal/70 border-gray-200',
   };
 
   return (
     <div>
-      <span className="text-xs text-charcoal/40 font-medium">続柄別の付与日数</span>
+      <span className="text-xs text-charcoal/65 font-medium">続柄別の付与日数</span>
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
         {sorted.map((entry, i) => {
           const colorClass = dayColorMap[entry.days] || dayColorMap[1];
@@ -476,7 +476,7 @@ function FamilyDaysChart({ entries }: { entries: FamilyChartEntry[] }) {
           );
         })}
       </div>
-      <p className="text-[10px] text-charcoal/40 mt-2">
+      <p className="text-[10px] text-charcoal/65 mt-2">
         ※ 遠隔地の場合は1日加算（移動手段が分かる書類を添付）
       </p>
     </div>

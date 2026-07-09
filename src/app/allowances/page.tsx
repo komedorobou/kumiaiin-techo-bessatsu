@@ -55,10 +55,10 @@ export default function AllowancesPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2 min-h-[44px] inline-flex items-center justify-center text-xs sm:text-sm font-medium rounded-xl transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-accent text-white shadow-md'
-                  : 'text-charcoal/50 hover:text-accent hover:bg-accent/5'
+                  : 'text-charcoal/70 hover:text-accent hover:bg-accent/5'
               }`}
             >
               <span className="hidden sm:inline">{tab.label}</span>
@@ -125,8 +125,8 @@ function FuyoTeate() {
           <table className="w-full mt-4 text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 text-charcoal/40 font-medium text-xs">扶養親族</th>
-                <th className="text-right py-2 pl-4 text-charcoal/40 font-medium text-xs">月額</th>
+                <th className="text-left py-2 pr-4 text-charcoal/65 font-medium text-xs">扶養親族</th>
+                <th className="text-right py-2 pl-4 text-charcoal/65 font-medium text-xs">月額</th>
               </tr>
             </thead>
             <tbody>
@@ -136,16 +136,16 @@ function FuyoTeate() {
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-3 pr-4 text-charcoal/70">配偶者</td>
-                <td className="py-3 pl-4 text-right text-charcoal/40">支給なし</td>
+                <td className="py-3 pl-4 text-right text-charcoal/65">支給なし</td>
               </tr>
               <tr>
                 <td className="py-3 pr-4 text-charcoal/70">父母等</td>
-                <td className="py-3 pl-4 text-right text-charcoal/40">支給なし</td>
+                <td className="py-3 pl-4 text-right text-charcoal/65">支給なし</td>
               </tr>
             </tbody>
           </table>
         </TableWrapper>
-        <p className="mt-4 text-xs text-charcoal/40 leading-relaxed">
+        <p className="mt-4 text-xs text-charcoal/65 leading-relaxed">
           16歳から22歳の子については、上記の額に5,000円を加算します。（令和8年度以降の制度。配偶者・父母等の手当は令和8年度に廃止されました）
         </p>
       </SectionCard>
@@ -199,7 +199,7 @@ function JukyoTeate() {
       <SectionCard title="住居手当シミュレーター">
         <InfoBadge>正規職員・再任用職員（短時間含む）のみ</InfoBadge>
         <div className="mt-4">
-          <label className="block text-xs text-charcoal/40 mb-2">月額家賃（円）</label>
+          <label className="block text-xs text-charcoal/65 mb-2">月額家賃（円）</label>
           <div className="flex items-center gap-3">
             <input
               type="number"
@@ -208,7 +208,7 @@ function JukyoTeate() {
               placeholder="例: 55000"
               className="w-48 px-4 py-2.5 rounded-xl border border-gray-200 bg-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all"
             />
-            <span className="text-sm text-charcoal/40">円</span>
+            <span className="text-sm text-charcoal/65">円</span>
           </div>
           {allowance !== null && (
             <div className="mt-4 p-4 rounded-xl bg-accent border border-accent">
@@ -229,14 +229,14 @@ function JukyoTeate() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 text-charcoal/40 font-medium text-xs">家賃額</th>
-                <th className="text-left py-2 pl-4 text-charcoal/40 font-medium text-xs">手当額</th>
+                <th className="text-left py-2 pr-4 text-charcoal/65 font-medium text-xs">家賃額</th>
+                <th className="text-left py-2 pl-4 text-charcoal/65 font-medium text-xs">手当額</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-gray-100">
                 <td className="py-3 pr-4 text-charcoal/70">16,000円以下</td>
-                <td className="py-3 pl-4 text-charcoal/40">支給なし</td>
+                <td className="py-3 pl-4 text-charcoal/65">支給なし</td>
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-3 pr-4 text-charcoal/70">16,000円超 ~ 27,000円以下</td>
@@ -261,7 +261,7 @@ function JukyoTeate() {
           <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>生活の本拠となっている住宅を借り受けていること</li>
           <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>住宅の借主であること（配偶者・1親等の親族との共同名義を含む）</li>
         </ul>
-        <p className="mt-3 text-xs text-charcoal/40 leading-relaxed">
+        <p className="mt-3 text-xs text-charcoal/65 leading-relaxed">
           家賃に含まれないもの: 権利金、敷金、礼金、保証金、共益費、電気・水道・ガス等の料金
         </p>
       </SectionCard>
@@ -294,10 +294,10 @@ function KaikeiTsukin() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">距離区分（片道）</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自動車</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">二輪・原付</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自転車</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">距離区分（片道）</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">自動車</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">二輪・原付</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">自転車</th>
               </tr>
             </thead>
             <tbody>
@@ -343,7 +343,7 @@ function TsukinTeate() {
       <SectionCard title="通勤手当シミュレーター（交通用具）">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
-            <label className="block text-xs text-charcoal/40 mb-2">交通用具の種類</label>
+            <label className="block text-xs text-charcoal/65 mb-2">交通用具の種類</label>
             <select
               value={vehicleType}
               onChange={(e) => setVehicleType(e.target.value as VehicleType)}
@@ -355,7 +355,7 @@ function TsukinTeate() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-charcoal/40 mb-2">片道直線距離</label>
+            <label className="block text-xs text-charcoal/65 mb-2">片道直線距離</label>
             <select
               value={distanceIndex}
               onChange={(e) => setDistanceIndex(parseInt(e.target.value))}
@@ -377,7 +377,7 @@ function TsukinTeate() {
             <p className="text-xs text-white/70 mt-1">自転車は片道12km未満までが支給対象です（正規職員）</p>
           )}
         </div>
-        <p className="mt-3 text-xs text-charcoal/40">
+        <p className="mt-3 text-xs text-charcoal/65">
           25km以上は5km増すごとに3,900円加算（限度額46,300円）。片道2km未満は原則支給なし。
         </p>
       </SectionCard>
@@ -387,10 +387,10 @@ function TsukinTeate() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">距離区分</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自動車</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">二輪・原付</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自転車</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">距離区分</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">自動車</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">二輪・原付</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">自転車</th>
               </tr>
             </thead>
             <tbody>
@@ -459,10 +459,10 @@ function BonusSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs"></th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">6月30日</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">12月10日</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">合計</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs"></th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">6月30日</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">12月10日</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">合計</th>
               </tr>
             </thead>
             <tbody>
@@ -494,10 +494,10 @@ function BonusSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs"></th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">6月30日</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">12月10日</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">合計</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs"></th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">6月30日</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">12月10日</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">合計</th>
               </tr>
             </thead>
             <tbody>
@@ -541,7 +541,7 @@ function BonusSection() {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-xs text-charcoal/40">当該年度中に満44歳に達する者は10%加算</p>
+        <p className="mt-3 text-xs text-charcoal/65">当該年度中に満44歳に達する者は10%加算</p>
       </SectionCard>
 
       <SectionCard title="支給条件">
@@ -576,8 +576,8 @@ function KaikeiOvertimeSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">区分</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">割増率</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">区分</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">割増率</th>
               </tr>
             </thead>
             <tbody>
@@ -600,7 +600,7 @@ function KaikeiOvertimeSection() {
             </tbody>
           </table>
         </TableWrapper>
-        <p className="mt-3 text-xs text-charcoal/40">
+        <p className="mt-3 text-xs text-charcoal/65">
           正規勤務時間を超えて勤務した場合、1時間当たりの額を算出し支給されます。
         </p>
       </SectionCard>
@@ -618,9 +618,9 @@ function OvertimeSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">勤務区分</th>
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">時間帯</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">支給率</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">勤務区分</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">時間帯</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">支給率</th>
               </tr>
             </thead>
             <tbody>
@@ -661,7 +661,7 @@ function OvertimeSection() {
           <p className="font-mono text-center">
             （給料 + 給料 &times; 0.11）&times; 12 &divide; 1,860時間
           </p>
-          <p className="text-xs text-charcoal/40 text-center mt-2">
+          <p className="text-xs text-charcoal/65 text-center mt-2">
             1,860時間 = 52週 &times; 38.75時間 - 20日 &times; 7.75時間
           </p>
         </div>
@@ -685,12 +685,12 @@ function OvertimeSection() {
             { role: '主幹', amount: '38,000円' },
           ].map((item) => (
             <div key={item.role} className="bg-white/60 rounded-xl p-3 text-center border border-gray-100">
-              <div className="text-xs text-charcoal/50">{item.role}</div>
+              <div className="text-xs text-charcoal/70">{item.role}</div>
               <div className="text-lg font-bold text-accent mt-1">{item.amount}</div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-charcoal/40">管理職手当を支給されている職員には超過勤務手当・休日給は支給されません。</p>
+        <p className="text-xs text-charcoal/65">管理職手当を支給されている職員には超過勤務手当・休日給は支給されません。</p>
       </SectionCard>
 
       <SectionCard title="管理職員特別勤務手当">
@@ -704,13 +704,13 @@ function OvertimeSection() {
             { time: '1時間以上3時間未満', amount: '5,000円' },
           ].map((item) => (
             <div key={item.time} className="bg-white/60 rounded-xl p-3 text-center border border-gray-100">
-              <div className="text-xs text-charcoal/50">{item.time}</div>
+              <div className="text-xs text-charcoal/70">{item.time}</div>
               <div className="text-base font-bold text-accent mt-1">{item.amount}</div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-charcoal/40 mb-2">※61歳以降・再任用職員は上記の70%</p>
-        <p className="text-xs font-medium text-charcoal/50 mb-1">対象業務:</p>
+        <p className="text-xs text-charcoal/65 mb-2">※61歳以降・再任用職員は上記の70%</p>
+        <p className="text-xs font-medium text-charcoal/70 mb-1">対象業務:</p>
         <ul className="space-y-1 text-sm text-charcoal/60">
           <li>&bull; 選挙・住民投票に係る事務（前日・当日）</li>
           <li>&bull; 地域防災計画に基づく災害応急対策業務</li>
@@ -770,7 +770,7 @@ function TokushuSection() {
               <div className="flex items-start justify-between gap-2 flex-wrap">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-charcoal">{item.name}</p>
-                  <p className="text-xs text-charcoal/40 mt-0.5">{item.target}</p>
+                  <p className="text-xs text-charcoal/65 mt-0.5">{item.target}</p>
                 </div>
                 <span className="text-sm font-semibold text-accent whitespace-nowrap">{item.amount}</span>
               </div>
@@ -813,9 +813,9 @@ function TaishokuSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">勤続年数</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">自己都合</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">定年・応募認定等</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">勤続年数</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">自己都合</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">定年・応募認定等</th>
               </tr>
             </thead>
             <tbody>
@@ -829,7 +829,7 @@ function TaishokuSection() {
             </tbody>
           </table>
         </TableWrapper>
-        <p className="mt-3 text-xs text-charcoal/40">
+        <p className="mt-3 text-xs text-charcoal/65">
           例）定年退職・勤続35年・給料月額40万円の場合: 40万円 × 47.71月 ≒ 約1,908万円 ＋ 調整額
         </p>
       </SectionCard>
@@ -852,7 +852,7 @@ function TaishokuSection() {
           <li className="flex gap-2"><span className="text-accent/60 shrink-0">&bull;</span>勤続期間は在職月数で計算。休職・停職等の期間は一部除算あり</li>
           <li className="flex gap-2"><span className="text-red-400 shrink-0">&bull;</span>懲戒免職等の場合は全部又は一部が不支給となることがあります</li>
         </ul>
-        <p className="mt-4 text-xs text-charcoal/40">
+        <p className="mt-4 text-xs text-charcoal/65">
           出典: 職員の退職手当に関する条例（昭和32年12月20日条例第16号）内容現在 令和8年4月1日。実際の支給額は人事課にご確認ください。
         </p>
       </SectionCard>
@@ -985,8 +985,8 @@ function Over61Section() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-charcoal/40 font-medium text-xs">区分</th>
-                <th className="text-right py-2 text-charcoal/40 font-medium text-xs">月額</th>
+                <th className="text-left py-2 text-charcoal/65 font-medium text-xs">区分</th>
+                <th className="text-right py-2 text-charcoal/65 font-medium text-xs">月額</th>
               </tr>
             </thead>
             <tbody>
@@ -1065,7 +1065,7 @@ function PaymentSection() {
               <p className="text-sm font-medium text-charcoal mb-1">{section.title}</p>
               <ul className="space-y-0.5">
                 {section.items.map((item, i) => (
-                  <li key={i} className="text-xs text-charcoal/50">&bull; {item}</li>
+                  <li key={i} className="text-xs text-charcoal/70">&bull; {item}</li>
                 ))}
               </ul>
             </div>

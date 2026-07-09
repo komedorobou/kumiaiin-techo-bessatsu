@@ -97,7 +97,7 @@ export default function Home() {
                 <br />
                 労働組合
               </h1>
-              <p className="mt-6 text-base sm:text-lg text-charcoal/50 leading-relaxed max-w-lg">
+              <p className="mt-6 text-base sm:text-lg text-charcoal/70 leading-relaxed max-w-lg">
                 組合員手帳別冊のデジタル版。
                 <br className="hidden sm:block" />
                 給料・休暇・共済・規約の情報にすばやくアクセス。
@@ -124,7 +124,7 @@ export default function Home() {
                   <h2 className="text-lg font-semibold text-charcoal group-hover:text-accent transition-colors">
                     {feature.title}
                   </h2>
-                  <p className="mt-2 text-sm text-charcoal/50 leading-relaxed">
+                  <p className="mt-2 text-sm text-charcoal/70 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
