@@ -1062,9 +1062,9 @@ function KaikeiSection() {
 
   const monthlyTotal = monthly + tsukinTeate;
 
-  // ボーナス（期末・勤勉手当）: 常勤職員と同じ支給月数で概算
-  const kimatsuTeate = Math.floor(monthly * 2.5);
-  const kinbenTeate = Math.floor(monthly * 2.1);
+  // ボーナス（期末・勤勉手当）: 6月期2.325月＋12月期2.325月＝年間4.65月
+  const kimatsuTeate = Math.floor(monthly * 2.325);
+  const kinbenTeate = Math.floor(monthly * 2.325);
   const bonusAnnual = kimatsuTeate + kinbenTeate;
 
   const annualIncome = monthlyTotal * 12 + bonusAnnual;
@@ -1085,7 +1085,7 @@ function KaikeiSection() {
     for (let y = 0; y <= maxYears; y++) {
       const expYear = Math.min(yearNum + y, 10);
       const m = job.rows[expYear - 1].monthly;
-      const yBonus = Math.floor(m * 2.5) + Math.floor(m * 2.1);
+      const yBonus = Math.floor(m * 2.325) * 2;
       const yAnnual = (m + tsukinTeate) * 12 + yBonus;
       results.push({
         year: y,
@@ -1178,7 +1178,7 @@ function KaikeiSection() {
           </div>
           <div className="mt-4 p-3 rounded-xl bg-gray-50/80 text-xs text-charcoal/40 space-y-1">
             <p>・交通機関利用者は定期券の額（月額限度 18,000円）</p>
-            <p>・交通用具は距離区分に応じた定額（2km未満は支給なし）</p>
+            <p>・交通用具は距離区分に応じた定額（片道2km（直線1.5km）未満は支給なし）</p>
             {isChoujikan && <p>・長時間担当職員（長時間担当保育）は朝夕2回勤務のため通勤距離を1/2換算</p>}
           </div>
         </SectionCard>
@@ -1264,8 +1264,8 @@ function KaikeiSection() {
               <tbody>
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
-                    期末手当（年額）
-                    <span className="text-xs text-charcoal/40 ml-1">1.25 x 2回 = 2.5ヶ月</span>
+                    6月期
+                    <span className="text-xs text-charcoal/40 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kimatsuTeate.toLocaleString()}円
@@ -1273,15 +1273,15 @@ function KaikeiSection() {
                 </tr>
                 <tr>
                   <td className="py-3 px-3 text-charcoal/70">
-                    勤勉手当（年額）
-                    <span className="text-xs text-charcoal/40 ml-1">1.05 x 2回 = 2.1ヶ月</span>
+                    12月期
+                    <span className="text-xs text-charcoal/40 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal">
                     {kinbenTeate.toLocaleString()}円
                   </td>
                 </tr>
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
-                  <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計</td>
+                  <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計（4.65ヶ月）</td>
                   <td className="py-3 px-3 text-right font-bold text-accent text-lg">
                     {bonusAnnual.toLocaleString()}円
                   </td>
@@ -1290,7 +1290,7 @@ function KaikeiSection() {
             </table>
           </div>
           <p className="mt-3 text-xs text-charcoal/40">
-            ※ 月額報酬を基礎に常勤職員と同じ支給月数で計算した概算です。在職期間等により実際の支給額は異なります。
+            ※ 一任用期間が6ヶ月以上、かつ一週間の勤務時間が15.5時間以上の場合に支給。新規採用者の場合、初回は一部支給。月額報酬を基礎にした概算です。
           </p>
         </SectionCard>
       </div>
