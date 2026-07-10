@@ -569,7 +569,7 @@ export default function SalaryPage() {
               <label className={labelCls}>年齢</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
+                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value)))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
@@ -1136,7 +1136,7 @@ function KaikeiSection() {
               <label className={labelCls}>年齢</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(18, Math.min(65, Number(e.target.value))))} className={miniInputCls} />
+                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value)))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
