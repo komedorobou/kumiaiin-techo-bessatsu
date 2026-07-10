@@ -21,7 +21,7 @@ type CommuteMethod = 'transit' | 'car' | 'bike' | 'bicycle' | 'walk';
 
 interface PromotionPlan {
   id: number;
-  yearOffset: number;
+  yearOffset: number | '';
   targetGrade: number;
 }
 
@@ -412,7 +412,7 @@ export default function SalaryPage() {
     setPromotionPlans(prev => prev.filter(p => p.id !== id));
   }, []);
 
-  const updatePromotionPlan = useCallback((id: number, field: 'yearOffset' | 'targetGrade', value: number) => {
+  const updatePromotionPlan = useCallback((id: number, field: 'yearOffset' | 'targetGrade', value: number | '') => {
     setPromotionPlans(prev =>
       prev.map(p => (p.id === id ? { ...p, [field]: value } : p))
     );
@@ -435,7 +435,7 @@ export default function SalaryPage() {
     if (maxYears <= 0) return results;
 
     // Sort promotions by year
-    const sortedPlans = [...promotionPlans].sort((a, b) => a.yearOffset - b.yearOffset);
+    const sortedPlans = [...promotionPlans].sort((a, b) => (a.yearOffset === '' ? 0 : a.yearOffset) - (b.yearOffset === '' ? 0 : b.yearOffset));
 
     for (let y = 0; y <= maxYears; y++) {
       const curAge = ageNum + y;
@@ -599,7 +599,7 @@ export default function SalaryPage() {
               <label className={labelCls}>うち16〜22歳の子</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={numChildrenNum} value={numChildren16to22Num} onChange={(e) => setNumChildren16to22(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Math.max(0, Math.min(numChildrenNum, Number(e.target.value))))} className={miniInputCls} />
+                <input type="number" min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setNumChildren16to22(Math.max(0, Math.min(numChildrenNum, Number(e.target.value)))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
@@ -833,7 +833,8 @@ export default function SalaryPage() {
                     min={1}
                     max={35}
                     value={plan.yearOffset}
-                    onChange={(e) => updatePromotionPlan(plan.id, 'yearOffset', Math.max(1, Number(e.target.value)))}
+                    onChange={(e) => updatePromotionPlan(plan.id, 'yearOffset', e.target.value === '' ? '' : Number(e.target.value))}
+                    onBlur={(e) => updatePromotionPlan(plan.id, 'yearOffset', e.target.value === '' ? 1 : Math.max(1, Math.min(35, Number(e.target.value))))}
                     className="w-20 bg-white/80 border border-gray-200 rounded-xl px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-accent/20"
                   />
                   <span className="text-sm text-charcoal/60">年後に</span>
