@@ -276,6 +276,9 @@ export default function SalaryPage() {
   const [tableId, setTableId] = useState('gyosei');
   const [grade, setGrade] = useState(6);
   const [step, setStep] = useState(25);
+  // 等級逆引き（基本給→級・号給）
+  const [finderOpen, setFinderOpen] = useState(false);
+  const [finderSalary, setFinderSalary] = useState<number | ''>('');
   const [age, setAge] = useState<number | ''>('');
   const [position, setPosition] = useState<PositionLevel>('ippan');
 
@@ -347,6 +350,20 @@ export default function SalaryPage() {
     () => salaryTables.find((t) => t.id === tableId)!,
     [tableId]
   );
+
+  const finderResults = useMemo(() => {
+    if (finderSalary === '' || finderSalary < 130000) return [];
+    const hits: { grade: number; step: number; sal: number; diff: number }[] = [];
+    for (const [g, steps] of Object.entries(currentTable.data)) {
+      for (const [st, sal] of Object.entries(steps as Record<number, number>)) {
+        const diff = Math.abs((sal as number) - finderSalary);
+        if (diff <= 1200) hits.push({ grade: Number(g), step: Number(st), sal: sal as number, diff });
+      }
+    }
+    hits.sort((a, b) => a.diff - b.diff || a.grade - b.grade);
+    const exact = hits.filter(h => h.diff === 0);
+    return exact.length > 0 ? exact : hits.slice(0, 4);
+  }, [finderSalary, currentTable]);
 
   const maxGrades = currentTable.grades;
   const maxSteps = useMemo(() => {
@@ -602,6 +619,63 @@ export default function SalaryPage() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* 等級・号給の逆引き */}
+          <div className="mt-4">
+            <button
+              onClick={() => setFinderOpen(!finderOpen)}
+              className="text-xs font-medium text-accent underline underline-offset-2 min-h-[44px] inline-flex items-center"
+            >
+              等級・号給がわからない方はこちら
+            </button>
+            {finderOpen && (
+              <div className="mt-1 p-4 rounded-xl bg-accent-pale/60 space-y-3">
+                <p className="text-xs text-charcoal/70 leading-relaxed">
+                  給与明細の「基本給（給料月額）」の金額を入力してください。該当する等級・号給を探します。
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    onFocus={caretToEnd}
+                    value={finderSalary}
+                    placeholder="例: 263900"
+                    onChange={(e) => setFinderSalary(e.target.value === '' ? '' : Number(e.target.value.replace(/[^0-9]/g, '')))}
+                    className="w-40 bg-white/80 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  />
+                  <span className="text-sm text-charcoal/60">円</span>
+                </div>
+                {finderSalary !== '' && finderSalary >= 130000 && finderResults.length === 0 && (
+                  <p className="text-xs text-charcoal/70">
+                    この給料表に該当額が見つかりません。職種（給料表）が合っているか、金額に手当が混ざっていないか確認してください。
+                  </p>
+                )}
+                {finderResults.length > 0 && (
+                  <div className="space-y-2">
+                    {finderResults.some(h => h.diff > 0) && (
+                      <p className="text-xs text-charcoal/60">ぴったり一致は無いため、近い金額の候補を出しています。</p>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {finderResults.map((h) => (
+                        <button
+                          key={`${h.grade}-${h.step}`}
+                          onClick={() => {
+                            setGrade(h.grade);
+                            setStep(h.step);
+                            setActiveModel(null);
+                            setFinderOpen(false);
+                          }}
+                          className="px-3 py-2 min-h-[44px] rounded-xl bg-white border border-accent/30 text-sm font-medium text-accent hover:bg-accent hover:text-white transition-colors"
+                        >
+                          {h.grade}級 {h.step}号（{h.sal.toLocaleString()}円）に設定
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </SectionCard>
 
