@@ -206,10 +206,15 @@ function JukyoTeate() {
               inputMode="numeric"
               onFocus={(e) => {
                 const el = e.target;
-                requestAnimationFrame(() => {
-                  const len = el.value.length;
-                  try { el.setSelectionRange(len, len); } catch { /* noop */ }
-                });
+                const move = () => {
+                  try { const len = el.value.length; el.setSelectionRange(len, len); } catch { /* noop */ }
+                };
+                move();
+                requestAnimationFrame(move);
+                setTimeout(move, 50);
+                const onClick = () => move();
+                el.addEventListener('click', onClick, { once: true });
+                setTimeout(() => el.removeEventListener('click', onClick), 700);
               }}
               value={rent}
               onChange={(e) => setRent(e.target.value)}

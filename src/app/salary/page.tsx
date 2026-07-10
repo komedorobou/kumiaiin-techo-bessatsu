@@ -85,17 +85,24 @@ function getCommuteAllowanceVehicle(method: 'car' | 'bike' | 'bicycle', distance
 }
 
 
-/* 数値欄: フォーカス時にカーソルを数値の右端へ */
+/* 数値欄: フォーカス時にカーソルを数値の右端へ。
+   iOSはフォーカス後のタップ位置にカーソルを置き直すため、直後のclickでも右端へ寄せる */
 function caretToEnd(e: React.FocusEvent<HTMLInputElement>) {
   const el = e.target;
-  requestAnimationFrame(() => {
-    const len = el.value.length;
+  const move = () => {
     try {
+      const len = el.value.length;
       el.setSelectionRange(len, len);
     } catch {
       /* noop */
     }
-  });
+  };
+  move();
+  requestAnimationFrame(move);
+  setTimeout(move, 50);
+  const onClick = () => move();
+  el.addEventListener('click', onClick, { once: true });
+  setTimeout(() => el.removeEventListener('click', onClick), 700);
 }
 
 /* ===================== Calculation Helpers ===================== */
