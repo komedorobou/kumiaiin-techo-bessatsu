@@ -84,6 +84,20 @@ function getCommuteAllowanceVehicle(method: 'car' | 'bike' | 'bicycle', distance
   return row[method];
 }
 
+
+/* 数値欄: フォーカス時にカーソルを数値の右端へ */
+function caretToEnd(e: React.FocusEvent<HTMLInputElement>) {
+  const el = e.target;
+  requestAnimationFrame(() => {
+    const len = el.value.length;
+    try {
+      el.setSelectionRange(len, len);
+    } catch {
+      /* noop */
+    }
+  });
+}
+
 /* ===================== Calculation Helpers ===================== */
 
 function calcFuyoTeate(
@@ -569,7 +583,7 @@ export default function SalaryPage() {
               <label className={labelCls}>年齢</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value)))); }} className={miniInputCls} />
+                <input type="text" inputMode="numeric" onFocus={caretToEnd} min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value.replace(/[^0-9.]/g, '')))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value.replace(/[^0-9.]/g, ''))))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
@@ -591,7 +605,7 @@ export default function SalaryPage() {
               <label className={labelCls}>子の人数</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={6} value={numChildrenNum} onChange={(e) => { const v = Number(e.target.value); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={`${sliderCls} flex-1`} />
-                <input type="number" min={0} max={6} value={numChildren} placeholder="0" onChange={(e) => { if (e.target.value === '') { setNumChildren(''); return; } const v = Math.max(0, Math.min(6, Number(e.target.value))); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={miniInputCls} />
+                <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} max={6} value={numChildren} placeholder="0" onChange={(e) => { if (e.target.value === '') { setNumChildren(''); return; } const v = Math.max(0, Math.min(6, Number(e.target.value.replace(/[^0-9.]/g, '')))); setNumChildren(v); if (numChildren16to22Num > v) setNumChildren16to22(v); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
@@ -599,7 +613,7 @@ export default function SalaryPage() {
               <label className={labelCls}>うち16〜22歳の子</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={numChildrenNum} value={numChildren16to22Num} onChange={(e) => setNumChildren16to22(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setNumChildren16to22(Math.max(0, Math.min(numChildrenNum, Number(e.target.value)))); }} className={miniInputCls} />
+                <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} max={numChildrenNum} value={numChildren16to22} placeholder="0" onChange={(e) => setNumChildren16to22(e.target.value === '' ? '' : Number(e.target.value.replace(/[^0-9.]/g, '')))} onBlur={(e) => { if (e.target.value !== '') setNumChildren16to22(Math.max(0, Math.min(numChildrenNum, Number(e.target.value.replace(/[^0-9.]/g, ''))))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
@@ -607,7 +621,7 @@ export default function SalaryPage() {
               <label className={labelCls}>父母等の人数</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={0} max={4} value={numParentsNum} onChange={(e) => setNumParents(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={0} max={4} value={numParents} placeholder="0" onChange={(e) => setNumParents(e.target.value === '' ? '' : Math.max(0, Math.min(4, Number(e.target.value))))} className={miniInputCls} />
+                <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} max={4} value={numParents} placeholder="0" onChange={(e) => setNumParents(e.target.value === '' ? '' : Math.max(0, Math.min(4, Number(e.target.value.replace(/[^0-9.]/g, '')))))} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">人</span>
               </div>
             </div>
@@ -643,7 +657,7 @@ export default function SalaryPage() {
                 <label className={labelCls}>家賃額（月額）</label>
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={150000} step={1000} value={rentNum} onChange={(e) => setRent(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                  <input type="number" min={0} step={1000} value={rent} placeholder="55000" onChange={(e) => setRent(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} step={1000} value={rent} placeholder="55000" onChange={(e) => setRent(e.target.value === '' ? '' : Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, ''))))} className={miniInputCls} />
                   <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>
@@ -667,7 +681,7 @@ export default function SalaryPage() {
                 <label className={labelCls}>片道距離</label>
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={50} step={1} value={commuteDistanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                  <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <input type="text" inputMode="decimal" onFocus={caretToEnd} min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, ''))))} className={miniInputCls} />
                   <span className="text-xs text-charcoal/65">km</span>
                 </div>
               </div>
@@ -677,7 +691,7 @@ export default function SalaryPage() {
                 <label className={labelCls}>6ヶ月定期代</label>
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={300000} step={1000} value={sixMonthPassNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                  <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, ''))))} className={miniInputCls} />
                   <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>
@@ -829,11 +843,13 @@ export default function SalaryPage() {
               <div key={plan.id} className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    onFocus={caretToEnd}
                     min={1}
                     max={35}
                     value={plan.yearOffset}
-                    onChange={(e) => updatePromotionPlan(plan.id, 'yearOffset', e.target.value === '' ? '' : Number(e.target.value))}
+                    onChange={(e) => updatePromotionPlan(plan.id, 'yearOffset', e.target.value === '' ? '' : Number(e.target.value.replace(/[^0-9]/g, '')))}
                     onBlur={(e) => updatePromotionPlan(plan.id, 'yearOffset', e.target.value === '' ? 1 : Math.max(1, Math.min(35, Number(e.target.value))))}
                     className="w-20 bg-white/80 border border-gray-200 rounded-xl px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-accent/20"
                   />
@@ -1137,7 +1153,7 @@ function KaikeiSection() {
               <label className={labelCls}>年齢</label>
               <div className="flex items-center gap-2">
                 <input type="range" min={18} max={65} value={ageNum} onChange={(e) => setAge(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                <input type="number" min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value)))); }} className={miniInputCls} />
+                <input type="text" inputMode="numeric" onFocus={caretToEnd} min={18} max={65} value={age} placeholder="30" onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value.replace(/[^0-9.]/g, '')))} onBlur={(e) => { if (e.target.value !== '') setAge(Math.max(18, Math.min(65, Number(e.target.value.replace(/[^0-9.]/g, ''))))); }} className={miniInputCls} />
                 <span className="text-xs text-charcoal/65">歳</span>
               </div>
             </div>
@@ -1161,7 +1177,7 @@ function KaikeiSection() {
                 <label className={labelCls}>片道距離</label>
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={30} step={1} value={distanceNum} onChange={(e) => setCommuteDistance(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                  <input type="number" min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <input type="text" inputMode="decimal" onFocus={caretToEnd} min={0} max={100} step={0.5} value={commuteDistance} placeholder="10" onChange={(e) => setCommuteDistance(e.target.value === '' ? '' : Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, ''))))} className={miniInputCls} />
                   <span className="text-xs text-charcoal/65">km</span>
                 </div>
               </div>
@@ -1171,7 +1187,7 @@ function KaikeiSection() {
                 <label className={labelCls}>6ヶ月定期代</label>
                 <div className="flex items-center gap-2">
                   <input type="range" min={0} max={300000} step={1000} value={passNum} onChange={(e) => setSixMonthPass(Number(e.target.value))} className={`${sliderCls} flex-1`} />
-                  <input type="number" min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))} className={miniInputCls} />
+                  <input type="text" inputMode="numeric" onFocus={caretToEnd} min={0} step={1000} value={sixMonthPass} placeholder="60000" onChange={(e) => setSixMonthPass(e.target.value === '' ? '' : Math.max(0, Number(e.target.value.replace(/[^0-9.]/g, ''))))} className={miniInputCls} />
                   <span className="text-xs text-charcoal/65">円</span>
                 </div>
               </div>

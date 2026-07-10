@@ -202,7 +202,15 @@ function JukyoTeate() {
           <label className="block text-xs text-charcoal/65 mb-2">月額家賃（円）</label>
           <div className="flex items-center gap-3">
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              onFocus={(e) => {
+                const el = e.target;
+                requestAnimationFrame(() => {
+                  const len = el.value.length;
+                  try { el.setSelectionRange(len, len); } catch { /* noop */ }
+                });
+              }}
               value={rent}
               onChange={(e) => setRent(e.target.value)}
               placeholder="例: 55000"
