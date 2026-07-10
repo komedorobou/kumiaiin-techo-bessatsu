@@ -178,6 +178,15 @@ body {
   100% { transform: translate3d(5vmax, 4vmax, 0) scale(0.96) rotate(4deg); }
 }
 
+
+/* iOSズーム暴発防止: 16px未満の入力欄はフォーカス時に自動ズーム→画面が横ズレする。
+   モバイルではフォーム部品を16pxに統一する */
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
