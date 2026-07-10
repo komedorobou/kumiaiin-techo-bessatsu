@@ -177,8 +177,9 @@ function LineChart({ data }: { data: { label: string; value: number }[] }) {
   const chartH = H - PAD_T - PAD_B;
 
   const values = data.map(d => d.value);
+  // Y軸は0円起点（最小値起点だと61歳の7割措置がグラフ底=0円に落ちたように見える）
   const maxVal = Math.max(...values);
-  const minVal = Math.min(...values);
+  const minVal = 0;
   const range = maxVal - minVal || 1;
 
   const points = data.map((d, i) => {
