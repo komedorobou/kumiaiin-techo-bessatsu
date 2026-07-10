@@ -430,9 +430,9 @@ export default function SalaryPage() {
   );
 
   const bonusBase = baseSalary + fuyoTeate + chiikiTeate + yakushokuKasanGaku;
-  const kimatsuTeate = Math.floor(bonusBase * 2.5); // 1.25 * 2
-  const kinbenTeate = Math.floor(bonusBase * 2.1); // 1.05 * 2
-  const bonusAnnual = kimatsuTeate + kinbenTeate;
+  // 1期あたり: 期末1.25ヶ月 + 勤勉1.05ヶ月 = 2.3ヶ月（6月・12月とも同率）
+  const bonusPerTerm = Math.floor(bonusBase * 1.25) + Math.floor(bonusBase * 1.05);
+  const bonusAnnual = bonusPerTerm * 2;
 
   const annualIncome = monthlyTotal * 12 + bonusAnnual;
   const takeHome = Math.round(annualIncome * 0.79);
@@ -514,7 +514,7 @@ export default function SalaryPage() {
       const yPosRate = getPositionAddRate(position, curAge);
       const yYakushoku = Math.floor((effectiveSalary + effectiveSalary * 0.11) * yPosRate);
       const yBonusBase = effectiveSalary + yFuyo + yChiiki + yYakushoku;
-      const yBonus = Math.floor(yBonusBase * 2.5) + Math.floor(yBonusBase * 2.1);
+      const yBonus = (Math.floor(yBonusBase * 1.25) + Math.floor(yBonusBase * 1.05)) * 2;
       const yAnnual = yMonthly * 12 + yBonus;
 
       results.push({
@@ -885,24 +885,24 @@ export default function SalaryPage() {
                 </tr>
                 <tr>
                   <td className="py-3 px-3 text-charcoal/70">
-                    期末手当（年額）
-                    <span className="text-xs text-charcoal/65 ml-1">1.25 x 2回 = 2.5ヶ月</span>
+                    夏のボーナス（6月支給）
+                    <span className="text-xs text-charcoal/65 ml-1 block sm:inline">期末1.25 + 勤勉1.05 = 2.3ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
-                    {kimatsuTeate.toLocaleString()}円
+                  <td className="py-3 px-3 text-right font-bold text-charcoal whitespace-nowrap">
+                    {bonusPerTerm.toLocaleString()}円
                   </td>
                 </tr>
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
-                    勤勉手当（年額）
-                    <span className="text-xs text-charcoal/65 ml-1">1.05 x 2回 = 2.1ヶ月</span>
+                    冬のボーナス（12月支給）
+                    <span className="text-xs text-charcoal/65 ml-1 block sm:inline">期末1.25 + 勤勉1.05 = 2.3ヶ月</span>
                   </td>
-                  <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
-                    {kinbenTeate.toLocaleString()}円
+                  <td className="py-3 px-3 text-right font-bold text-charcoal whitespace-nowrap">
+                    {bonusPerTerm.toLocaleString()}円
                   </td>
                 </tr>
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
-                  <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計</td>
+                  <td className="py-3 px-3 font-semibold text-charcoal">年間合計（4.6ヶ月）</td>
                   <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {bonusAnnual.toLocaleString()}円
                   </td>
@@ -1362,7 +1362,7 @@ function KaikeiSection() {
               <tbody>
                 <tr className="bg-gray-50/50">
                   <td className="py-3 px-3 text-charcoal/70">
-                    6月期
+                    夏のボーナス（6月支給）
                     <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
@@ -1371,7 +1371,7 @@ function KaikeiSection() {
                 </tr>
                 <tr>
                   <td className="py-3 px-3 text-charcoal/70">
-                    12月期
+                    冬のボーナス（12月支給）
                     <span className="text-xs text-charcoal/65 ml-1">2.325ヶ月</span>
                   </td>
                   <td className="py-3 px-3 text-right font-semibold text-charcoal whitespace-nowrap">
@@ -1379,7 +1379,7 @@ function KaikeiSection() {
                   </td>
                 </tr>
                 <tr className="border-t-2 border-accent/20 bg-accent/5">
-                  <td className="py-3 px-3 font-semibold text-charcoal">ボーナス年額合計（4.65ヶ月）</td>
+                  <td className="py-3 px-3 font-semibold text-charcoal">年間合計（4.65ヶ月）</td>
                   <td className="py-3 px-3 text-right font-bold text-accent text-lg whitespace-nowrap">
                     {bonusAnnual.toLocaleString()}円
                   </td>
