@@ -4,7 +4,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/kumiaiin-techo-bessatsu' : '',
   trailingSlash: true,
 };
 
