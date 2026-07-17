@@ -67,7 +67,7 @@ const features = [
     href: '/insurance',
     iconKey: 'kyosai',
     title: '共済ガイド',
-    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、組織共済（弔慰金）を確認できる。',
+    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、慶弔費を確認できる。',
   },
   {
     href: '/rules',

@@ -25,6 +25,7 @@ import {
   sekkotsuinNotes,
   kyosaiContact,
   mutualAidBenefits,
+  mutualAidNotes,
   SetKyosaiPlan,
 } from '@/data/insuranceData';
 import {
@@ -74,14 +75,14 @@ export default function InsurancePage() {
   return (
     <PageLayout
       title="共済ガイド"
-      subtitle="セット共済・火災共済・組織共済の内容を確認できます"
+      subtitle="セット共済・火災共済・慶弔費の内容を確認できます"
     >
       {/* 共済の種類 */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6 animate-fade-in">
         {([
           ['set', 'セット共済'],
           ['kasai', '火災共済'],
-          ['soshiki', '組織共済（弔慰金）'],
+          ['soshiki', '慶弔費'],
         ] as const).map(([val, label]) => (
           <button
             key={val}
@@ -1028,31 +1029,54 @@ function ClaimSection() {
   );
 }
 
-/* ==================== 慶弔見舞金 ==================== */
+/* ==================== 慶弔費 ==================== */
 
 function BenefitsList() {
   return (
     <div className="glass-card-strong rounded-2xl p-6 sm:p-8 animate-fade-in">
-      <h2 className="text-lg font-bold text-charcoal mb-1">組織共済（弔慰金）</h2>
+      <h2 className="text-lg font-bold text-charcoal mb-1">慶弔費</h2>
       <p className="text-xs text-charcoal/65 mb-6">
-        市職労共済規程 慶弔見舞金 ― 事由発生日より1年以内に請求してください
+        組合には下記の表のとおり御祝金などの慶弔金があります
       </p>
 
-      <div className="space-y-0">
-        {mutualAidBenefits.map((item, i) => (
-          <div
-            key={i}
-            className={`flex items-center justify-between py-4 ${
-              i < mutualAidBenefits.length - 1 ? 'border-b border-gray-50' : ''
-            }`}
-          >
-            <span className="text-sm text-charcoal/70 flex-1 pr-4">{item.event}</span>
-            <span className="text-sm font-semibold text-accent whitespace-nowrap">
-              {item.amount}
-            </span>
+      <div className="space-y-6">
+        {mutualAidBenefits.map((group) => (
+          <div key={group.category}>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-bold tracking-wide">
+                {group.category}
+              </span>
+              {'note' in group && group.note && (
+                <span className="text-xs text-charcoal/55">{group.note}</span>
+              )}
+            </div>
+            <div>
+              {group.items.map((item, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center justify-between gap-4 py-3 ${
+                    i < group.items.length - 1 ? 'border-b border-gray-50' : ''
+                  }`}
+                >
+                  <span className="text-sm text-charcoal/70 flex-1">{item.event}</span>
+                  <span className="text-sm font-semibold text-accent whitespace-nowrap">
+                    {item.amount}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
+
+      <ul className="mt-6 space-y-1">
+        {mutualAidNotes.map((e, i) => (
+          <li key={i} className="flex gap-2 text-xs text-charcoal/60 leading-relaxed">
+            <span className="text-accent/60 shrink-0">&bull;</span>
+            {e}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
