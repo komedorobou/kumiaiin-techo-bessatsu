@@ -481,21 +481,21 @@ function BonusSection() {
             <tbody>
               <tr className="border-b border-gray-100">
                 <td className="py-3 text-charcoal/70">期末手当</td>
-                <td className="py-3 text-right font-semibold text-accent">1.25ヶ月</td>
-                <td className="py-3 text-right font-semibold text-accent">1.25ヶ月</td>
-                <td className="py-3 text-right font-bold text-accent">2.5ヶ月</td>
+                <td className="py-3 text-right font-semibold text-accent">1.2625ヶ月</td>
+                <td className="py-3 text-right font-semibold text-accent">1.2625ヶ月</td>
+                <td className="py-3 text-right font-bold text-accent">2.525ヶ月</td>
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-3 text-charcoal/70">勤勉手当</td>
-                <td className="py-3 text-right font-semibold text-accent">1.05ヶ月</td>
-                <td className="py-3 text-right font-semibold text-accent">1.05ヶ月</td>
-                <td className="py-3 text-right font-bold text-accent">2.1ヶ月</td>
+                <td className="py-3 text-right font-semibold text-accent">1.0625ヶ月</td>
+                <td className="py-3 text-right font-semibold text-accent">1.0625ヶ月</td>
+                <td className="py-3 text-right font-bold text-accent">2.125ヶ月</td>
               </tr>
               <tr>
                 <td className="py-3 font-semibold text-charcoal">合計</td>
-                <td className="py-3 text-right font-bold text-accent">2.3ヶ月</td>
-                <td className="py-3 text-right font-bold text-accent">2.3ヶ月</td>
-                <td className="py-3 text-right font-bold text-accent text-lg">4.6ヶ月</td>
+                <td className="py-3 text-right font-bold text-accent">2.325ヶ月</td>
+                <td className="py-3 text-right font-bold text-accent">2.325ヶ月</td>
+                <td className="py-3 text-right font-bold text-accent text-lg">4.65ヶ月</td>
               </tr>
             </tbody>
           </table>
