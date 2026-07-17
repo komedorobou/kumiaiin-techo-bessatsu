@@ -1227,7 +1227,7 @@ function KaikeiSection() {
               <label className={labelCls}>何年目</label>
               <select value={yearNum} onChange={(e) => setYearNum(Number(e.target.value))} className={inputCls}>
                 {Array.from({ length: 10 }, (_, i) => i + 1).map((y) => (
-                  <option key={y} value={y}>{y}年目</option>
+                  <option key={y} value={y}>{y === 10 ? '10年目以降' : `${y}年目`}</option>
                 ))}
               </select>
             </div>
@@ -1332,7 +1332,7 @@ function KaikeiSection() {
             <table className="w-full text-sm">
               <tbody>
                 {[
-                  [`月額報酬（${job.name}・${yearNum}年目${hours !== null ? `・週${hours}時間` : ''}）`, monthly],
+                  [`月額報酬（${job.name}・${yearNum === 10 ? '10年目以降' : `${yearNum}年目`}${hours !== null ? `・週${hours}時間` : ''}）`, monthly],
                   ['通勤手当', tsukinTeate],
                 ].map(([label, val], i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
