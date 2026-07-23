@@ -57,13 +57,14 @@ export function positionKanriYen(p: PositionLevel): number {
 }
 
 // 期末・勤勉手当の役職加算率（給与規則別表第2の級区分に対応）。
-// ※役職なし（一般）への年齢一律加算（本番の「44歳10%」）は例規に根拠がないため採らず0とする。
-export function getPositionAddRate(p: PositionLevel): number {
+// 一般職員の「44歳以上10%」は組合員手帳別冊（令和8年4月1日現在）に基づく労使運用値（従来の本番実装どおり）。
+export function getPositionAddRate(p: PositionLevel, age: number): number {
   if (p === 'buchou' || p === 'riji') return 0.20;
   if (p === 'kachou' || p === 'sanji') return 0.15;
   if (p === 'kachohosa' || p === 'shukan') return 0.10;
   if (p === 'tantouchou' || p === 'shusa' || p === 'shunin') return 0.05;
-  return 0; // 一般
+  if (age >= 44) return 0.10; // 一般・44歳以上（手帳別冊・労使運用）
+  return 0; // 一般・44歳未満
 }
 
 /* ---------- 扶養手当（配偶者は対象外・子・16〜22歳加算・父母等） ----------

@@ -98,20 +98,20 @@ export function raiseStep(age: number, slow = false): number {
 /* ---------- 賞与（役職加算は役職→率。給与条例第25条第6項／規則別表第2） ----------
  * 加算額＝floor((給料月額＋その地域手当) × 役職加算率)。本番実装と同一。
  */
-export function positionAddGaku(base: number, position: PositionLevel): number {
-  const rate = getPositionAddRate(position);
+export function positionAddGaku(base: number, position: PositionLevel, age: number): number {
+  const rate = getPositionAddRate(position, age);
   if (rate <= 0) return 0;
   return Math.floor((base + (base * chiikiPct) / 100) * rate);
 }
-export function bonusBaseOf(base: number, fuyo: number, position: PositionLevel): number {
-  return base + fuyo + calcChiikiForBonus(base, fuyo) + positionAddGaku(base, position);
+export function bonusBaseOf(base: number, fuyo: number, position: PositionLevel, age: number): number {
+  return base + fuyo + calcChiikiForBonus(base, fuyo) + positionAddGaku(base, position, age);
 }
-export function bonusTerm(base: number, fuyo: number, position: PositionLevel, term: 'jun' | 'dec'): number {
-  const b = bonusBaseOf(base, fuyo, position);
+export function bonusTerm(base: number, fuyo: number, position: PositionLevel, age: number, term: 'jun' | 'dec'): number {
+  const b = bonusBaseOf(base, fuyo, position, age);
   return Math.floor(b * kimatsu[term]) + Math.floor(b * kinben[term]);
 }
-export function bonusAnnual(base: number, fuyo: number, position: PositionLevel): number {
-  return bonusTerm(base, fuyo, position, 'jun') + bonusTerm(base, fuyo, position, 'dec');
+export function bonusAnnual(base: number, fuyo: number, position: PositionLevel, age: number): number {
+  return bonusTerm(base, fuyo, position, age, 'jun') + bonusTerm(base, fuyo, position, age, 'dec');
 }
 
 /* ---------- 再エクスポート ---------- */

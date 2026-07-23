@@ -282,12 +282,12 @@ export default function SalaryPage() {
 
   const monthlyTotal = baseSalary + kanriTeate + fuyoTeate + chiikiTeate + jukyoTeate + tsukinTeate;
 
-  const positionAddRate = getPositionAddRate(position);
-  const positionAddAmount = positionAddGaku(baseSalary, position);
-  const bonusBase = bonusBaseOf(baseSalary, fuyoTeate, position);
-  const bonusJun = bonusTerm(baseSalary, fuyoTeate, position, 'jun');
-  const bonusDec = bonusTerm(baseSalary, fuyoTeate, position, 'dec');
-  const bonusYear = bonusAnnual(baseSalary, fuyoTeate, position);
+  const positionAddRate = getPositionAddRate(position, ageNum);
+  const positionAddAmount = positionAddGaku(baseSalary, position, ageNum);
+  const bonusBase = bonusBaseOf(baseSalary, fuyoTeate, position, ageNum);
+  const bonusJun = bonusTerm(baseSalary, fuyoTeate, position, ageNum, 'jun');
+  const bonusDec = bonusTerm(baseSalary, fuyoTeate, position, ageNum, 'dec');
+  const bonusYear = bonusAnnual(baseSalary, fuyoTeate, position, ageNum);
 
   const annualIncome = monthlyTotal * 12 + bonusYear;
   const takeHome = Math.round(annualIncome * TAKEHOME_RATE);
@@ -342,7 +342,7 @@ export default function SalaryPage() {
       const yTsukin =
         commuteMethod === 'walk' ? 0 : commuteMethod === 'transit' ? commuteTransitYen(sixMonthPassNum) : commuteVehicleYen(commuteDistanceNum, vehicleKind);
       const yMonthly = effSal + yKanri + yFuyo + yChiiki + yJukyo + yTsukin;
-      const yBonus = bonusAnnual(effSal, yFuyo, position);
+      const yBonus = bonusAnnual(effSal, yFuyo, position, curAge);
       const yAnnual = yMonthly * 12 + yBonus;
 
       results.push({ year: y, age: curAge, grade: curGrade, step: curStep, monthlySalary: effSal, annualIncome: yAnnual });
