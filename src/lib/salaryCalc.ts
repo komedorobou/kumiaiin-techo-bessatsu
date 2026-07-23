@@ -109,7 +109,7 @@ export function bonusBaseOf(base: number, fuyo: number, position: PositionLevel,
 }
 /** 勤勉手当の基礎額＝期末手当基礎額と同一（扶養込み）。
  *  岸和田は給与条例第26条第3項が第25条第5項（給料及び扶養手当の月額並びに地域手当の合計額）を
- *  読替えなしで勤勉手当基礎額に準用するため、貝塚・高石と異なり扶養手当を含むのが条例どおり。 */
+ *  読替えなしで勤勉手当基礎額に準用するため、読替えで扶養を除外する市と異なり扶養手当を含むのが条例どおり。 */
 export function bonusKinbenBaseOf(base: number, fuyo: number, position: PositionLevel, age: number): number {
   return bonusBaseOf(base, fuyo, position, age);
 }
