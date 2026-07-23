@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 import KaikeiKishiwada from '@/components/KaikeiKishiwada';
+import SalaryKigyodan from '@/components/SalaryKigyodan';
 import { seishokuTables, simTables, getSalary, getTable, stepCount, factValue, getFact, gradeLabel } from '@/lib/facts';
 import { fuyoUnitAmounts, defaultPromotionTarget, entryGrade, type VehicleKind, type PositionLevel } from '@/lib/slots/kishiwada';
 import { calcJukyo } from '@/lib/formulas/jukyo';
@@ -26,6 +27,7 @@ import {
   raiseStopAge,
   seniorStartAge,
   bonusBaseOf,
+  bonusKinbenBaseOf,
   bonusTerm,
   bonusAnnual,
 } from '@/lib/salaryCalc';
@@ -285,6 +287,7 @@ export default function SalaryPage() {
   const positionAddRate = getPositionAddRate(position, ageNum);
   const positionAddAmount = positionAddGaku(baseSalary, position, ageNum);
   const bonusBase = bonusBaseOf(baseSalary, fuyoTeate, position, ageNum);
+  const bonusKinbenBase = bonusKinbenBaseOf(baseSalary, fuyoTeate, position, ageNum);
   const bonusJun = bonusTerm(baseSalary, fuyoTeate, position, ageNum, 'jun');
   const bonusDec = bonusTerm(baseSalary, fuyoTeate, position, ageNum, 'dec');
   const bonusYear = bonusAnnual(baseSalary, fuyoTeate, position, ageNum);
@@ -624,11 +627,19 @@ export default function SalaryPage() {
                 <table className="w-full text-sm">
                   <tbody>
                     <tr className="bg-gray-50/50">
-                      <td className="py-3 px-3 text-charcoal/70">期末勤勉手当基礎額</td>
+                      <td className="py-3 px-3 text-charcoal/70">期末手当 基礎額</td>
                       <td className="py-3 px-3 text-right text-charcoal whitespace-nowrap">{bonusBase.toLocaleString()}円</td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-3 text-charcoal/70 text-xs pl-6">基礎＝給料＋扶養手当＋これらに対する地域手当（管理職手当は含めない）</td>
+                      <td className="py-3 px-3 text-charcoal/70 text-xs pl-6">給料＋扶養手当＋これらに対する地域手当（管理職手当は含めない）</td>
+                      <td></td>
+                    </tr>
+                    <tr className="bg-gray-50/50">
+                      <td className="py-3 px-3 text-charcoal/70">勤勉手当 基礎額</td>
+                      <td className="py-3 px-3 text-right text-charcoal whitespace-nowrap">{bonusKinbenBase.toLocaleString()}円</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-3 text-charcoal/70 text-xs pl-6">給料＋扶養手当＋これらに対する地域手当（期末手当と同じ基礎・給与条例第26条第3項）</td>
                       <td></td>
                     </tr>
                     <tr>
@@ -828,6 +839,8 @@ export default function SalaryPage() {
       )}
 
       {staffMode === 'sonota' && <KaikeiKishiwada />}
+
+      {staffMode === 'kigyodan' && <SalaryKigyodan />}
     </PageLayout>
   );
 }

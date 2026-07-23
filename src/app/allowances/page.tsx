@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import PageLayout from '@/components/PageLayout';
+import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
+import AllowancesKigyodan from '@/components/AllowancesKigyodan';
 import { getFact, factValue, ordinanceName, getKaikei, seishokuTables, gradeLabel } from '@/lib/facts';
 import { chiikiPct, bonusRates, annualBonusMonths, kanriList } from '@/lib/salaryCalc';
 import { calcJukyo } from '@/lib/formulas/jukyo';
@@ -47,6 +49,7 @@ const tabDefs: { key: AllowTab; label: string; present: boolean }[] = [
 const allowTabs = tabDefs.filter((t) => t.present);
 
 export default function AllowancesPage() {
+  const { mode } = useStaffMode();
   const [tab, setTab] = useState<AllowTab>(allowTabs[0].key);
   const [rent, setRent] = useState<number | ''>('');
   const jukyo = rent === '' ? 0 : calcJukyo(rent);
@@ -76,8 +79,18 @@ export default function AllowancesPage() {
   const yakushokuKasan = getFact<string>('yakushokuKasan');
   const kCommute = getKaikei<any>('commute');
 
+  if (mode === 'kigyodan') {
+    return (
+      <PageLayout title="手当ガイド" subtitle="職員区分ごとの各種手当">
+        <StaffModeToggle />
+        <AllowancesKigyodan />
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout title="手当ガイド" subtitle="岸和田市職員給与条例にもとづく各種手当">
+      <StaffModeToggle />
       <div className="flex gap-2 mb-6 flex-wrap">
         {allowTabs.map(({ key, label }) => (
           <button key={key} onClick={() => setTab(key)} className={`px-4 py-2 min-h-[44px] inline-flex items-center justify-center rounded-full text-sm font-medium transition-all active:scale-95 ${tab === key ? 'bg-accent text-white' : 'bg-white text-charcoal/70 hover:text-accent hover:bg-accent/5'}`}>
@@ -114,7 +127,7 @@ export default function AllowancesPage() {
             </tbody>
           </table>
           <p className="mt-3 text-xs text-charcoal/60">
-            「◯ヶ月分」は基礎額（{bonusBaseDef?.value}）に対する倍率。基準日は6月1日・12月1日。勤勉手当は「支給総額の上限率」で、実支給は人事評価（成績率）で変動します。在職期間が基準日前6ヶ月に満たない場合は期間率で減額されます。
+            「◯ヶ月分」は基礎額に対する倍率。基準日は6月1日・12月1日。期末手当の基礎額は給料＋扶養手当＋これらに対する地域手当、勤勉手当の基礎額は給料＋その地域手当で<b>扶養手当を含みません</b>（給与条例第26条第3項）。勤勉手当は「支給総額の上限率」で、実支給は人事評価（成績率）で変動します。在職期間が基準日前6ヶ月に満たない場合は期間率で減額されます。
           </p>
           {yakushokuKasanTable.length > 0 && (
             <div className="mt-5">

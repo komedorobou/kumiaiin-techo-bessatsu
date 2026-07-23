@@ -45,19 +45,19 @@ const features = [
     href: '/salary',
     iconKey: 'salary',
     title: '給料シミュレーター',
-    description: '職種・等級・号給を選んで月額給料を確認。将来の昇給や60歳特例まで試算できます。',
+    description: '職種・等級・号給を選んで月額給料を確認。将来の昇給や60歳特例まで試算できます。大阪広域水道企業団の企業職給料表にも対応。',
   },
   {
     href: '/leave',
     iconKey: 'leave',
     title: '休暇ガイド',
-    description: '勤務時間・年休・特別休暇・忌引・病気休暇など岸和田市の休暇制度を確認。',
+    description: '勤務時間・年休・特別休暇・忌引・病気休暇などの休暇制度を確認。大阪広域水道企業団の職員区分にも対応。',
   },
   {
     href: '/allowances',
     iconKey: 'allowance',
     title: '手当ガイド',
-    description: '賞与・扶養・住居・地域・通勤・時間外・管理職など各種手当を岸和田市の条例で確認。',
+    description: '賞与・扶養・住居・地域・通勤・時間外・管理職など各種手当を確認。大阪広域水道企業団の給与規程にも対応。',
   },
   {
     href: '/insurance',

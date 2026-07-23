@@ -2,7 +2,9 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-export type StaffMode = 'seishoku' | 'sonota';
+export type StaffMode = 'seishoku' | 'sonota' | 'kigyodan';
+
+const STAFF_MODES: StaffMode[] = ['seishoku', 'sonota', 'kigyodan'];
 
 const StaffModeContext = createContext<{
   mode: StaffMode;
@@ -14,7 +16,7 @@ export function StaffModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('staffMode');
-    if (saved === 'sonota' || saved === 'seishoku') setModeState(saved);
+    if (saved && (STAFF_MODES as string[]).includes(saved)) setModeState(saved as StaffMode);
   }, []);
 
   const setMode = (m: StaffMode) => {
@@ -44,6 +46,7 @@ export function StaffModeToggle() {
         {([
           ['seishoku', '正職員'],
           ['sonota', '会計年度任用職員'],
+          ['kigyodan', '大阪広域水道企業団'],
         ] as const).map(([val, label]) => (
           <button
             key={val}

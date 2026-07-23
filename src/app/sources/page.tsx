@@ -1,6 +1,15 @@
 import PageLayout from '@/components/PageLayout';
 import factsData from '@/data/facts.json';
+import kigyodanFactsData from '@/data/kigyodan_facts.json';
 import { ordinanceName, salaryTables, source, notFound, formatHm } from '@/lib/facts';
+import {
+  ordinanceName as kigyodanOrdinanceName,
+  ordinanceCode as kigyodanOrdinanceCode,
+  ordinances as kigyodanOrdinances,
+  salaryTables as kigyodanSalaryTables,
+  source as kigyodanSource,
+  notFound as kigyodanNotFound,
+} from '@/lib/kigyodan/facts';
 import { jaLabel, nestedLabel } from './labels';
 
 /**
@@ -55,9 +64,24 @@ function flatten(obj: Record<string, any>): Row[] {
 const factRows = flatten(factsData.facts as Record<string, any>);
 const leaveRows = flatten(factsData.leave as Record<string, any>);
 const kaikeiRows = flatten(factsData.kaikei as Record<string, any>);
-const totalRows = factRows.length + leaveRows.length + kaikeiRows.length + salaryTables.length + notFound.length;
 
-function CardList({ title, rows }: { title: string; rows: Row[] }) {
+// 大阪広域水道企業団（別データ源）
+const kFactRows = flatten(kigyodanFactsData.facts as Record<string, any>);
+const kLeaveSource = kigyodanFactsData.leave as Record<string, any>;
+const kLeaveRows = flatten({
+  types: kLeaveSource.types,
+  specialLeave: kLeaveSource.specialLeave,
+  mourning: kLeaveSource.mourning,
+  midYearHire: kLeaveSource.midYearHire,
+  summerLeave: kLeaveSource.summerLeave,
+  sickLeave: kLeaveSource.sickLeave,
+});
+
+const totalRows =
+  factRows.length + leaveRows.length + kaikeiRows.length + salaryTables.length + notFound.length +
+  kFactRows.length + kLeaveRows.length + kigyodanSalaryTables.length + kigyodanNotFound.length;
+
+function CardList({ title, rows, resolveOrd = ordinanceName }: { title: string; rows: Row[]; resolveOrd?: (k: string) => string }) {
   return (
     <section className="mb-10">
       <h2 className="text-base font-bold text-charcoal mb-3">
@@ -73,7 +97,7 @@ function CardList({ title, rows }: { title: string; rows: Row[] }) {
             </div>
             {(r.ord || r.article) && (
               <p className="mt-1.5 text-xs text-charcoal/60">
-                {r.ord ? ordinanceName(r.ord) : ''}{r.article ? `　${r.article}` : ''}
+                {r.ord ? resolveOrd(r.ord) : ''}{r.article ? `　${r.article}` : ''}
               </p>
             )}
             {r.quote && (
@@ -131,6 +155,74 @@ export default function SourcesPage() {
         </h2>
         <div className="space-y-2">
           {notFound.map((n, i) => (
+            <div key={i} className="src-row rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3">
+              <p className="text-xs font-semibold text-amber-900">{jaLabel(n.key.split('.').pop() ?? n.key)}</p>
+              <p className="mt-0.5 text-xs text-amber-800/90 leading-relaxed">{n.reason}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== 大阪広域水道企業団（別データ源） ===== */}
+      <div className="mt-14 mb-8 border-t border-charcoal/10 pt-8">
+        <h2 className="text-lg font-bold text-charcoal">大阪広域水道企業団</h2>
+        <p className="mt-2 text-sm text-charcoal/75 leading-relaxed">
+          企業団職員（岸職労組合員の一部）向けの数値は、大阪広域水道企業団の公開例規集から取得しています。取得日: {kigyodanSource.fetchedAt}。
+          岸和田市の条例とは別体系（給与の種類及び基準に関する条例、給与に関する規程、管理職手当に関する規程、就業規則等）にもとづき、各項目に条例名・条番号・条文引用を付しています。
+        </p>
+      </div>
+
+      <section className="mb-10">
+        <h2 className="text-base font-bold text-charcoal mb-3">
+          出典規程群（企業団）
+          <span className="ml-2 text-xs font-normal text-charcoal/50">{Object.keys(kigyodanOrdinances).length}件</span>
+        </h2>
+        <div className="space-y-2">
+          {Object.keys(kigyodanOrdinances).map((key) => (
+            <div key={key} className="src-row rounded-xl border border-charcoal/10 bg-white/80 px-4 py-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p className="text-sm font-semibold text-charcoal">{kigyodanOrdinanceName(key)}</p>
+                <p className="text-xs font-mono text-charcoal/50">{kigyodanOrdinanceCode(key)}</p>
+              </div>
+              <p className="mt-1 text-xs text-charcoal/50">取得日: {kigyodanSource.fetchedAt}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <CardList title="給与・手当（企業団）" rows={kFactRows} resolveOrd={kigyodanOrdinanceName} />
+      <CardList title="休暇（企業団）" rows={kLeaveRows} resolveOrd={kigyodanOrdinanceName} />
+
+      <section className="mb-10">
+        <h2 className="text-base font-bold text-charcoal mb-3">
+          給料表（企業団）
+          <span className="ml-2 text-xs font-normal text-charcoal/50">{kigyodanSalaryTables.length}表</span>
+        </h2>
+        <div className="space-y-2">
+          {kigyodanSalaryTables.map((t) => (
+            <div key={t.id} className="src-row rounded-xl border border-charcoal/10 bg-white/80 px-4 py-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p className="text-sm font-semibold text-charcoal">{t.name}</p>
+                <p className="text-sm font-bold text-[#1B4D4F]">{t.grades}級</p>
+              </div>
+              <p className="mt-1.5 text-xs text-charcoal/60">
+                {kigyodanOrdinanceName(t.provenance.ordinance)}　{t.provenance.article}
+              </p>
+              <p className="mt-1 text-xs text-charcoal/50">
+                級別号給数: {t.checks.stepCounts.join(' / ')}　　総セル {t.checks.totalCells}　　検証: 単調性 {t.checks.monotonicPerGrade ? 'OK' : 'NG'}・級間昇順 {t.checks.crossGradeAscending ? 'OK' : '—'}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-4">
+        <h2 className="text-base font-bold text-charcoal mb-3">
+          導入時に反映（未収録・企業団）
+          <span className="ml-2 text-xs font-normal text-charcoal/50">{kigyodanNotFound.length}項目</span>
+        </h2>
+        <div className="space-y-2">
+          {kigyodanNotFound.map((n, i) => (
             <div key={i} className="src-row rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3">
               <p className="text-xs font-semibold text-amber-900">{jaLabel(n.key.split('.').pop() ?? n.key)}</p>
               <p className="mt-0.5 text-xs text-amber-800/90 leading-relaxed">{n.reason}</p>

@@ -103,12 +103,20 @@ export function positionAddGaku(base: number, position: PositionLevel, age: numb
   if (rate <= 0) return 0;
   return Math.floor((base + (base * chiikiPct) / 100) * rate);
 }
+/** 期末手当の基礎額＝給料＋扶養手当＋（給料＋扶養に対する）地域手当＋役職加算（給与条例第25条第2項）。 */
 export function bonusBaseOf(base: number, fuyo: number, position: PositionLevel, age: number): number {
   return base + fuyo + calcChiikiForBonus(base, fuyo) + positionAddGaku(base, position, age);
 }
+/** 勤勉手当の基礎額＝期末手当基礎額と同一（扶養込み）。
+ *  岸和田は給与条例第26条第3項が第25条第5項（給料及び扶養手当の月額並びに地域手当の合計額）を
+ *  読替えなしで勤勉手当基礎額に準用するため、貝塚・高石と異なり扶養手当を含むのが条例どおり。 */
+export function bonusKinbenBaseOf(base: number, fuyo: number, position: PositionLevel, age: number): number {
+  return bonusBaseOf(base, fuyo, position, age);
+}
 export function bonusTerm(base: number, fuyo: number, position: PositionLevel, age: number, term: 'jun' | 'dec'): number {
-  const b = bonusBaseOf(base, fuyo, position, age);
-  return Math.floor(b * kimatsu[term]) + Math.floor(b * kinben[term]);
+  const kimatsuBase = bonusBaseOf(base, fuyo, position, age);
+  const kinbenBase = bonusKinbenBaseOf(base, fuyo, position, age);
+  return Math.floor(kimatsuBase * kimatsu[term]) + Math.floor(kinbenBase * kinben[term]);
 }
 export function bonusAnnual(base: number, fuyo: number, position: PositionLevel, age: number): number {
   return bonusTerm(base, fuyo, position, age, 'jun') + bonusTerm(base, fuyo, position, age, 'dec');

@@ -11,6 +11,7 @@ import {
   LeaveSubItem,
 } from '@/data/leaveData';
 import { kaikeiLeaveCategories } from '@/data/kaikeiNendoData';
+import { kigyodanLeaveCategories } from '@/data/kigyodanLeaveData';
 import { useStaffMode, StaffModeToggle } from '@/components/StaffMode';
 
 /* ── Category SVG Icons (24px, line-style) ── */
@@ -137,17 +138,18 @@ export default function LeavePage() {
     setSelectedCategory(null);
   }, [mode]);
 
-  const categories = mode === 'sonota' ? kaikeiLeaveCategories : leaveCategories;
+  const categories =
+    mode === 'kigyodan' ? kigyodanLeaveCategories : mode === 'sonota' ? kaikeiLeaveCategories : leaveCategories;
+
+  const subtitle =
+    mode === 'kigyodan'
+      ? 'ライフイベントに応じた休暇制度を確認できます（大阪広域水道企業団 就業規則 準拠）'
+      : mode === 'sonota'
+        ? 'ライフイベントに応じた休暇制度を確認できます（会計年度任用職員 休暇一覧 準拠）'
+        : 'ライフイベントに応じた休暇制度を確認できます（服務・勤怠関係事務 R8.4.1改定準拠）';
 
   return (
-    <PageLayout
-      title="休暇ガイド"
-      subtitle={
-        mode === 'sonota'
-          ? 'ライフイベントに応じた休暇制度を確認できます（会計年度任用職員 休暇一覧 準拠）'
-          : 'ライフイベントに応じた休暇制度を確認できます（服務・勤怠関係事務 R8.4.1改定準拠）'
-      }
-    >
+    <PageLayout title="休暇ガイド" subtitle={subtitle}>
       <StaffModeToggle />
       {!selectedCategory ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
