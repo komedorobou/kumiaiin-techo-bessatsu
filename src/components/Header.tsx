@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Header() {
@@ -10,13 +11,10 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 glass-card-strong">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group p-1 -m-1" aria-label="トップページへ">
             <div className="glass-tile w-9 h-9 rounded-xl flex items-center justify-center">
               <span className="text-accent text-[15px] font-bold leading-none">組</span>
             </div>
-            <span className="text-sm font-semibold text-charcoal hidden sm:block group-hover:text-accent transition-colors">
-              岸和田市職員労働組合
-            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -25,7 +23,6 @@ export default function Header() {
             <NavLink href="/leave">休暇ガイド</NavLink>
             <NavLink href="/allowances">手当ガイド</NavLink>
             <NavLink href="/insurance">共済ガイド</NavLink>
-            <NavLink href="/rules">規約ビューア</NavLink>
           </nav>
 
           {/* Mobile menu button */}
@@ -53,7 +50,6 @@ export default function Header() {
             <MobileNavLink href="/leave" onClick={() => setMenuOpen(false)}>休暇ガイド</MobileNavLink>
             <MobileNavLink href="/allowances" onClick={() => setMenuOpen(false)}>手当ガイド</MobileNavLink>
             <MobileNavLink href="/insurance" onClick={() => setMenuOpen(false)}>共済ガイド</MobileNavLink>
-            <MobileNavLink href="/rules" onClick={() => setMenuOpen(false)}>規約ビューア</MobileNavLink>
           </nav>
         </div>
       )}
@@ -62,10 +58,17 @@ export default function Header() {
 }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const pathname = usePathname();
+  const active = pathname.startsWith(href);
   return (
     <Link
       href={href}
-      className="px-3 py-2 text-sm font-medium text-charcoal/70 hover:text-accent rounded-lg hover:bg-accent/5 transition-all"
+      aria-current={active ? 'page' : undefined}
+      className={`px-3 py-2 text-sm rounded-lg transition-all ${
+        active
+          ? 'font-semibold text-accent bg-accent/10'
+          : 'font-medium text-charcoal/70 hover:text-accent hover:bg-accent/5'
+      }`}
     >
       {children}
     </Link>
@@ -73,11 +76,18 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 }
 
 function MobileNavLink({ href, children, onClick }: { href: string; children: React.ReactNode; onClick: () => void }) {
+  const pathname = usePathname();
+  const active = pathname.startsWith(href);
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="px-4 py-3 min-h-[44px] flex items-center text-sm font-medium text-charcoal/80 hover:text-accent rounded-lg hover:bg-accent/5 transition-all"
+      aria-current={active ? 'page' : undefined}
+      className={`px-4 py-3 min-h-[44px] flex items-center text-sm rounded-lg transition-all ${
+        active
+          ? 'font-semibold text-accent bg-accent/10'
+          : 'font-medium text-charcoal/80 hover:text-accent hover:bg-accent/5'
+      }`}
     >
       {children}
     </Link>

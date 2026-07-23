@@ -75,7 +75,7 @@ export default function InsurancePage() {
   return (
     <PageLayout
       title="共済ガイド"
-      subtitle="セット共済・火災共済・慶弔費の内容を確認できます"
+      subtitle="セット共済・火災共済・慶弔費の内容を確認できます（出典：自治労連共済／組合資料）"
     >
       {/* 共済の種類 */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6 animate-fade-in">

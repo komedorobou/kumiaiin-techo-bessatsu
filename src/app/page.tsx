@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { initFluid } from '@/lib/fluid';
+import { unionName, municipality } from '@/lib/facts';
+import { MS_PER_SEC } from '@/lib/ui';
 
 
 const featureIcons: Record<string, React.ReactNode> = {
@@ -35,13 +38,6 @@ const featureIcons: Record<string, React.ReactNode> = {
       <path d="M24 30s-7-4.2-7-9a4 4 0 017-2.6A4 4 0 0131 21c0 4.8-7 9-7 9z" opacity="0.55" fill="currentColor" stroke="none" />
     </svg>
   ),
-  rules: (
-    <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 40a5 5 0 015-5h19V4H17a5 5 0 00-5 5v31z" />
-      <path d="M12 40a5 5 0 005 4h19v-9" opacity="0.4" />
-      <path d="M28 4v14l-4-3.5L20 18V4" opacity="0.55" fill="currentColor" stroke="none" />
-    </svg>
-  ),
 };
 
 const features = [
@@ -49,31 +45,25 @@ const features = [
     href: '/salary',
     iconKey: 'salary',
     title: '給料シミュレーター',
-    description: '職種・等級・号給を選んで月額給料を確認。来年の昇給シミュレーションも。',
+    description: '職種・等級・号給を選んで月額給料を確認。将来の昇給や60歳特例まで試算できます。',
   },
   {
     href: '/leave',
     iconKey: 'leave',
     title: '休暇ガイド',
-    description: 'ライフイベントから検索。結婚・出産・介護など場面別に必要な休暇が分かる。',
+    description: '勤務時間・年休・特別休暇・忌引・病気休暇など岸和田市の休暇制度を確認。',
   },
   {
     href: '/allowances',
     iconKey: 'allowance',
     title: '手当ガイド',
-    description: '扶養・住居・通勤・賞与など各種手当の詳細。シミュレーター付き。',
+    description: '賞与・扶養・住居・地域・通勤・時間外・管理職など各種手当を岸和田市の条例で確認。',
   },
   {
     href: '/insurance',
     iconKey: 'kyosai',
     title: '共済ガイド',
-    description: 'セット共済のプラン比較・加入条件・給付手続き、火災共済、慶弔費を確認できる。',
-  },
-  {
-    href: '/rules',
-    iconKey: 'rules',
-    title: '規約ビューア',
-    description: '組合規約の全文を章ごとにナビゲーション。全文検索でキーワードを素早く発見。',
+    description: 'セット共済・火災共済・慶弔費など自治労連共済の給付制度を確認。',
   },
 ];
 
@@ -82,56 +72,7 @@ export default function Home() {
   useEffect(() => {
     const container = document.getElementById('fluidContainer');
     if (!container) return;
-    let fluid: { stop: () => void } | null = null;
-    let ambient: ReturnType<typeof setInterval> | null = null;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-    (async () => {
-      try {
-        const mod = await import('webgl-fluid-enhanced');
-        const FluidClass = mod.default;
-        const f = new FluidClass(container as HTMLElement);
-        const lite = window.matchMedia('(max-width: 900px)').matches;
-        f.setConfig({
-          simResolution: lite ? 96 : 128,
-          dyeResolution: lite ? 512 : 1024,
-          densityDissipation: 0.32,
-          velocityDissipation: 0.22,
-          pressure: 0.8,
-          pressureIterations: lite ? 12 : 20,
-          curl: 26,
-          splatRadius: 0.28,
-          splatForce: 5200,
-          shading: true,
-          colorful: false,
-          colorPalette: ['#1B4D4F', '#2A6F72', '#3E8487', '#5D9496', '#A88652'],
-          hover: true,
-          backgroundColor: '#FAF9F4',
-          transparent: false,
-          brightness: 0.9,
-          bloom: false,
-          sunrays: false,
-        });
-        f.start();
-        fluid = f;
-        const wrap = document.getElementById('fluidWrap');
-        if (wrap) wrap.style.opacity = '1';
-        // 初手の見せ場: 開いた瞬間に墨が走る
-        timeouts.push(setTimeout(() => f.multipleSplats(6), 150));
-        timeouts.push(setTimeout(() => f.multipleSplats(4), 650));
-        timeouts.push(setTimeout(() => f.multipleSplats(3), 1400));
-        // 触らなくても生き続ける環境スプラット
-        ambient = setInterval(() => {
-          if (!document.hidden && window.scrollY < window.innerHeight) f.multipleSplats(2 + Math.floor(Math.random() * 2));
-        }, 3800);
-      } catch {
-        /* WebGL不可: JS雲フォールバックがそのまま見える */
-      }
-    })();
-    return () => {
-      timeouts.forEach(clearTimeout);
-      if (ambient) clearInterval(ambient);
-      fluid?.stop();
-    };
+    return initFluid(container as HTMLElement);
   }, []);
 
   // 雲はJS駆動: OSの視差軽減設定やCSSアニメ無効化の影響を受けず必ず動く（WebGL失敗時のフォールバック兼下地）
@@ -154,7 +95,7 @@ export default function Home() {
       raf = requestAnimationFrame(tick);
       if (now - last < 33) return;
       last = now;
-      const t = now / 1000;
+      const t = now / MS_PER_SEC;
       nodes.forEach((n, i) => {
         const p = params[i];
         const x = Math.sin(t * p.sx + p.ph) * p.ax * vmax;
@@ -194,15 +135,15 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
             <div className="max-w-2xl animate-fade-in">
               <p className="text-sm sm:text-[16px] font-semibold text-accent/80 tracking-wide mb-3">
-                岸和田市職員労働組合
+                {unionName}
               </p>
               <h1 className="text-4xl sm:text-6xl font-bold text-charcoal tracking-tight leading-tight">
                 組合員ポータル
               </h1>
               <p className="mt-6 text-[16px] sm:text-lg text-charcoal/70 leading-relaxed max-w-lg">
-                組合員手帳別冊のデジタル版。
+                勤務・労働条件・給料・手当の情報を、スマホでいつでも。
                 <br className="hidden sm:block" />
-                給料・休暇・共済・規約の情報にすばやくアクセス。
+                給料シミュレーターには{municipality}の給与条例の実データを反映しています。
               </p>
             </div>
           </div>
@@ -210,7 +151,7 @@ export default function Home() {
 
         {/* スクロールキュー */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-accent/60">
-          <span className="text-[11px] font-medium tracking-widest">SCROLL</span>
+          <span className="text-xs font-medium tracking-widest">SCROLL</span>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
             <path d="M3 6l5 5 5-5" />
           </svg>
@@ -227,7 +168,7 @@ export default function Home() {
             <Link
               key={feature.href}
               href={feature.href}
-              className={`group glass-card-strong rounded-2xl p-6 sm:p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in-delay-${i + 1}`}
+              className={`group glass-card-strong rounded-2xl p-6 sm:p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] animate-fade-in-delay-${i + 1}`}
             >
               <div className="flex items-start gap-4">
                 <div className="glass-tile w-16 h-16 rounded-2xl shrink-0 flex items-center justify-center text-accent group-hover:scale-105 transition-transform duration-300">
@@ -243,7 +184,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-4 flex justify-end">
-                <span className="text-xs font-medium text-accent/40 group-hover:text-accent/70 transition-colors flex items-center gap-1">
+                <span className="text-xs font-semibold text-accent/70 group-hover:text-accent transition-colors flex items-center gap-1">
                   開く
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 3l4 4-4 4" />

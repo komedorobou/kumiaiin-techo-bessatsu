@@ -1,8 +1,8 @@
 /**
- * 会計年度任用職員（月給パートタイム）給与データ
- * 元データ: 岸和田市例規集（会計年度任用職員の給与等に関する条例／同施行規則）
- * 内容現在: 令和8年4月1日
- * 単位: 円
+ * 会計年度任用職員（月給パートタイム）給与データ（岸和田市）。
+ * 元データ: 岸和田市例規集（会計年度任用職員の給与等に関する条例／同施行規則）内容現在 令和8年4月1日、
+ *           および各職種（月給）任用条件。単位: 円。
+ * 数値はデータ層（src/data）に集約（check_hardcode 対象外）。コンポーネントは本ファイルから読み出す。
  */
 
 import type { LeaveCategory } from './leaveData';
@@ -20,7 +20,8 @@ export interface KaikeiNendoJob {
   subtitle: string;
   rows: KaikeiNendoRow[];
   notes: string[];
-  weeklyHoursOptions?: number[]; // 週勤務時間が配属先で変わる職種は選択式（rowsのmonthlyはdefaultWeeklyHours時の額）
+  weeklyHours: number; // 規定の週勤務時間
+  weeklyHoursOptions?: number[]; // 配属先で変わる職種は選択式（rowsのmonthlyはdefaultWeeklyHours時の額）
   defaultWeeklyHours?: number;
 }
 
@@ -32,8 +33,8 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
   {
     id: 'jidoshido',
     name: '児童指導員',
-    subtitle:
-      '保育所・認定こども園／月給パートタイム・保育士資格必須・週約30.25時間・地域手当11%込み',
+    subtitle: '保育所・認定こども園／月給パートタイム・保育士資格必須・週約30.25時間・地域手当11%込み',
+    weeklyHours: 30.25,
     rows: [
       { year: 1, gokyu: 46, tableSalary: 259300, monthly: 224688 },
       { year: 2, gokyu: 48, tableSalary: 261700, monthly: 226767 },
@@ -56,8 +57,8 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
   {
     id: 'choujikan',
     name: '長時間担当職員',
-    subtitle:
-      '保育補助・有資格／月給パートタイム・保育士資格必須・週26時間・地域手当11%込み',
+    subtitle: '保育補助・有資格／月給パートタイム・保育士資格必須・週26時間・地域手当11%込み',
+    weeklyHours: 26,
     rows: [
       { year: 1, gokyu: 40, tableSalary: 251700, monthly: 187460 },
       { year: 2, gokyu: 42, tableSalary: 254300, monthly: 189396 },
@@ -81,6 +82,7 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
     id: 'houkago',
     name: '放課後児童支援員',
     subtitle: '学童／週30時間勤務・地域手当11%込み',
+    weeklyHours: 30,
     rows: [
       { year: 1, gokyu: 33, tableSalary: 242000, monthly: 207964 },
       { year: 2, gokyu: 35, tableSalary: 244700, monthly: 210284 },
@@ -94,7 +96,7 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
       { year: 10, gokyu: 51, tableSalary: 265000, monthly: 227729 },
     ],
     notes: [
-      '給料表は会計年度任用職員給料表1（別表第1）。初任は33号給、1年ごとに2号給昇給。',
+      '学童（放課後児童健全育成事業）の支援員。給料表は会計年度任用職員給料表1（別表第1）。初任は33号給、1年ごとに2号給昇給。',
       '報酬額＝給料月額 × 1.11（地域手当11%）× 30 ÷ 38.75 を四捨五入（会計年度任用職員の給与等に関する条例 第13条）。',
       '38.75時間＝フルタイム基準（週38時間45分）。30時間＝放課後児童支援員の規定労働時間。',
     ],
@@ -102,8 +104,8 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
   {
     id: 'jimu',
     name: '一般事務員',
-    subtitle:
-      '行政事務全般（窓口業務・文書処理事務など）／月給パートタイム・週28〜31時間（配属先による）・地域手当11%込み',
+    subtitle: '行政事務全般（窓口業務・文書処理事務など）／月給パートタイム・週28〜31時間（配属先による）・地域手当11%込み',
+    weeklyHours: 28,
     weeklyHoursOptions: [28, 29, 30, 31],
     defaultWeeklyHours: 28,
     rows: [
@@ -123,7 +125,7 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
       '報酬額＝給料月額 × 1.11（地域手当11%・条例第4条）× 週勤務時間28 ÷ 38.75 を四捨五入（条例第13条第1項第1号）。',
       '1年目（39号給）＝200,757円は岸和田市 会計年度任用職員採用試験案内（令和8年7月・週4日28時間勤務の場合）の公表実額と一致。',
       '昇給は経験1年ごとに+2号給、上限9年（10年目で+18号の57号給）。施行規則第3条第2項第2号による。',
-      '勤務時間は配属先により週28〜31時間程度・週4〜5日。rowsのmonthlyは週28時間の場合の額（UIでは時間選択で再計算）。',
+      '勤務時間は配属先により週28〜31時間程度・週4〜5日。表の月額は週28時間の場合の額（時間選択で再計算）。',
       '別ルートとして時給制の登録募集（事務等・時給1,434円）もあり。上表は採用試験による月給パートタイム。',
     ],
   },
@@ -132,13 +134,10 @@ export const kaikeiNendoJobs: KaikeiNendoJob[] = [
 export const kaikeiNendoSource =
   '出典：岸和田市例規集（会計年度任用職員の給与等に関する条例／同施行規則）内容現在 令和8年4月1日、および各職種（月給）任用条件。';
 
-/* ==================== 労働条件一覧表（その3） ==================== */
+/* ==================== 労働条件一覧表 ==================== */
 
 export const kaikeiEmploymentRows: { label: string; values: [string, string, string] }[] = [
-  {
-    label: '身分',
-    values: ['パートタイム会計年度任用職員', 'パートタイム会計年度任用職員', 'パートタイム会計年度任用職員'],
-  },
+  { label: '身分', values: ['パートタイム会計年度任用職員', 'パートタイム会計年度任用職員', 'パートタイム会計年度任用職員'] },
   {
     label: '任用期間',
     values: [
@@ -156,10 +155,7 @@ export const kaikeiEmploymentRows: { label: string; values: [string, string, str
     ],
   },
   { label: '当局研修', values: ['年1回', '年1回', '―'] },
-  {
-    label: '担当課',
-    values: ['子ども家庭応援部 子育て施設課', '子ども家庭応援部 子育て支援課', '子ども家庭応援部 子育て施設課'],
-  },
+  { label: '担当課', values: ['子ども家庭応援部 子育て施設課', '子ども家庭応援部 子育て支援課', '子ども家庭応援部 子育て施設課'] },
 ];
 
 export const kaikeiEmploymentColumns = ['長時間担当保育分会', '学童保育指導員分会', '児童指導員分会'];
@@ -175,7 +171,7 @@ export const kaikeiInsuranceRows: { label: string; value: string }[] = [
   { label: '厚生会', value: '加入' },
 ];
 
-/* ==================== 通勤手当支給一覧 ==================== */
+/* ==================== 通勤手当支給一覧（会計年度） ==================== */
 
 export const kaikeiCommuteVehicleRows: { range: string; car: string; bike: string; bicycle: string }[] = [
   { range: '2km以上4km未満', car: '6,200円', bike: '3,600円', bicycle: '3,000円' },
@@ -189,17 +185,7 @@ export const kaikeiCommuteNotes = [
   '長時間担当保育は朝夕2回勤務のため、通勤距離を1/2換算する。',
 ];
 
-// 距離区分別の支給額（数値）: [2〜4km, 4〜6km, 6〜8km, 8km以上]
-export const kaikeiCommuteAmounts: Record<'car' | 'bike' | 'bicycle', number[]> = {
-  car: [6200, 7800, 9400, 11000],
-  bike: [3600, 4400, 5200, 6000],
-  bicycle: [3000, 3500, 4000, 4500],
-};
-
 export const kaikeiTransitCap = 18000; // 交通機関の月額限度額
-
-/* ==================== 休暇一覧（会計年度任用職員） ==================== */
-// 元データ: 会計年度任用職員 休暇一覧（組合手帳別冊 p.18）
 
 export const kaikeiLeaveCategories: LeaveCategory[] = [
   // ─── 日常の休暇 ───
