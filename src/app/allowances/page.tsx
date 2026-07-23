@@ -339,19 +339,16 @@ export default function AllowancesPage() {
       {tab === 'tokushu' && (
         <Card title="特殊勤務手当">
           <p className="mb-3 text-sm text-charcoal/70">著しく危険・不快・不健康又は困難な勤務等に従事する職員に、勤務の特殊性に応じて支給される手当です。</p>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse min-w-[360px]">
-              <thead><tr className="border-b border-charcoal/15"><th className={th}>手当の種類</th><th className={`${th} text-right`}>額</th><th className={th}>対象</th></tr></thead>
-              <tbody>
-                {tokushuData.map((r) => (
-                  <tr key={r.name} className="border-b border-charcoal/10 last:border-0 align-top">
-                    <td className={`${cell} font-medium text-charcoal/80`}>{r.name}</td>
-                    <td className={`${cell} text-right font-semibold text-[#1B4D4F] whitespace-nowrap`}>{r.amount}</td>
-                    <td className={`${cell} text-charcoal/60`}>{r.target}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-2">
+            {tokushuData.map((r) => (
+              <div key={r.name} className="rounded-xl border border-charcoal/10 bg-white/80 px-4 py-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <p className="text-sm font-semibold text-charcoal">{r.name}</p>
+                  <p className="text-sm font-bold text-[#1B4D4F] text-right break-words max-w-full">{r.amount}</p>
+                </div>
+                {r.target && <p className="mt-1 text-xs text-charcoal/60">対象：{r.target}</p>}
+              </div>
+            ))}
           </div>
           <p className="mt-3 text-xs text-charcoal/50">{tokushuSource}</p>
         </Card>
