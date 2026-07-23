@@ -22,10 +22,9 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 const cell = 'py-2.5 px-3 text-sm align-top';
 const th = 'py-2 px-3 text-left text-xs text-charcoal/60 font-semibold';
 
-type Tab = 'types' | 'bonus' | 'fuyo' | 'jukyo' | 'chiiki' | 'tsukin' | 'warimashi' | 'kanri' | 'kinmu' | 'tokushu' | 'sonota';
+type Tab = 'bonus' | 'fuyo' | 'jukyo' | 'chiiki' | 'tsukin' | 'warimashi' | 'kanri' | 'kinmu' | 'tokushu' | 'sonota';
 
 const tabs: { key: Tab; label: string }[] = [
-  { key: 'types', label: '手当の種類' },
   { key: 'bonus', label: '賞与' },
   { key: 'fuyo', label: '扶養' },
   { key: 'jukyo', label: '住居' },
@@ -39,11 +38,9 @@ const tabs: { key: Tab; label: string }[] = [
 ];
 
 export default function AllowancesKigyodan() {
-  const [tab, setTab] = useState<Tab>('types');
+  const [tab, setTab] = useState<Tab>('bonus');
   const [rent, setRent] = useState<number | ''>('');
   const jukyo = rent === '' ? 0 : calcJukyo(rent);
-
-  const giveTypes = (factValue('giveTypes') ?? []) as string[];
   const rNormal = bonusRatesForGrade(1);
   const rHigh = bonusRatesForGrade(specialManagerGrade);
   const bonusBaseDef = getFact<string>('bonusBase');
@@ -104,16 +101,7 @@ export default function AllowancesKigyodan() {
         ))}
       </div>
 
-      {tab === 'types' && (
-        <Card title="手当の種類">
-          <p className="mb-3 text-sm text-charcoal/70">企業団の給与の種類及び基準に関する条例が定める手当は次の{giveTypes.length}種類です。</p>
-          <div className="flex flex-wrap gap-2">
-            {giveTypes.map((t) => (
-              <span key={t} className="px-3 py-1.5 rounded-lg bg-accent/5 text-accent text-xs font-medium">{t}</span>
-            ))}
-          </div>
-        </Card>
-      )}
+      
 
       {tab === 'bonus' && (
         <Card title="期末手当・勤勉手当（ボーナス）">
