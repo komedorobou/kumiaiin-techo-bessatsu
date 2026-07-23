@@ -370,7 +370,7 @@ export default function SalaryKigyodan() {
                 ))}
               </select>
               {gradeTiers.length === 0 && (
-                <p className="mt-1 text-[11px] text-charcoal/50">この級に管理職手当の区分はありません（6級以上が対象）。管理職の方は級を選び直してください。</p>
+                <p className="mt-1 text-xs text-charcoal/55">この級に管理職手当の区分はありません（6級以上が対象）。管理職の方は級を選び直してください。</p>
               )}
             </div>
           </div>
