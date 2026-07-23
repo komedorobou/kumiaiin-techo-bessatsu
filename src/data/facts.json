@@ -4493,156 +4493,48 @@
   ],
   "mourning": [
    {
-    "relation": "配偶者",
-    "days": "7日",
+    "relation": "配偶者・父母・子",
+    "days": 7,
     "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "配偶者　7日"
+     "ordinance": "kinmuKisoku",
+     "article": "別表第2(第14条関係)",
+     "quote": "１　配偶者、父母、子\t７日"
     }
    },
    {
-    "relation": "父母",
-    "days": "7日",
+    "relation": "祖父母・子の配偶者",
+    "days": 5,
     "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "父母（養父母を含む）　7日"
+     "ordinance": "kinmuKisoku",
+     "article": "別表第2(第14条関係)",
+     "quote": "２　祖父母、子の配偶者\t５日"
     }
    },
    {
-    "relation": "子",
-    "days": "7日",
+    "relation": "兄弟・姉妹・孫・配偶者の父母",
+    "days": 3,
     "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "子　7日"
+     "ordinance": "kinmuKisoku",
+     "article": "別表第2(第14条関係)",
+     "quote": "３　兄弟、姉妹、孫、配偶者の父母\t３日"
     }
    },
    {
-    "relation": "祖父母（血族）",
-    "days": "5日",
+    "relation": "曽祖父母・伯叔父母",
+    "days": 2,
     "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "祖父母（血族）　5日"
+     "ordinance": "kinmuKisoku",
+     "article": "別表第2(第14条関係)",
+     "quote": "４　曽祖父母、伯叔父母\t２日"
     }
    },
    {
-    "relation": "祖父母（姻族）",
-    "days": "3日",
+    "relation": "曽孫・甥・姪・配偶者の祖父母又は兄弟姉妹",
+    "days": 1,
     "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "祖父母（姻族）　3日（同居の場合は血族に準ずる）"
-    }
-   },
-   {
-    "relation": "兄弟姉妹（血族）",
-    "days": "5日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "兄弟姉妹（血族）　5日"
-    }
-   },
-   {
-    "relation": "兄弟姉妹（姻族）",
-    "days": "2日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "兄弟姉妹（姻族）　2日"
-    }
-   },
-   {
-    "relation": "孫",
-    "days": "3日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "孫　3日"
-    }
-   },
-   {
-    "relation": "曽祖父母",
-    "days": "2日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "曽祖父母　2日"
-    }
-   },
-   {
-    "relation": "曽孫",
-    "days": "1日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "曽孫　1日"
-    }
-   },
-   {
-    "relation": "伯叔父母",
-    "days": "2日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "伯叔父母　2日"
-    }
-   },
-   {
-    "relation": "おい・めい",
-    "days": "1日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "おい・めい　1日"
-    }
-   },
-   {
-    "relation": "配偶者の父母",
-    "days": "3日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "配偶者の父母　3日（同居の場合は血族に準ずる）"
-    }
-   },
-   {
-    "relation": "配偶者の祖父母",
-    "days": "1日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "配偶者の祖父母　1日"
-    }
-   },
-   {
-    "relation": "配偶者の兄弟姉妹",
-    "days": "1日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "配偶者の兄弟姉妹　1日"
-    }
-   },
-   {
-    "relation": "子の配偶者",
-    "days": "1日",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引（親族の喪・血族／姻族別）",
-     "quote": "子の配偶者　1日"
-    }
-   },
-   {
-    "relation": "（但書）例規別表第2との関係",
-    "days": "血族・姻族の細分は労使運用（組合員手帳別冊）に基づきます。例規別表第2は続柄をまとめて7〜1日に区分しており、兄弟姉妹・祖父母姻族等は手帳の細分値を採用しています。",
-    "provenance": {
-     "ordinance": "techo",
-     "article": "忌引の運用",
-     "quote": "血族・姻族で日数が異なり、生計を一にする姻族は血族に準ずる。"
+     "ordinance": "kinmuKisoku",
+     "article": "別表第2(第14条関係)",
+     "quote": "５　曽孫、甥、姪、配偶者の祖父母又は兄弟姉妹\t１日"
     }
    }
   ]
